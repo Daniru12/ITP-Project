@@ -54,3 +54,40 @@ export function loginUser(req, res) {
     }
   });
 }
+
+export async function Profile(req, res) {
+
+  //just for testing
+  // if (req.user == null) {
+  //   res.status(401).json({
+  //     message: "Please login and try again"
+  //   });
+  //   return;
+  // }
+  // if(req.user.user_type != "admin"){
+  //   res.status(403).json({
+  //     message : "You are not authorized to perform this action"
+  //   })
+  //   return
+  // }
+
+  try {
+    const user = await User.findOne({ email: req.user.email });
+    
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json({
+      username: user.username,
+      full_name: user.full_name, 
+      email: user.email,
+      phone_number: user.phone_number,
+      user_type: user.user_type,
+      profile_picture: user.profile_picture
+    });
+
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching user details" });
+  }
+}
