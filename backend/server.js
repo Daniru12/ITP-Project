@@ -4,7 +4,8 @@ import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
 import userRouter from "./routes/userRouter.js";
-import jwt from "jsonwebtoken";
+import groomingRouter from "./routes/GroomingRoutes/groomingRouter.js";
+import appointmentRouter from "./routes/GroomingRoutes/appointmentRouter.js";
 
 dotenv.config();
 
@@ -29,6 +30,8 @@ mongoose
   });
 
 app.use("/api/users", userRouter);
+app.use("/api/grooming", groomingRouter);
+app.use("/api/appointments", appointmentRouter);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

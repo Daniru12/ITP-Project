@@ -2,6 +2,7 @@ import User from "../models/User.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+import Pet from "../models/Pets.js";
 
 dotenv.config();
 
@@ -34,14 +35,19 @@ export function loginUser(req, res) {
       const isPasswordValid = bcrypt.compareSync(data.password, user.password);
 
       if (isPasswordValid) {
-        const token = jwt.sign({
-          username: user.username,
-          full_name: user.full_name,
-          email: user.email,
-          phone_number: user.phone_number,
-          user_type: user.user_type,
-          profile_picture: user.profile_picture,
-        }, process.env.JWT_SECRET, { expiresIn: "1h" });
+        const token = jwt.sign(
+          {
+            _id: user._id,
+            username: user.username,
+            full_name: user.full_name,
+            email: user.email,
+            phone_number: user.phone_number,
+            user_type: user.user_type,
+            profile_picture: user.profile_picture,
+          },
+          process.env.JWT_SECRET,
+          { expiresIn: "1h" }
+        );
 
         res.status(200).json({
           message: "Login successful",
@@ -56,7 +62,6 @@ export function loginUser(req, res) {
 }
 
 export async function Profile(req, res) {
-
   //just for testing
   // if (req.user == null) {
   //   res.status(401).json({
@@ -73,21 +78,85 @@ export async function Profile(req, res) {
 
   try {
     const user = await User.findOne({ email: req.user.email });
-    
+
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
     res.status(200).json({
       username: user.username,
-      full_name: user.full_name, 
+      full_name: user.full_name,
       email: user.email,
       phone_number: user.phone_number,
       user_type: user.user_type,
-      profile_picture: user.profile_picture
+      profile_picture: user.profile_picture,
     });
-
   } catch (error) {
     res.status(500).json({ message: "Error fetching user details" });
   }
 }
+
+export const registerPet = async (req, res) => {
+  if (req.user == null) {
+    res.status(401).json({
+      message: "Please login and try again",
+    });
+    return;
+  }
+
+  if (req.user.user_type !== "pet_owner") {
+    res.status(403).json({
+      message: "Only pet owners can register pets",
+    });
+    return;
+  }
+
+  try {
+    const petData = {
+      owner_id: req.user._id,
+      name: req.body.name,
+      species: req.body.species,
+      breed: req.body.breed,
+      age: req.body.age,
+      gender: req.body.gender,
+      pet_image: req.body.pet_image || "https://via.placeholder.com/150",
+    };
+
+    const newPet = new Pet(petData);
+    await newPet.save();
+
+    res.status(201).json({
+      message: "Pet registered successfully",
+      pet: newPet,
+    });
+  } catch (error) {
+    console.error("Error registering pet:", error);
+    res.status(500).json({
+      message: "Error registering pet",
+      error: error.message,
+    });
+  }
+};
+
+export const getPets = async (req, res) => {
+  if (req.user == null) {
+    res.status(401).json({
+      message: "Please login and try again",
+    });
+    return;
+  }
+
+  try {
+    const pets = await Pet.find({ owner_id: req.user._id });
+    res.status(200).json({
+      message: "Pets fetched successfully",
+      pets: pets,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Error fetching pets", 
+      error: error.message,
+    });
+  }
+};
+

@@ -1,38 +1,38 @@
-const mongoose = require('mongoose');
+import mongoose from "mongoose";
 
 // Define the Pet Schema
 const petSchema = new mongoose.Schema(
   {
     owner_id: {
       type: mongoose.Schema.Types.ObjectId, // Reference to the User model
-      ref: 'User', // Links to the User model
-      required: [true, 'Owner ID is required'],
+      ref: "User", // Links to the User model
+      required: [true, "Owner ID is required"],
     },
     name: {
       type: String,
-      required: [true, 'Pet name is required'],
+      required: [true, "Pet name is required"],
     },
     species: {
       type: String,
-      required: [true, 'Species is required'],
+      required: [true, "Species is required"],
     },
     breed: {
       type: String,
-      required: [true, 'Breed is required'],
+      required: [true, "Breed is required"],
     },
     age: {
       type: Number,
-      required: [true, 'Age is required'],
-      min: [0, 'Age cannot be negative'],
+      required: [true, "Age is required"],
+      min: [0, "Age cannot be negative"],
     },
     gender: {
       type: String,
-      enum: ['male', 'female', 'unknown'],
-      required: [true, 'Gender is required'],
+      enum: ["male", "female", "unknown"],
+      required: [true, "Gender is required"],
     },
     pet_image: {
       type: String,
-      default: 'https://via.placeholder.com/150', // Default image
+      default: "https://via.placeholder.com/150", // Default image
     },
   },
   {
@@ -41,6 +41,6 @@ const petSchema = new mongoose.Schema(
 );
 
 // Create the Pet model
-const Pet = mongoose.model('Pet', petSchema);
+const Pet = mongoose.model("Pet", petSchema);
 
-module.exports = Pet;
+export default Pet;
