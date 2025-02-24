@@ -34,6 +34,10 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: 'https://via.placeholder.com/150', // Default profile picture
     },
+    loyalty_points: {
+      type: Number,
+      default: 0,
+    },
   },
   {
     timestamps: true, // Adds createdAt and updatedAt fields automatically
