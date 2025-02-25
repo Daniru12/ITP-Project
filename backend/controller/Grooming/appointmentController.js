@@ -1,6 +1,8 @@
 import Appointment from "../../models/Appointment.js";
 import Pet from "../../models/Pets.js";
 import GroomingService from "../../models/GroomingService.js";
+import { calculateLoyaltyPoints, calculateDiscount } from "../../utils/loyaltyHelper.js";
+import User from "../../models/User.js";
 
 // Book a new appointment
 export const bookAppointment = async (req, res) => {
@@ -17,15 +19,34 @@ export const bookAppointment = async (req, res) => {
         .json({ message: "Pet not found or not owned by user" });
     }
 
+    // Check if user wants to use loyalty points
+    const usePoints = req.body.usePoints === true;
+    let discount = 0;
+
+    if (usePoints) {
+      const user = await User.findById(req.user._id);
+      discount = calculateDiscount(user.loyalty_points);
+
+      // Deduct points if discount is applied
+      if (discount > 0) {
+        user.loyalty_points = 0; // Reset points after use
+        await user.save();
+      }
+    }
+
     const newAppointment = new Appointment({
       ...req.body,
       status: "pending",
+      discount_applied: discount,
+      package_type: req.body.package_type
     });
 
     await newAppointment.save();
+
     res.status(201).json({
       message: "Appointment booked successfully",
       appointment: newAppointment,
+      discountApplied: discount
     });
   } catch (error) {
     res
@@ -126,68 +147,78 @@ export const getProviderAppointments = async (req, res) => {
 // This function lets service providers accept or reject appointments
 export const updateAppointmentStatus = async (req, res) => {
   try {
-    // Step 1: Make sure the user is a service provider
-    const isServiceProvider = req.user.user_type === "service_provider";
-    if (!isServiceProvider) {
+    // Basic validation
+    if (req.user.user_type !== "service_provider") {
       return res.status(403).json({
-        message:
-          "You need to be a service provider to accept/reject appointments",
+        message: "Only service providers can update appointment status"
       });
     }
 
-    // Step 2: Get the appointment ID and new status from the request
-    const appointmentId = req.params.id;
-    const newStatus = req.body.status;
+    const { id } = req.params;
+    const { status } = req.body;
 
-    // Step 3: Make sure the new status is either 'confirmed' or 'rejected'
-    if (newStatus !== "confirmed" && newStatus !== "rejected") {
+    // Validate status
+    if (!status || (status !== "confirmed" && status !== "rejected")) {
       return res.status(400).json({
-        message: "Please choose either 'confirmed' or 'rejected' as the status",
+        message: "Status must be either 'confirmed' or 'rejected'"
       });
     }
 
-    // Step 4: Find the appointment in our database
-    const appointment = await Appointment.findById(appointmentId).populate({
-      path: "service_id",
-      select: "provider_id service_name",
-    });
-
-    // Step 5: Check if we found the appointment
+    // Find appointment and update status using findByIdAndUpdate to avoid validation issues
+    const appointment = await Appointment.findByIdAndUpdate(
+      id,
+      { status },
+      { 
+        new: true,
+        runValidators: false  // Disable validation since we're only updating status
+      }
+    );
+    
+    // Check if appointment exists
     if (!appointment) {
       return res.status(404).json({
-        message: "We couldn't find this appointment",
+        message: "Appointment not found"
       });
     }
 
-    // Step 6: Make sure the appointment belongs to this service provider
-    const isProviderAppointment =
-      appointment.service_id.provider_id.toString() === req.user._id.toString();
-    if (!isProviderAppointment) {
+    // Get service to verify provider
+    const service = await GroomingService.findById(appointment.service_id);
+    
+    // Verify service provider ownership
+    if (service.provider_id.toString() !== req.user._id.toString()) {
       return res.status(403).json({
-        message: "This appointment doesn't belong to your services",
+        message: "You can only update appointments for your services"
       });
     }
 
-    // Step 7: Make sure the appointment is still 'pending'
-    if (appointment.status !== "pending") {
-      return res.status(400).json({
-        message: `This appointment is already ${appointment.status}`,
+    // Handle loyalty points for confirmed appointments
+    if (status === "confirmed") {
+      const pet = await Pet.findById(appointment.pet_id);
+      const petOwner = await User.findById(pet.owner_id);
+      
+      const pointsEarned = calculateLoyaltyPoints(appointment.package_type);
+      petOwner.loyalty_points += pointsEarned;
+      await petOwner.save();
+
+      return res.status(200).json({
+        message: "Appointment confirmed successfully",
+        appointment,
+        pointsEarned,
+        totalPoints: petOwner.loyalty_points
       });
     }
 
-    // Step 8: Update the appointment status
-    appointment.status = newStatus;
-    await appointment.save();
-
-    // Step 9: Send back success message
+    // Response for rejected appointments
     res.status(200).json({
-      message: `Great! The appointment has been ${newStatus}`,
-      appointment: appointment,
+      message: "Appointment updated successfully",
+      appointment
     });
+
   } catch (error) {
+    console.error("Error updating appointment:", error);
     res.status(500).json({
-      message: "Something went wrong while updating the appointment",
-      error: error.message,
+      message: "Failed to update appointment",
+      error: error.message
     });
   }
 };

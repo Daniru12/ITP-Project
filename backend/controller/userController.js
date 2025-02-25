@@ -44,6 +44,8 @@ export function loginUser(req, res) {
             phone_number: user.phone_number,
             user_type: user.user_type,
             profile_picture: user.profile_picture,
+            loyalty_points: user.loyalty_points,
+            
           },
           process.env.JWT_SECRET,
           { expiresIn: "1h" }
@@ -90,6 +92,7 @@ export async function Profile(req, res) {
       phone_number: user.phone_number,
       user_type: user.user_type,
       profile_picture: user.profile_picture,
+      loyalty_points: user.loyalty_points
     });
   } catch (error) {
     res.status(500).json({ message: "Error fetching user details" });
@@ -160,3 +163,19 @@ export const getPets = async (req, res) => {
   }
 };
 
+export const getLoyaltyPoints = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+    const possibleDiscount = calculateDiscount(user.loyalty_points);
+
+    res.status(200).json({
+      points: user.loyalty_points,
+      possibleDiscount: possibleDiscount
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Error fetching loyalty points",
+      error: error.message
+    });
+  }
+};
