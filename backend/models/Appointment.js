@@ -25,6 +25,15 @@ const appointmentSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    package_type: {
+      type: String,
+      enum: ["basic", "premium", "luxury"],
+      required: [true, "Package type is required"]
+    },
+    discount_applied: {
+      type: Number,
+      default: 0
+    }
   },
   {
     timestamps: true,
