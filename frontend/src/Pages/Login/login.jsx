@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import toast from "react-hot-toast";
 import axios from 'axios';
+import SplashCursor from '../../UI/SplashCursor'
 
 export default function LoginPage() {
 
@@ -41,6 +42,7 @@ export default function LoginPage() {
 
   return (
     <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-md">
+      <SplashCursor />
       <h2 className="text-2xl font-bold text-center mb-6">Login</h2>
       <form onSubmit={handleSubmit}>
         <div className="mb-4">

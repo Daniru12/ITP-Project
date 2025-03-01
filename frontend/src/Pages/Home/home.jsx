@@ -1,10 +1,13 @@
 import React from 'react'
+import SplashCursor from '../../UI/SplashCursor'
 
 function home() {
   return (
-    <div>
-      <h1>Home</h1>
-    </div>
+    <>
+    <SplashCursor />
+    <h1>Hello</h1>
+    </>
+    
   )
 }
 

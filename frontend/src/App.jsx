@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Home from './pages/Home/home'
 import LoginPage from './pages/Login/login'
 import { Toaster } from 'react-hot-toast'
-import adminDashboard from './Pages/Admin/adminDashboard'
+import AdminDashboard from './Pages/Admin/adminDashboard'
 
 function App() {
 
@@ -13,7 +13,7 @@ function App() {
     <Routes>
       <Route path='/' element={<Home />} />
       <Route path='/login' element={<LoginPage />} />
-      <Route path='/admin' element={<adminDashboard />} />
+      <Route path='/admin' element={<AdminDashboard />} />
     </Routes>
   </BrowserRouter>
   )
