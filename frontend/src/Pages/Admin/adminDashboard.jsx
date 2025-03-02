@@ -5,7 +5,7 @@ function adminDashboard() {
   return (
     <div className="flex flex-col items-center justify-center h-[50vh]">
       <FallingText
-        text={`React Bits is a library of animated and interactive React components designed to streamline UI development and simplify your workflow.`}
+        text={`Welcome to the Pawgo Admin Dashboard! We are excited to have you on board.`}
         highlightWords={["React", "Bits", "animated", "components", "simplify"]}
         highlightClass="highlighted"
         trigger="hover"
