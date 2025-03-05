@@ -1,4 +1,4 @@
-import GroomingService from "../../models/GroomingService.js";
+import GroomingService from "../../models/Service.js";
 
 // Add a new grooming service
 export const addService = async (req, res) => {
