@@ -28,7 +28,11 @@ export default function LoginPage() {
 
             if(user.user_type === "admin"){
                 navigate("/admin")
-            }else{
+            }
+            else if(user.user_type === "service_provider"){
+                navigate("/provider-profile")
+            }
+            else{
                 navigate("/")
             }
         })

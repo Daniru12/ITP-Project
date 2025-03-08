@@ -7,6 +7,7 @@ import AdminDashboard from './Pages/Admin/adminDashboard'
 import RegisterPage from './Pages/Register/register'
 import NavBar from './Components/NavBar'
 import Profile from './Pages/PetOwner/profile'
+import ProviderProfile from './Pages/Providers/providerProfile'
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
           <Route path='/admin' element={<AdminDashboard />} />
           <Route path='/register' element={<RegisterPage />} />
           <Route path='/profile' element={<Profile />} />
+          <Route path='/provider-profile' element={<ProviderProfile />} />
         </Routes>
       </div>
     </BrowserRouter>

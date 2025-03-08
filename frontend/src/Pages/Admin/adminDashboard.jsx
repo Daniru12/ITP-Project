@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import * as echarts from 'echarts';
 
-const AdminDashboard = () => {
+export default function AdminDashboard() {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [selectedNav, setSelectedNav] = useState('dashboard');
   const [searchQuery, setSearchQuery] = useState('');
@@ -310,6 +310,4 @@ const AdminDashboard = () => {
     </div>
   );
 };
-
-export default AdminDashboard;
 
