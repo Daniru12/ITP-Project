@@ -179,3 +179,19 @@ export const getLoyaltyPoints = async (req, res) => {
     });
   }
 };
+
+export const getAllUsers = async (req, res) => {
+  if(req.user.user_type !== "admin"){
+    res.status(403).json({
+      message: "You are not authorized to perform this action"
+    })
+    return
+  }else{
+    const users = await User.find()
+    res.status(200).json({
+      message: "Users fetched successfully",
+      users: users
+    })
+  }
+  
+}
