@@ -161,8 +161,8 @@ const AdminDashboard = () => {
               />
               <SidebarItem 
                 icon={<FiBarChart2 />} 
-                text="Analytics" 
-                to="/admin/analytics" 
+                text="Services" 
+                to="/admin/services" 
                 active={activeItem === 'analytics'} 
                 onClick={() => setActiveItem('analytics')}
               />
