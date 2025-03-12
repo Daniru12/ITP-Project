@@ -28,7 +28,11 @@ export default function LoginPage() {
 
             if(user.user_type === "admin"){
                 navigate("/admin")
-            }else{
+            }
+            else if(user.user_type === "service_provider"){
+                navigate("/provider-profile")
+            }
+            else{
                 navigate("/")
             }
         })
@@ -42,7 +46,7 @@ export default function LoginPage() {
 
   return (
     <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-md">
-      <SplashCursor />
+      {/* <SplashCursor /> */}
       <h2 className="text-2xl font-bold text-center mb-6">Login</h2>
       <form onSubmit={handleSubmit}>
         <div className="mb-4">

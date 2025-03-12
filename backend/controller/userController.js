@@ -1,4 +1,5 @@
 import User from "../models/User.js";
+import Service from "../models/Service.js"
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
@@ -179,3 +180,34 @@ export const getLoyaltyPoints = async (req, res) => {
     });
   }
 };
+
+export const getAllUsers = async (req, res) => {
+  if(req.user.user_type !== "admin"){
+    res.status(403).json({
+      message: "You are not authorized to perform this action"
+    })
+    return
+  }else{
+    const users = await User.find()
+    res.status(200).json({
+      message: "Users fetched successfully",
+      users: users
+    })
+  }
+  
+}
+
+export const getAllServices = async (req,res) => {
+  if(req.user.user_type !== "admin"){
+    res.status(403).json({
+      message: "You are not authorized to perform this action"
+    })
+    return
+  }else{
+    const services = await Service.find().populate('provider_id', 'username full_name phone_number email')
+    res.status(200).json({
+      message: "Services fetched successfully",
+      services: services
+    })
+  }
+}

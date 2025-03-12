@@ -39,7 +39,7 @@ const groomingServiceSchema = new mongoose.Schema(
     service_category: {
       type: String,
       required: [true, "Service category is required"],
-      enum: ["pet_grooming", "pet_sitting", "pet_training"],
+      enum: ["pet_grooming", "pet_boarding", "pet_training"],
     },
     description: {
       type: String,
@@ -61,7 +61,7 @@ const groomingServiceSchema = new mongoose.Schema(
 );
 
 const GroomingService = mongoose.model(
-  "GroomingService",
+  "Services",
   groomingServiceSchema
 );
 
