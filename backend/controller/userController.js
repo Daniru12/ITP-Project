@@ -211,3 +211,18 @@ export const getAllServices = async (req,res) => {
     })
   }
 }
+
+export const getAllPets = async (req,res) => {
+  if(req.user.user_type!== "admin"){
+    res.status(403).json({
+      message: "You are not authorized to perform this action"
+    })
+    return
+  }else{
+    const pets = await Pet.find().populate('owner_id', 'username full_name phone_number email')
+    res.status(200).json({
+      message: "Pets fetched successfully",
+      pets: pets
+    })
+  }
+}
