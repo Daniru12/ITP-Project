@@ -168,8 +168,8 @@ const AdminDashboard = () => {
               />
               <SidebarItem 
                 icon={<FiMessageSquare />} 
-                text="Messages" 
-                to="/admin/messages" 
+                text="Pets" 
+                to="/admin/AllPets" 
                 active={activeItem === 'messages'} 
                 onClick={() => setActiveItem('messages')}
               />
