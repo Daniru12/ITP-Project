@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import { Link } from 'react-router-dom';
 
 export default function Profile() {
   // State to store user data
@@ -126,9 +127,9 @@ export default function Profile() {
           <div className="bg-white rounded-lg shadow-md p-6">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-2xl font-bold text-gray-800">My Pets</h2>
-              <button className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md">
+              <Link to="/register-pet" className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md">
                 Add New Pet
-              </button>
+              </Link>
             </div>
 
             {userPets.length === 0 ? (
