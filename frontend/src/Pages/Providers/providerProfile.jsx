@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { FaStar, FaEdit, FaTrash } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
 
 const ProviderProfile = () => {
   const [services, setServices] = useState([]);
@@ -92,9 +93,12 @@ const ProviderProfile = () => {
       <div className="bg-white rounded-lg shadow-md p-6 mb-8">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-semibold">My Services</h2>
-          <button className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md">
+          <Link 
+            to="/add-service"
+            className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md"
+          >
             Add New Service
-          </button>
+          </Link>
         </div>
 
         {services.length === 0 ? (
