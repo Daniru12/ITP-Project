@@ -11,6 +11,9 @@ import ProviderProfile from './Pages/Providers/providerProfile'
 import UserManagement from './Pages/Admin/UserManagement'
 import ServiceManagement from './Pages/Admin/ServiceManagement'
 import PetsManagement from './Pages/Admin/PetsManagement'
+import AddGrooming from './Pages/Providers/addGrooming'
+import AddService from './Pages/Providers/addService'
+import RegisterPet from './Pages/PetOwner/registerPet'
 
 // Wrapper component to handle NavBar conditional rendering
 const AppContent = () => {
@@ -38,6 +41,9 @@ const AppContent = () => {
           <Route path='/register' element={<RegisterPage />} />
           <Route path='/profile' element={<Profile />} />
           <Route path='/provider-profile' element={<ProviderProfile />} />
+          <Route path='/add-grooming' element={<AddGrooming />} />
+          <Route path='/add-service' element={<AddService />} />
+          <Route path='/register-pet' element={<RegisterPet />} />
         </Routes>
       </div>
     </>

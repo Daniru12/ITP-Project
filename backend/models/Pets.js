@@ -27,7 +27,6 @@ const petSchema = new mongoose.Schema(
     },
     gender: {
       type: String,
-      enum: ["male", "female", "unknown"],
       required: [true, "Gender is required"],
     },
     pet_image: {
