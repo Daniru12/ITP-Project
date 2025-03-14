@@ -11,6 +11,7 @@ import {
   FiX
 } from 'react-icons/fi';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 // Dashboard components
 const DashboardHome = () => (
@@ -110,6 +111,7 @@ const AdminDashboard = () => {
     sessionStorage.removeItem('user');
     
     // Navigate to login page
+    toast.success("Logged out successfully");
     navigate('/login');
   };
 
