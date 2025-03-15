@@ -15,11 +15,27 @@ const appointmentSchema = new mongoose.Schema(
     appointment_date: {
       type: Date,
       required: [true, "Appointment date is required"],
+      unique : true
     },
     status: {
       type: String,
       enum: ["pending", "confirmed", "completed", "cancelled"],
       default: "pending",
+    },
+    phone: {
+      type : String,
+      required: [true, "Phone number is required"]
+    },
+    petype:{
+      type : String,
+      squard: ["cat", "dog", "parrot", "rabit"],
+      default: "dog",
+    },
+    age : {
+      type : Number
+    },
+    weight : {
+      type : String
     },
     special_notes: {
       type: String,
