@@ -14,6 +14,7 @@ import PetsManagement from './Pages/Admin/PetsManagement'
 import AddGrooming from './Pages/Providers/addGrooming'
 import AddService from './Pages/Providers/addService'
 import RegisterPet from './Pages/PetOwner/registerPet'
+import FAQ from './Pages/FAQ/faq'
 
 // Wrapper component to handle NavBar conditional rendering
 const AppContent = () => {
@@ -44,6 +45,7 @@ const AppContent = () => {
           <Route path='/add-grooming' element={<AddGrooming />} />
           <Route path='/add-service' element={<AddService />} />
           <Route path='/register-pet' element={<RegisterPet />} />
+          <Route path='/faq' element={<FAQ />} />
         </Routes>
       </div>
     </>
