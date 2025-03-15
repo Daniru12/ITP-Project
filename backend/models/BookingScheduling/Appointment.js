@@ -9,7 +9,7 @@ const appointmentSchema = new mongoose.Schema(
     },
     service_id: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "GroomingService",
+      ref: "Service",
       required: [true, "Service is required"],
     },
     appointment_date: {
@@ -21,21 +21,6 @@ const appointmentSchema = new mongoose.Schema(
       type: String,
       enum: ["pending", "confirmed", "completed", "cancelled"],
       default: "pending",
-    },
-    phone: {
-      type : String,
-      required: [true, "Phone number is required"]
-    },
-    petype:{
-      type : String,
-      squard: ["cat", "dog", "parrot", "rabit"],
-      default: "dog",
-    },
-    age : {
-      type : Number
-    },
-    weight : {
-      type : String
     },
     special_notes: {
       type: String,
