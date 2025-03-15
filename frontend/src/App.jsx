@@ -14,10 +14,6 @@ import PetsManagement from './Pages/Admin/PetsManagement'
 import AddGrooming from './Pages/Providers/addGrooming'
 import AddService from './Pages/Providers/addService'
 import RegisterPet from './Pages/PetOwner/registerPet'
-import PaymentPage from './Pages/Payment/PaymentPage'
-import PaymentForm from './Pages/Payment/PaymentForm'
-import ServiceSummary from './Pages/Payment/ServiceSummary'
-import OrderSummary from './Pages/Payment/OrderSummary'
 
 // Wrapper component to handle NavBar conditional rendering
 const AppContent = () => {
@@ -48,10 +44,6 @@ const AppContent = () => {
           <Route path='/add-grooming' element={<AddGrooming />} />
           <Route path='/add-service' element={<AddService />} />
           <Route path='/register-pet' element={<RegisterPet />} />
-          <Route path='/PaymentPage' element={<PaymentPage />}/>
-          <Route path='/PaymentForm' element={<PaymentForm />}/>
-          <Route path='/ServiceSummary' element={<ServiceSummary />}/>
-          <Route path='/OrderSummary' element={<OrderSummary />}/>
         </Routes>
       </div>
     </>
