@@ -9,12 +9,13 @@ const appointmentSchema = new mongoose.Schema(
     },
     service_id: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "GroomingService",
+      ref: "Service",
       required: [true, "Service is required"],
     },
     appointment_date: {
       type: Date,
       required: [true, "Appointment date is required"],
+      unique : true
     },
     status: {
       type: String,

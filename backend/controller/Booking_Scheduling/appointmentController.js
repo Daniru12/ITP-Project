@@ -1,4 +1,4 @@
-import Appointment from "../../models/Booking&Scheduling/Appointment.js";
+import Appointment from "../../models/BookingScheduling/Appointment.js";
 import Pet from "../../models/Pets.js";
 import GroomingService from "../../models/Service.js";
 import { calculateLoyaltyPoints, calculateDiscount } from "../../utils/loyaltyHelper.js";

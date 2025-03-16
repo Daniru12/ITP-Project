@@ -6,7 +6,7 @@ import {
   updateAppointmentStatus,
   deleteAppointment,
   cancelAppointment,
-} from "../../controller/Grooming/appointmentController.js";
+} from "../../controller/Booking_Scheduling/appointmentController.js";
 import { protect } from "../../middleware/authMiddleware.js";
 
 const appointmentRouter = express.Router();

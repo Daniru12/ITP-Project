@@ -4,7 +4,7 @@ import {
   getAllServices,
   getProviderServices,
   getServicesByCategory,
-} from "../../controller/Grooming/groomingController.js";
+} from "../../controller/Booking_Scheduling/groomingController.js";
 import { protect } from "../../middleware/authMiddleware.js";
 
 const groomingRouter = express.Router();
