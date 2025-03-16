@@ -15,6 +15,10 @@ import AddGrooming from './Pages/Providers/addGrooming'
 import AddService from './Pages/Providers/addService'
 import RegisterPet from './Pages/PetOwner/registerPet'
 import FAQ from './Pages/FAQ/faq'
+import PaymentPage from './Pages/Payment/PaymentPage'
+import PaymentForm from './Pages/Payment/PaymentForm'
+import OrderSummary from './Pages/Payment/OrderSummary'
+import ServiceSummary from './Pages/Payment/ServiceSummary'
 
 // Wrapper component to handle NavBar conditional rendering
 const AppContent = () => {
@@ -46,6 +50,10 @@ const AppContent = () => {
           <Route path='/add-service' element={<AddService />} />
           <Route path='/register-pet' element={<RegisterPet />} />
           <Route path='/faq' element={<FAQ />} />
+          <Route path='/PaymentPage' element={<PaymentPage />} />
+          <Route path='/PaymentForm' element={<PaymentForm />} />
+          <Route path='/OrderSummary' element={<OrderSummary />} />
+          <Route path='/ServiceSummary' element={<ServiceSummary />} />
         </Routes>
       </div>
     </>
