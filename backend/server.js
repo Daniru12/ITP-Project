@@ -4,7 +4,6 @@ import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
 import userRouter from "./routes/userRouter.js";
-import groomingRouter from "./routes/AppoimentScheduling/groomingRouter.js";
 import appointmentRouter from "./routes/AppoimentScheduling/appointmentRouter.js";
 import boardingRouter from "./routes/Boarding/boardingRoute.js";
 import scheduleRouter from "./routes/AppoimentScheduling/schedulingRoutes.js";
@@ -31,7 +30,6 @@ mongoose
   });
 
 app.use("/api/users", userRouter);
-app.use("/api/grooming", groomingRouter);
 app.use("/api/appointments", appointmentRouter);
 app.use("/api/boarding", boardingRouter);
 app.use("/api/scheduling", scheduleRouter);
