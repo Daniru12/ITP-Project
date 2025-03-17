@@ -1,5 +1,5 @@
 import express from "express";
-import { loginUser, Profile, registerUser, registerPet, getPets, getLoyaltyPoints, getAllUsers, getAllServices, getAllPets } from "../controller/userController.js";
+import { loginUser, Profile, registerUser, registerPet, getPets, getLoyaltyPoints, getAllUsers, getAllServices, getAllPets, deletePet } from "../controller/userController.js";
 import { protect } from "../middleware/authMiddleware.js";
 
 const userRouter = express.Router();
@@ -13,5 +13,6 @@ userRouter.get("/loyalty-points", protect, getLoyaltyPoints);
 userRouter.get("/all-users", protect, getAllUsers);
 userRouter.get("/services", protect,getAllServices);
 userRouter.get("/allpets",protect, getAllPets);
+userRouter.delete("/deletePet/:id",protect, deletePet);
 
 export default userRouter;
