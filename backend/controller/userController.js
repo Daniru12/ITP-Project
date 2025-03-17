@@ -226,3 +226,18 @@ export const getAllPets = async (req,res) => {
     })
   }
 }
+
+//delete pet by owner
+export const deletePet = async (req, res) => {
+  try {
+    //check pet own to the user
+    const pet = await Pet.findById(req.params.id);
+    if (pet.owner_id.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: "You are not authorized to delete this pet" });
+    }
+    await Pet.findByIdAndDelete(req.params.id);
+    res.status(200).json({ message: "Pet deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Error deleting pet", error: error.message });
+  }
+};

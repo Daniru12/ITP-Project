@@ -29,7 +29,7 @@ const AppContent = () => {
     <>
       <Toaster position="bottom-right" />
       {!isAdminRoute && <NavBar />}
-      <div className={`${!isAdminRoute ? 'pt-4' : ''}`}>
+      <div className={`${!isAdminRoute ? 'pt-15' : ''}`}>
         <Routes>
           <Route path='/' element={<Home />} />
           <Route path='/login' element={<LoginPage />} />

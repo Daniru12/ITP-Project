@@ -66,6 +66,25 @@ export default function Profile() {
     fetchUserPets();
   }, []); // Empty dependency array means this runs once when component mounts
 
+  function handleDeletePet(id) {
+    const token = localStorage.getItem('token');
+    const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
+    axios.delete(`${backendUrl}/api/users/deletePet/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+    .then(() => {
+      toast.success('Pet deleted successfully');
+      setUserPets(userPets.filter(pet => pet._id !== id));
+    })
+    .catch((err) => {
+      console.error('Error deleting pet:', err);
+      toast.error('Failed to delete pet');
+    })
+  }
+
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-screen">
@@ -170,8 +189,8 @@ export default function Profile() {
                       <button className="text-blue-600 hover:text-blue-800 text-sm font-medium">
                         Edit
                       </button>
-                      <button className="text-red-600 hover:text-red-800 text-sm font-medium">
-                        Remove
+                      <button onClick={() => handleDeletePet(pet._id)} className="text-red-600 hover:text-red-800 text-sm font-medium">
+                        Delete
                       </button>
                     </div>
                   </div>
@@ -184,5 +203,3 @@ export default function Profile() {
     </div>
   );
 }
-
-
