@@ -19,7 +19,7 @@ import PaymentPage from './Pages/Payment/PaymentPage'
 import PaymentForm from './Pages/Payment/PaymentForm'
 import OrderSummary from './Pages/Payment/OrderSummary'
 import ServiceSummary from './Pages/Payment/ServiceSummary'
-import { PetCareBooking } from './Pages/Booking/PetCareBooking'
+import { PetCareBooking } from './Pages/Booking/Create/PetCareBooking'
 
 // Wrapper component to handle NavBar conditional rendering
 const AppContent = () => {
