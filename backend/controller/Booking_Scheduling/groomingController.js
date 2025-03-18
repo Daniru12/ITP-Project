@@ -1,183 +1,153 @@
-import GroomingService from "../../models/Service.js";
+import Grooming from "../../models/BookingScheduling/GroomingSheduling.js";
+import Service from "../../models/Service.js"; // Import Groomer mode
+import Pet from "../../models/Pets.js"; // Import Pet model
+import Appointment from "../../models/BookingScheduling/Appointment.js"; // Import Appointment model
 
-// Add a new grooming service
-export const addService = async (req, res) => {
-  try {
-    // Check if user is a service provider
-    if (req.user.user_type !== "service_provider") {
-      return res.status(403).json({
-        message: "Only service providers can add services",
-      });
-    }
 
-    const { service_name, description, packages } = req.body;
+// Create a new grooming appointment (Scheduling)
+export const createGroomingScheduling = async (req, res) => {
+    try {
+        const { pet_id, service_id, appointment_id, Period, start_time, end_time } = req.body;
 
-    // Validate that all three package tiers are provided
-    const requiredTiers = ["basic", "premium", "luxury"];
-    const missingTiers = requiredTiers.filter((tier) => !packages[tier]);
+        // Validate required fields
+        if (!pet_id || !service_id || !appointment_id || !start_time) {
+            return res.status(400).json({ error: "All required fields must be provided!" });
+        }
 
-    if (missingTiers.length > 0) {
-      return res.status(400).json({
-        message: `Missing package details for: ${missingTiers.join(", ")}`,
-        example: {
-          service_name: "Dog Grooming Service",
-          description: "Professional grooming for dogs of all sizes",
-          packages: {
-            basic: {
-              price: 30,
-              duration: 30,
-              includes: ["Basic bath", "Basic brushing", "Nail trimming"],
-            },
-            premium: {
-              price: 50,
-              duration: 60,
-              includes: [
-                "Premium bath",
-                "Deep brushing",
-                "Nail trimming",
-                "Ear cleaning",
-              ],
-            },
-            luxury: {
-              price: 80,
-              duration: 90,
-              includes: [
-                "Luxury bath",
-                "Full grooming",
-                "Nail care",
-                "Ear cleaning",
-                "Teeth brushing",
-              ],
-            },
-          },
-        },
-      });
-    }
+        // Calculate `end_time` based on `Period`
+        let computedEndTime = new Date(start_time);
+        switch (Period) {
+            case "30min":
+                computedEndTime.setMinutes(computedEndTime.getMinutes() + 30);
+                break;
+            case "1hour":
+                computedEndTime.setHours(computedEndTime.getHours() + 1);
+                break;
+            case "2hours":
+                computedEndTime.setHours(computedEndTime.getHours() + 2);
+                break;
+            default:
+                if (!end_time) {
+                    return res.status(400).json({ error: "Custom Period requires an end_time!" });
+                }
+                computedEndTime = new Date(end_time);
+                break;
+        }
 
-    // Validate each package tier
-    for (const tier of requiredTiers) {
-      const package_tier = packages[tier];
-
-      // Check for required fields
-      if (
-        !package_tier.price ||
-        !package_tier.duration ||
-        !package_tier.includes
-      ) {
-        return res.status(400).json({
-          message: `Missing required fields in ${tier} package`,
-          required: ["price", "duration", "includes"],
+        // Save the grooming scheduling
+        const newGrooming = new Grooming({
+            pet_id,
+            service_id,
+            appointment_id,
+            Period,
+            start_time,
+            end_time: computedEndTime,
         });
-      }
 
-      // Validate includes array
-      if (
-        !Array.isArray(package_tier.includes) ||
-        package_tier.includes.length === 0
-      ) {
-        return res.status(400).json({
-          message: `${tier} package must include at least one service`,
+        await newGrooming.save();
+
+        res.status(201).json({
+            message: "Grooming appointment scheduled successfully!"
         });
-      }
 
-      // Add tier type to each package
-      package_tier.type = tier;
+    } catch (error) {
+        res.status(500).json({ error: "Internal Server Error", details: error.message });
     }
-
-    // Create new service
-    const serviceData = {
-      provider_id: req.user._id,
-      service_name,
-      service_category: "pet_grooming",
-      description,
-      packages,
-      is_available: true,
-    };
-
-    const newService = new GroomingService(serviceData);
-    await newService.save();
-
-    res.status(201).json({
-      message: "Your grooming service has been created successfully!",
-      service: newService,
-    });
-  } catch (error) {
-    res.status(500).json({
-      message: "Sorry, we couldn't save your grooming service",
-      error: error.message,
-    });
-  }
 };
+//Get all grooming (Scheduling)
 
-// Get provider's services
-export const getProviderServices = async (req, res) => {
+export const getAllGroomingSchedulings = async (req, res) => {
   try {
-    // Check if user is a service provider
-    if (req.user.user_type !== "service_provider") {
-      return res.status(403).json({
-        message:
-          "Access denied. Only service providers can view their services.",
+      const schedules = await Grooming.find()
+          .populate({
+              path: "pet_id",
+              select: "name species breed age owner_id", // Select required fields
+          })
+          .populate({
+              path: "service_id",
+              select: "name description price", // Select required fields from Service
+          })
+          .populate({
+              path: "appointment_id",
+              select: "date status", // Select required fields
+          });
+
+      res.status(200).json({
+          success: true,
+          count: schedules.length,
+          data: schedules,
       });
-    }
-
-    const services = await GroomingService.find({
-      provider_id: req.user._id,
-    });
-
-    if (services.length === 0) {
-      return res.status(200).json({
-        message: "You haven't created any grooming services yet",
-        services: [],
-      });
-    }
-
-    res.status(200).json({
-      message: "Here are your grooming services",
-      services,
-    });
   } catch (error) {
-    res.status(500).json({
-      message: "Error fetching your services",
-      error: error.message,
-    });
+      res.status(500).json({ error: "Internal Server Error", details: error.message });
   }
 };
 
-// Get all available services for customers
-export const getAllServices = async (req, res) => {
-  try {
-    const services = await GroomingService.find({
-      is_available: true,
-    })
-      .populate("provider_id", "username full_name phone_number")
-      .sort({ "packages.basic.price": 1 });
 
-    res.status(200).json({
-      message: "Available grooming services",
-      services: services,
-    });
-  } catch (error) {
-    res.status(500).json({
-      message: "Error fetching services",
-      error: error.message,
-    });
-  }
+// Get a single grooming schedule by ID
+export const getGroomingSchedulingById = async (req, res) => {
+    try {
+        const appointment = await Grooming.findById(req.params.id).populate("pet_id service_id appointment_id");
+        if (!appointment) return res.status(404).json({ error: "Grooming Scheduling not found" });
+
+        res.status(200).json({ success: true, data: appointment });
+    } catch (error) {
+        res.status(500).json({ error: "Internal Server Error", details: error.message });
+    }
 };
 
-// Get services by category
-export const getServicesByCategory = async (req, res) => {
-  try {
-    const { category } = req.params;
-    const services = await GroomingService.find({
-      service_category: category,
-      is_available: true,
-    }).populate("provider_id", "username full_name phone_number");
+// Update an existing grooming appointment
+export const updateGroomingSheduling = async (req, res) => {
+    try {
+        const { Period, start_time, end_time } = req.body;
 
-    res.status(200).json(services);
-  } catch (error) {
-    res.status(500).json({
-      message: "Error fetching services by category",
-      error: error.message,
-    });
-  }
+        let computedEndTime = end_time ? new Date(end_time) : null;
+
+        // If `start_time` is provided, recalculate `end_time` based on `Period`
+        if (start_time) {
+            computedEndTime = new Date(start_time);
+            switch (Period) {
+                case "30min":
+                    computedEndTime.setMinutes(computedEndTime.getMinutes() + 30);
+                    break;
+                case "1hour":
+                    computedEndTime.setHours(computedEndTime.getHours() + 1);
+                    break;
+                case "2hours":
+                    computedEndTime.setHours(computedEndTime.getHours() + 2);
+                    break;
+                default:
+                    if (!end_time) {
+                        return res.status(400).json({ error: "Custom Period requires an end_time!" });
+                    }
+                    computedEndTime = new Date(end_time);
+                    break;
+            }
+        }
+
+        const updatedAppointment = await Grooming.findByIdAndUpdate(
+            req.params.id,
+            { ...req.body, end_time: computedEndTime },
+            { new: true, runValidators: true }
+        );
+
+        if (!updatedAppointment) return res.status(404).json({ error: "Grooming Scheduling not found" });
+
+        res.status(200).json({ message: "Scheduling updated successfully", data: updatedAppointment });
+
+    } catch (error) {
+        res.status(400).json({ error: "Update failed", details: error.message });
+    }
+};
+
+// Delete a grooming appointment
+export const deleteGroomingScheduling = async (req, res) => {
+    try {
+        const deletedAppointment = await Grooming.findByIdAndDelete(req.params.id);
+        if (!deletedAppointment) return res.status(404).json({ error: "Grooming Scheduling not found" });
+
+        res.status(200).json({ message: "Scheduling deleted successfully" });
+
+    } catch (error) {
+        res.status(500).json({ error: "Internal Server Error", details: error.message });
+    }
 };

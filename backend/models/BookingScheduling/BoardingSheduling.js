@@ -64,6 +64,6 @@ SchedulingSchema.pre("save", function (next) {
     next();
 });
 
-const Scheduling = mongoose.model("Scheduling", SchedulingSchema);
+const Scheduling = mongoose.model("Boarding", SchedulingSchema);
 
 export default Scheduling;

@@ -12,7 +12,7 @@ import { protect } from "../../middleware/authMiddleware.js";
 const appointmentRouter = express.Router();
 
 // All appointment routes are protected
-appointmentRouter.post("/", protect, bookAppointment);
+appointmentRouter.post("/create", protect, bookAppointment);
 appointmentRouter.get("/user", protect, getUserAppointments);
 appointmentRouter.get("/provider", protect, getProviderAppointments);
 
