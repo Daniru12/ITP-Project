@@ -19,7 +19,7 @@ import PaymentPage from './Pages/Payment/PaymentPage'
 import PaymentForm from './Pages/Payment/PaymentForm'
 import OrderSummary from './Pages/Payment/OrderSummary'
 import ServiceSummary from './Pages/Payment/ServiceSummary'
-import PetMarketplace from './Pages/ProductMarket/PetMarketplace'
+import PetMarketplace from './Pages/ProductMarket/PetMarketplace'  //done
 
 
 // Wrapper component to handle NavBar conditional rendering
@@ -56,7 +56,7 @@ const AppContent = () => {
           <Route path='/PaymentForm' element={<PaymentForm />} />
           <Route path='/OrderSummary' element={<OrderSummary />} />
           <Route path='/ServiceSummary' element={<ServiceSummary />} />
-          <Route path='/petmarketplace' element={<PetMarketplace />} />
+          <Route path='/petmarketplace' element={<PetMarketplace />} />    //done 
         </Routes>
       </div>
     </>

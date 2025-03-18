@@ -1,9 +1,9 @@
 import React, { useState } from 'react'
-import { SearchAndCart } from '../../Components/SearchAndCart'
+import { SearchAndCart } from '../../Components/SearchAndCart'  // compononts
 import { ProductGrid } from '../../Components/ProductGrid'
-import { FilterBar } from '../../Components/FilterBar'
+import { FilterBar } from '../../Components/FilterBar'                        
 import { PawPrintIcon } from 'lucide-react'
-
+                                                                         // pet marketplace more to do!
 const PetMarketplace = () => {
   const [searchQuery, setSearchQuery] = useState('')
   const [activeCategory, setActiveCategory] = useState('all')
@@ -41,4 +41,4 @@ const PetMarketplace = () => {
     </div>
   )
 }
-export default PetMarketplace
+export default PetMarketplace  // change export

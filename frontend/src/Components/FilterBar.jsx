@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react' // fillter to do
 import { SlidersIcon } from 'lucide-react'
 
 export const FilterBar = ({ activeCategory, onCategoryChange }) => {

@@ -1,5 +1,5 @@
 import React, { memo } from 'react'
-import { ProductCard } from './ProductCard'
+import { ProductCard } from './ProductCard'  //grid done
 
 export const ProductGrid = ({ searchQuery, activeCategory }) => {
   // Mock product data

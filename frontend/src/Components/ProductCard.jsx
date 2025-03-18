@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState } from 'react' // card done
 import { ShoppingCartIcon, HeartIcon, StarIcon } from 'lucide-react'
 
 export const ProductCard = ({ product }) => {
