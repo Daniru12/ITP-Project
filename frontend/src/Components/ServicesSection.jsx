@@ -5,6 +5,8 @@ import {
   GraduationCapIcon,
   ShoppingBagIcon,
 } from 'lucide-react'
+import { Link } from 'react-router-dom'
+
 export const ServicesSection = () => {
   const services = [
     {
@@ -70,8 +72,8 @@ export const ServicesSection = () => {
                   {service.title}
                 </h3>
                 <p className="text-gray-600">{service.description}</p>
-                <a
-                  href="#"
+                <Link
+                  to="/displayServices"
                   className="mt-4 inline-flex items-center text-blue-600 font-medium hover:text-blue-800"
                 >
                   Learn more
@@ -87,7 +89,7 @@ export const ServicesSection = () => {
                       clipRule="evenodd"
                     />
                   </svg>
-                </a>
+                </Link>
               </div>
             </div>
           ))}

@@ -22,7 +22,7 @@ import ServiceSummary from './Pages/Payment/ServiceSummary'
 import { PetCareBooking } from './Pages/Booking/Create/PetCareBooking'
 import Schedule from './Pages/Schedule/groomingSchedule'
 import ProductDetail from './Pages/productMarket/ProductDetail'
-import PetMarketplace from './Pages/productMarket/PetMarketplace'  
+import PetMarketplace from './Pages/productMarket/PetMarketplace' 
 
 
 

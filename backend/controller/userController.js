@@ -241,3 +241,19 @@ export const deletePet = async (req, res) => {
     res.status(500).json({ message: "Error deleting pet", error: error.message });
   }
 };
+
+export const getServicesForDisplay = async (req, res) => {
+  const services = await Service.find().populate('provider_id', 'username full_name phone_number email')
+  res.status(200).json({
+    message: "Services fetched successfully",
+    services: services
+  })
+}
+
+export const getServiceById = async (req, res) => {
+  const service = await Service.findById(req.params.id).populate('provider_id', 'username full_name phone_number email')
+  res.status(200).json({
+    message: "Service fetched successfully",
+    service: service
+  })
+}
