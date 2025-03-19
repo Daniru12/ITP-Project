@@ -7,7 +7,7 @@ import Appointment from "../../models/BookingScheduling/Appointment.js"; // Impo
 // Create a new grooming appointment (Scheduling)
 export const createGroomingScheduling = async (req, res) => {
     try {
-        const { pet_id, service_id, appointment_id, Period, start_time, end_time } = req.body;
+        const { pet_id, service_id, appointment_id, Period, start_time, end_time, special_requests = "", notes = "" } = req.body;
 
         // Validate required fields
         if (!pet_id || !service_id || !appointment_id || !start_time) {
@@ -42,18 +42,22 @@ export const createGroomingScheduling = async (req, res) => {
             Period,
             start_time,
             end_time: computedEndTime,
+            special_requests,
+            notes
         });
 
         await newGrooming.save();
 
         res.status(201).json({
-            message: "Grooming appointment scheduled successfully!"
+            message: "Grooming appointment scheduled successfully!",
+            data: newGrooming
         });
 
     } catch (error) {
         res.status(500).json({ error: "Internal Server Error", details: error.message });
     }
 };
+
 //Get all grooming (Scheduling)
 
 export const getAllGroomingSchedulings = async (req, res) => {
