@@ -1,18 +1,27 @@
-import React, { useState } from 'react' // card done
+import React, { useState } from 'react'
 import { ShoppingCartIcon, HeartIcon, StarIcon } from 'lucide-react'
+import { Link } from 'react-router-dom'
 
 export const ProductCard = ({ product }) => {
   const [isLiked, setIsLiked] = useState(false)
   const [isAdding, setIsAdding] = useState(false)
 
-  const handleAddToCart = () => {
+  const handleAddToCart = (e) => {
+    e.preventDefault()
     setIsAdding(true)
-    // Simulate adding to cart
     setTimeout(() => setIsAdding(false), 1000)
   }
 
+  const handleLike = (e) => {
+    e.preventDefault()
+    setIsLiked(!isLiked)
+  }
+
   return (
-    <div className="bg-white rounded-xl shadow-sm overflow-hidden transform transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+    <Link
+      to={`/product/${product.id}`}
+      className="block bg-white rounded-xl shadow-sm overflow-hidden transform transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
+    >
       <div className="relative overflow-hidden group">
         <img
           src={product.image}
@@ -21,7 +30,7 @@ export const ProductCard = ({ product }) => {
         />
         <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-10 transition-opacity duration-300" />
         <button
-          onClick={() => setIsLiked(!isLiked)}
+          onClick={handleLike}
           className="absolute top-3 right-3 p-1.5 bg-white rounded-full hover:bg-gray-100 transform transition-transform duration-300 hover:scale-110 active:scale-95"
         >
           <HeartIcon
@@ -66,6 +75,6 @@ export const ProductCard = ({ product }) => {
           </button>
         </div>
       </div>
-    </div>
+    </Link>
   )
 }
