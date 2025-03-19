@@ -20,7 +20,8 @@ import PaymentForm from './Pages/Payment/PaymentForm'
 import OrderSummary from './Pages/Payment/OrderSummary'
 import ServiceSummary from './Pages/Payment/ServiceSummary'
 import PetMarketplace from './Pages/productMarket/PetMarketplace'  //done
-
+import DisplayServices from './Pages/Home/displayServices'
+import ServiceOverview from './Pages/Home/serviceOverview'
 
 // Wrapper component to handle NavBar conditional rendering
 const AppContent = () => {
@@ -57,6 +58,8 @@ const AppContent = () => {
           <Route path='/OrderSummary' element={<OrderSummary />} />
           <Route path='/ServiceSummary' element={<ServiceSummary />} />
           <Route path='/petmarketplace' element={<PetMarketplace />} />    //done 
+          <Route path='/displayServices' element={<DisplayServices />} />
+          <Route path='/service-overview/:id' element={<ServiceOverview />} />
         </Routes>
       </div>
     </>
