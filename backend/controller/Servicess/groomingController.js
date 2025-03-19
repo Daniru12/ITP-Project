@@ -10,7 +10,21 @@ export const addService = async (req, res) => {
       });
     }
 
-    const { service_name, description, packages } = req.body;
+    const { service_name, description, packages, location, image } = req.body;
+
+    // Check if location is provided
+    if (!location) {
+      return res.status(400).json({
+        message: "Location is required",
+      });
+    }
+
+    // Validate image URL if provided
+    if (image && !isValidUrl(image)) {
+      return res.status(400).json({
+        message: "Invalid image URL format",
+      });
+    }
 
     // Validate that all three package tiers are provided
     const requiredTiers = ["basic", "premium", "luxury"];
@@ -22,6 +36,7 @@ export const addService = async (req, res) => {
         example: {
           service_name: "Dog Grooming Service",
           description: "Professional grooming for dogs of all sizes",
+          location: "123 Pet Street, City",
           packages: {
             basic: {
               price: 30,
@@ -70,6 +85,20 @@ export const addService = async (req, res) => {
         });
       }
 
+      // Validate duration minimum
+      if (package_tier.duration < 15) {
+        return res.status(400).json({
+          message: `${tier} package duration must be at least 15 minutes`,
+        });
+      }
+
+      // Validate price is not negative
+      if (package_tier.price < 0) {
+        return res.status(400).json({
+          message: `${tier} package price cannot be negative`,
+        });
+      }
+
       // Validate includes array
       if (
         !Array.isArray(package_tier.includes) ||
@@ -91,7 +120,9 @@ export const addService = async (req, res) => {
       service_category: "pet_grooming",
       description,
       packages,
+      location,
       is_available: true,
+      image: image || "https://via.placeholder.com/150", // Use provided image or default
     };
 
     const newService = new GroomingService(serviceData);
@@ -106,6 +137,16 @@ export const addService = async (req, res) => {
       message: "Sorry, we couldn't save your grooming service",
       error: error.message,
     });
+  }
+};
+
+// Helper function to validate URL
+const isValidUrl = (string) => {
+  try {
+    new URL(string);
+    return true;
+  } catch (_) {
+    return false;
   }
 };
 
