@@ -203,6 +203,37 @@ const ServiceManagement = () => {
     );
   }
 
+  async function handleDeleteService(serviceId) {
+    // Show confirmation dialog
+    const isConfirmed = window.confirm("Are you sure you want to delete this service? This action cannot be undone.");
+    
+    if (!isConfirmed) {
+      return; // If user cancels, don't proceed with deletion
+    }
+
+    try {
+      const token = localStorage.getItem('token');
+      const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
+      await axios.delete(`${backendUrl}/api/users/admin-delete-service/${serviceId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      // Show success message
+      toast.success('Service deleted successfully');
+      
+      // Update local state
+      setServices(services.filter(service => service._id !== serviceId));
+    } catch (error) {
+      console.error('Error deleting service:', error);
+      // Show more specific error message
+      const errorMessage = error.response?.data?.message || 'Failed to delete service. Please try again.';
+      toast.error(errorMessage);
+    }
+  }
+
   // Show error message if something went wrong
   if (error) {
     return (
@@ -315,8 +346,8 @@ const ServiceManagement = () => {
                       <button 
                         className="text-red-600 hover:text-red-900"
                         onClick={(e) => {
-                          e.stopPropagation();
-                          // Handle delete (to be implemented)
+                          e.stopPropagation(); // Prevent row click event
+                          handleDeleteService(service._id);
                         }}
                       >
                         <FiTrash2 className="h-5 w-5" />
