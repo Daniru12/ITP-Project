@@ -59,7 +59,7 @@ export default function PetAppointmentForm() {
         appointment_id: appointmentId,
         Period: "1hour", 
         start_time: fullDateTime.toISOString(), // Convert to ISO format
-        special_request: formData.special_request,
+        special_requests: formData.special_request,
         notes: formData.notes,
       };
 
