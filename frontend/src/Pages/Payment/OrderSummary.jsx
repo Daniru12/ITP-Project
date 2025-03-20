@@ -1,6 +1,6 @@
 import React from 'react'
-//import { ShieldCheckIcon } from 'lucide-react'
-import { ShieldCheckIcon } from "lucide-react";
+import { ShieldCheckIcon } from 'lucide-react'
+
 
 const OrderSummary = ({ service, paymentMethod }) => {
   const subtotal = service.price

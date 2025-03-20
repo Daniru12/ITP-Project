@@ -241,3 +241,66 @@ export const deletePet = async (req, res) => {
     res.status(500).json({ message: "Error deleting pet", error: error.message });
   }
 };
+
+export const getServicesForDisplay = async (req, res) => {
+  const services = await Service.find().populate('provider_id', 'username full_name phone_number email')
+  res.status(200).json({
+    message: "Services fetched successfully",
+    services: services
+  })
+}
+
+export const getServiceById = async (req, res) => {
+  const service = await Service.findById(req.params.id).populate('provider_id', 'username full_name phone_number email')
+  res.status(200).json({
+    message: "Service fetched successfully",
+    service: service
+  })
+}
+
+export const deleteService = async (req, res) => {
+  const service = await Service.findById(req.params.id);
+  if(service.provider_id.toString() !== req.user._id.toString()){
+    return res.status(403).json({ message: "You are not authorized to delete this service" });
+  }
+  await Service.findByIdAndDelete(req.params.id);
+}
+
+export const adminDeleteService = async (req, res) => {
+  try {
+    // Check if user is admin
+    if (req.user.user_type !== "admin") {
+      return res.status(403).json({ message: "Only admins can delete services" });
+    }
+
+    const service = await Service.findById(req.params.id);
+    if (!service) {
+      return res.status(404).json({ message: "Service not found" });
+    }
+
+    await Service.findByIdAndDelete(req.params.id);
+    res.status(200).json({ message: "Service deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ 
+      message: "Error deleting service",
+      error: error.message 
+    });
+  }
+};
+
+export const adminDeletePet = async (req, res) => {
+  try {
+    // Check if user is admin
+    if (req.user.user_type !== "admin") {
+      return res.status(403).json({ message: "Only admins can delete pets" });
+    }
+    const pet = await Pet.findById(req.params.id);
+    if (!pet) {
+      return res.status(404).json({ message: "Pet not found" });
+    }
+    await Pet.findByIdAndDelete(req.params.id);
+    res.status(200).json({ message: "Pet deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Error deleting pet", error: error.message });
+  }
+};

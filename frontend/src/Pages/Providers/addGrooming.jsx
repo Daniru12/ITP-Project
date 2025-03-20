@@ -9,6 +9,8 @@ const AddGrooming = () => {
   // Simplified initial state with clear naming
   const [serviceName, setServiceName] = useState("");
   const [description, setDescription] = useState("");
+  const [location, setLocation] = useState("");
+  const [imageUrl, setImageUrl] = useState("");
   
   // Create separate state for each package to make it easier to understand
   const [basicPackage, setBasicPackage] = useState({
@@ -36,6 +38,14 @@ const AddGrooming = () => {
   
   const handleDescriptionChange = (e) => {
     setDescription(e.target.value);
+  };
+
+  const handleLocationChange = (e) => {
+    setLocation(e.target.value);
+  };
+
+  const handleImageUrlChange = (e) => {
+    setImageUrl(e.target.value);
   };
   
   // Handle price change with more descriptive function name
@@ -125,10 +135,37 @@ const AddGrooming = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
+    // Validate minimum duration
+    const packages = {
+      basic: basicPackage,
+      premium: premiumPackage,
+      luxury: luxuryPackage
+    };
+
+    // Check minimum duration for each package
+    for (const [tier, package_] of Object.entries(packages)) {
+      if (Number(package_.duration) < 15) {
+        toast.error(`${tier} package duration must be at least 15 minutes`);
+        return;
+      }
+      if (Number(package_.price) < 0) {
+        toast.error(`${tier} package price cannot be negative`);
+        return;
+      }
+    }
+
+    // Check if location is provided
+    if (!location.trim()) {
+      toast.error("Location is required");
+      return;
+    }
+    
     // Reconstruct the data in the format expected by the API
     const formData = {
       service_name: serviceName,
       description: description,
+      location: location,
+      image: imageUrl || undefined, // Only send if provided
       packages: {
         basic: basicPackage,
         premium: premiumPackage,
@@ -157,7 +194,7 @@ const AddGrooming = () => {
         <h1 className="text-2xl font-bold">Add New Grooming Service</h1>
         <Link
           to="/add-service"
-          className="bg-gray-500 text-white px-4 py-2 rounded-md"
+          className="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600"
         >
           Cancel
         </Link>
@@ -167,22 +204,39 @@ const AddGrooming = () => {
         {/* Service Information Section */}
         <div className="bg-white rounded-lg shadow-md p-6">
           <h2 className="text-xl font-semibold mb-4">Service Information</h2>
-          <input
-            type="text"
-            placeholder="Service Name"
-            value={serviceName}
-            onChange={handleServiceNameChange}
-            className="w-full p-2 border rounded-md mb-4"
-            required
-          />
-          <textarea
-            placeholder="Description"
-            value={description}
-            onChange={handleDescriptionChange}
-            className="w-full p-2 border rounded-md"
-            rows="3"
-            required
-          ></textarea>
+          <div className="space-y-4">
+            <input
+              type="text"
+              placeholder="Service Name"
+              value={serviceName}
+              onChange={handleServiceNameChange}
+              className="w-full p-2 border rounded-md"
+              required
+            />
+            <textarea
+              placeholder="Description"
+              value={description}
+              onChange={handleDescriptionChange}
+              className="w-full p-2 border rounded-md"
+              rows="3"
+              required
+            ></textarea>
+            <input
+              type="text"
+              placeholder="Location (e.g., 123 Pet Street, City)"
+              value={location}
+              onChange={handleLocationChange}
+              className="w-full p-2 border rounded-md"
+              required
+            />
+            <input
+              type="url"
+              placeholder="Image URL (optional)"
+              value={imageUrl}
+              onChange={handleImageUrlChange}
+              className="w-full p-2 border rounded-md"
+            />
+          </div>
         </div>
 
         {/* Packages Section */}

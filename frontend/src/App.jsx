@@ -21,8 +21,8 @@ import OrderSummary from './Pages/Payment/OrderSummary'
 import ServiceSummary from './Pages/Payment/ServiceSummary'
 import { PetCareBooking } from './Pages/Booking/Create/PetCareBooking'
 import Schedule from './Pages/Schedule/groomingSchedule'
-
-import PetMarketplace from './Pages/productMarket/PetMarketplace'  //done
+import ProductDetail from './Pages/productMarket/ProductDetail'
+import PetMarketplace from './Pages/productMarket/PetMarketplace' 
 
 
 
@@ -63,7 +63,8 @@ const AppContent = () => {
           <Route path='/PaymentForm' element={<PaymentForm />} />
           <Route path='/OrderSummary' element={<OrderSummary />} />
           <Route path='/ServiceSummary' element={<ServiceSummary />} />
-          <Route path='/petmarketplace' element={<PetMarketplace />} />    //done 
+          <Route path='/petmarketplace' element={<PetMarketplace />} /> 
+          <Route path="/product/:id" element={<ProductDetail />} />
         </Routes>
       </div>
     </>
