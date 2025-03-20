@@ -12,42 +12,46 @@ const NavBar = () => {
   };
 
   return (
-    <nav className="bg-blue-600 p-4 shadow-md">
-      <div className="container mx-auto flex justify-between items-center">
-        <Link to="/" className="text-white text-2xl font-bold">
-          PawGo
-        </Link>
-        
-        <div className="flex items-center space-x-6">
-          <Link to="/" className="text-white hover:text-blue-200">
-            Home
+    <nav className="bg-gradient-to-r from-blue-600 to-blue-800 fixed w-full top-0 z-50">
+      <div className="container mx-auto px-4 py-3">
+        <div className="flex justify-between items-center">
+          <Link to="/" className="flex items-center space-x-2">
+            <span className="text-2xl font-bold text-white tracking-tight">
+              🐾 PawGo
+            </span>
           </Link>
           
-          {isLoggedIn ? (
-            <>
-              <Link to="/profile" className="text-white hover:text-blue-200">
-                Profile
-              </Link>
-              <button
-                onClick={handleLogout}
-                className="text-white hover:text-blue-200 font-medium"
-              >
-                Logout
-              </button>
-            </>
-          ) : (
-            <>
-              <Link to="/login" className="text-white hover:text-blue-200">
-                Login
-              </Link>
-              <Link
-                to="/register"
-                className="bg-white text-blue-600 px-4 py-2 rounded-lg hover:bg-blue-100"
-              >
-                Register
-              </Link>
-            </>
-          )}
+          <div className="flex items-center space-x-8">
+            <Link to="/" className="text-white hover:text-blue-200 transition-colors duration-200 text-sm font-medium">
+              Home
+            </Link>
+            
+            {isLoggedIn ? (
+              <>
+                <Link to="/profile" className="text-white hover:text-blue-200 transition-colors duration-200 text-sm font-medium">
+                  Profile
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  className="bg-white/10 hover:bg-white/20 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 text-sm border border-white/20"
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <Link to="/login" className="text-white hover:text-blue-200 transition-colors duration-200 text-sm font-medium">
+                  Login
+                </Link>
+                <Link
+                  to="/register"
+                  className="bg-white text-blue-600 px-6 py-2 rounded-lg hover:bg-opacity-90 transition-all duration-200 text-sm font-semibold shadow-lg hover:shadow-xl"
+                >
+                  Register
+                </Link>
+              </>
+            )}
+          </div>
         </div>
       </div>
     </nav>

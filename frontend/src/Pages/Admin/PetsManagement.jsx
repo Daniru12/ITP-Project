@@ -93,6 +93,33 @@ const PetsManagement = () => {
     }
   };
 
+  const handleDeletePet = async (petId) => {
+    // Show confirmation dialog
+    const isConfirmed = window.confirm("Are you sure you want to delete this pet? This action cannot be undone.");
+    
+    if (!isConfirmed) {
+      return; // If user cancels, don't proceed with deletion
+    }
+
+    try {
+      const token = localStorage.getItem('token');
+      const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
+      await axios.delete(`${backendUrl}/api/users/admin-delete-pet/${petId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      toast.success('Pet deleted successfully');
+      setPets(pets.filter(pet => pet._id !== petId));
+    } catch (error) {
+      console.error('Error deleting pet:', error);
+      const errorMessage = error.response?.data?.message || 'Failed to delete pet';
+      toast.error(errorMessage);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -173,7 +200,13 @@ const PetsManagement = () => {
                       <button className="text-blue-600 hover:text-blue-900">
                         <FiEdit2 className="h-5 w-5" />
                       </button>
-                      <button className="text-red-600 hover:text-red-900">
+                      <button 
+                        onClick={(e) => {
+                          e.stopPropagation(); // Prevent row click event
+                          handleDeletePet(pet._id);
+                        }} 
+                        className="text-red-600 hover:text-red-900"
+                      >
                         <FiTrash2 className="h-5 w-5" />
                       </button>
                     </div>

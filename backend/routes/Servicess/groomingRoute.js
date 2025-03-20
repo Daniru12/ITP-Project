@@ -1,16 +1,14 @@
 import express from "express";
 import {
   addService,
-  getAllServices,
   getProviderServices,
   getServicesByCategory,
-} from "../../controller/Booking_Scheduling/groomingController.js";
+} from "../../controller/Servicess/groomingController.js";
 import { protect } from "../../middleware/authMiddleware.js";
 
 const groomingRouter = express.Router();
 
 // Public routes
-groomingRouter.get("/", getAllServices); // Can include ?category=pet_grooming query
 groomingRouter.get("/category/:category", getServicesByCategory);
 
 // Protected routes

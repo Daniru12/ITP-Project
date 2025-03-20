@@ -3,11 +3,12 @@ import bodyParser from "body-parser";
 import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
+import groomingRouter from "./routes/Servicess/groomingRoute.js";
 import userRouter from "./routes/userRouter.js";
-import groomingRouter from "./routes/AppoimentScheduling/groomingRouter.js";
 import appointmentRouter from "./routes/AppoimentScheduling/appointmentRouter.js";
-import boardingRouter from "./routes/Boarding/boardingRoute.js";
+import boardingRouter from "./routes/Servicess/boardingRoute.js";
 import scheduleRouter from "./routes/AppoimentScheduling/schedulingRoutes.js";
+import reviewRouter from "./routes/Reviews/reviewRoutes.js"; 
 dotenv.config();
 
 const app = express();
@@ -35,6 +36,7 @@ app.use("/api/grooming", groomingRouter);
 app.use("/api/appointments", appointmentRouter);
 app.use("/api/boarding", boardingRouter);
 app.use("/api/scheduling", scheduleRouter);
+app.use("/api/reviews", reviewRouter);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

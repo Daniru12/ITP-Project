@@ -19,6 +19,12 @@ import PaymentPage from './Pages/Payment/PaymentPage'
 import PaymentForm from './Pages/Payment/PaymentForm'
 import OrderSummary from './Pages/Payment/OrderSummary'
 import ServiceSummary from './Pages/Payment/ServiceSummary'
+import { PetCareBooking } from './Pages/Booking/Create/PetCareBooking'
+import Schedule from './Pages/Schedule/groomingSchedule'
+import ProductDetail from './Pages/productMarket/ProductDetail'
+import PetMarketplace from './Pages/productMarket/PetMarketplace' 
+
+
 
 // Wrapper component to handle NavBar conditional rendering
 const AppContent = () => {
@@ -29,7 +35,7 @@ const AppContent = () => {
     <>
       <Toaster position="bottom-right" />
       {!isAdminRoute && <NavBar />}
-      <div className={`${!isAdminRoute ? 'pt-4' : ''}`}>
+      <div className={`${!isAdminRoute ? 'pt-15' : ''}`}>
         <Routes>
           <Route path='/' element={<Home />} />
           <Route path='/login' element={<LoginPage />} />
@@ -44,6 +50,9 @@ const AppContent = () => {
           </Route>
           
           <Route path='/register' element={<RegisterPage />} />
+          <Route path='/booking' element={<PetCareBooking />} />
+          <Route path='/schedule' element={<Schedule />} />
+
           <Route path='/profile' element={<Profile />} />
           <Route path='/provider-profile' element={<ProviderProfile />} />
           <Route path='/add-grooming' element={<AddGrooming />} />
@@ -54,6 +63,8 @@ const AppContent = () => {
           <Route path='/PaymentForm' element={<PaymentForm />} />
           <Route path='/OrderSummary' element={<OrderSummary />} />
           <Route path='/ServiceSummary' element={<ServiceSummary />} />
+          <Route path='/petmarketplace' element={<PetMarketplace />} /> 
+          <Route path="/product/:id" element={<ProductDetail />} />
         </Routes>
       </div>
     </>
