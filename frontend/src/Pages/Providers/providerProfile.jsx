@@ -66,6 +66,27 @@ const ProviderProfile = () => {
     );
   }
 
+function handleDeleteService(serviceId) {
+  console.log(serviceId);
+  try {
+    const token = localStorage.getItem('token');
+    const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
+    axios.delete(`${backendUrl}/api/users/service/${serviceId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+
+    toast.success('Service deleted successfully');
+    setServices(services.filter(service => service._id !== serviceId));
+    window.location.reload();
+  } catch (error) {
+    console.error('Error deleting service:', error);
+    toast.error('Failed to delete service');
+  }
+}
+
   return (
     <div className="container mx-auto px-4 py-8">
       {/* Provider Profile Header */}
@@ -143,7 +164,7 @@ const ProviderProfile = () => {
                     <button className="text-blue-600 hover:text-blue-800">
                       <FaEdit />
                     </button>
-                    <button className="text-red-600 hover:text-red-800">
+                    <button className="text-red-600 hover:text-red-800" onClick={()=>handleDeleteService(service._id)}>
                       <FaTrash />
                     </button>
                   </div>
