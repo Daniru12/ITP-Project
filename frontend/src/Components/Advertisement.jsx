@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react'
+import { MdAddCircleOutline } from "react-icons/md";
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
@@ -10,6 +11,15 @@ import {
 const advertisements = [
   {
     id: 1,
+    title: 'Adopt Me',
+    description: 'Adopt a pet today, give love, save a life forever.',
+    image:
+      'https://i.postimg.cc/654fVsH7/Blue-and-Black-Modern-Business-Card-1.png',
+    ctaText: 'Adopt now',
+    //ctaUrl: '#home-decor',
+  },
+  {
+    id: 2,
     title: 'Get Best Service',
     description: 'Get up to 50% off on all pet Services.',
     image:
@@ -18,7 +28,7 @@ const advertisements = [
     //ctaUrl: '#summer-sale',
   },
   {
-    id: 2,
+    id: 3,
     title: 'Get Pet Products',
     description: 'Premium pet products for health, happiness, comfort, and overall well-being.',
     image:
@@ -26,15 +36,7 @@ const advertisements = [
     ctaText: 'Buy Now',
     //ctaUrl: '#tech-gadgets',
   },
-  {
-    id: 3,
-    title: '',
-    description: 'Adopt a pet today, give love, save a life forever.',
-    image:
-      'https://i.postimg.cc/rwBKWKN6/Blue-and-Black-Modern-Business-Card.png',
-    ctaText: 'Adopt now',
-    //ctaUrl: '#home-decor',
-  },
+  
   
 ]
 
@@ -141,13 +143,10 @@ export const AdvertisementSlideshow = () => {
         ))}
       </div>
 
-      {/* Play/Pause Button */}
       <button
-        onClick={togglePlayPause}
-        className="absolute top-4 right-4 z-20 p-2 rounded-full bg-white/30 hover:bg-white/50 text-white backdrop-blur-sm transition-colors"
-        aria-label={isPlaying ? 'Pause slideshow' : 'Play slideshow'}
+      className="absolute top-4 right-4 z-20 p-4 rounded-full text-blue-500 bg-blue-300/50 hover:bg-white/45 text-4xl backdrop-blur-sm transition-colors"
       >
-        {isPlaying ? <PauseIcon size={16} /> : <PlayIcon size={16} />}
+        <MdAddCircleOutline/>
       </button>
     </div>
   )
