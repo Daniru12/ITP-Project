@@ -1,15 +1,47 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { ClockIcon, CheckCircleIcon } from 'lucide-react';
 
 export default function PetAppointmentForm() {
-  // Simulating backend data
-  const selectedPet = {
-    id: '67d5e4073e18e063d8791e5f', // MongoDB ObjectId for pet
-    name: 'Max',
-    breed: 'Golden Retriever',
-    image: 'https://images.unsplash.com/photo-1633722715463-d30f4f325e24?auto=format&fit=crop&q=80&w=100&h=100',
+  const [userPets, setUserPets] = useState([]);
+  const [selectedPet, setSelectedPet] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [submitted, setSubmitted] = useState(false);
+
+useEffect(() => {
+  const fetchUserPets = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
+      const response = await axios.get(`${backendUrl}/api/users/pets`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      console.log("🐶 Pets Fetched:", response.data.pets); // Log all pets
+
+      if (response.data.pets.length > 0) {
+        const firstPet = response.data.pets[0];
+        setSelectedPet(firstPet); // Set first pet as selected
+        console.log("✅ First Pet Selected:", firstPet); // Log selected pet
+
+        // Check if the pet has `_id` instead of `id`
+        console.log("🐾 Pet ID:", firstPet.id || firstPet._id); 
+      }
+
+      setUserPets(response.data.pets || []);
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Error fetching user pets:", error);
+      setIsLoading(false);
+    }
   };
+
+  fetchUserPets();
+}, []);
+
 
   const selectedService = {
     id: '67da98b31af51a47f086517e', // MongoDB ObjectId for service
@@ -17,7 +49,7 @@ export default function PetAppointmentForm() {
     price: '$45',
   };
 
-  const appointmentId = '67d86e1f457809a5015d4db4'; // Appointment MongoDB ID
+  const appointmentId = '67d86e1f457809a5015d4db4';
   const periods = ['30 minutes', '1 hour', '2 hours'];
 
   const [formData, setFormData] = useState({
@@ -26,8 +58,6 @@ export default function PetAppointmentForm() {
     special_request: '',
     notes: '',
   });
-
-  const [submitted, setSubmitted] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -39,52 +69,84 @@ export default function PetAppointmentForm() {
 
   const sendSchedule = async () => {
     try {
-      console.log('Form Data:', formData);
-
+      if (!selectedPet) {
+        alert("Please select a pet before scheduling.");
+        console.error("❌ Error: selectedPet is null or undefined!");
+        return;
+      }
+  
+      const petId = selectedPet.id || selectedPet._id;
+      if (!petId) {
+        alert("❌ Pet ID is missing!");
+        console.error("❌ Error: Pet ID is missing in selectedPet object!", selectedPet);
+        return;
+      }
+  
+      if (!formData.period) {
+        alert("❌ Please select a service duration.");
+        console.error("❌ Error: period is missing!");
+        return;
+      }
+  
+      console.log("🔍 Checking start_time value:", formData.start_time); // Log start_time for debugging
+  
       if (!formData.start_time) {
-        throw new Error('Start time is missing!');
+        alert("❌ Please select a valid start time.");
+        console.error("❌ Error: start_time is missing or empty!");
+        return;
       }
-
-      const today = new Date().toISOString().split('T')[0]; // Get today's date (YYYY-MM-DD)
-      const fullDateTime = new Date(`${today}T${formData.start_time}:00`); // Append time
-
+  
+      const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
+      const fullDateTime = new Date(`${today}T${formData.start_time}:00`); // Append time to date
+  
+      console.log("⏰ Parsed Full DateTime:", fullDateTime.toISOString()); // Log full datetime
+  
       if (isNaN(fullDateTime.getTime())) {
-        throw new Error('Invalid start time format!');
+        alert("❌ Invalid start time format!");
+        console.error("❌ Error: Invalid start time format!", formData.start_time);
+        return;
       }
-
-      // Backend expects a structured request body
+  
+      const backendUrl = import.meta.env.VITE_BACKEND_URL;
+  
       const requestBody = {
-        pet_id: selectedPet.id,
+        pet_id: petId,
         service_id: selectedService.id,
         appointment_id: appointmentId,
-        Period: "1hour", 
-        start_time: fullDateTime.toISOString(), // Convert to ISO format
-        special_requests: formData.special_request,
-        notes: formData.notes,
+        period: formData.period,
+        start_time: fullDateTime.toISOString(),
+        end_time: formData.period === "custom" && formData.end_time ? new Date(`${today}T${formData.end_time}:00`).toISOString() : null,
+        special_requests: formData.special_request || "",
+        notes: formData.notes || "",
       };
-
-      console.log('Sending Request with Body:', requestBody);
-
+  
+      console.log("📡 Request Body Being Sent to Backend:", requestBody);
+  
       const response = await axios.post(
-        'http://localhost:3000/api/scheduling/groomingschedule/create', // Backend API
+        `${backendUrl}/api/scheduling/groomingschedule/create`,
         requestBody
       );
-
-      console.log('Schedule successful:', response.data);
-      alert('✅ Your pet\'s appointment has been successfully scheduled!');
+  
+      console.log("✅ Schedule successful:", response.data);
+      alert("✅ Your pet's appointment has been successfully scheduled!");
       setSubmitted(true);
     } catch (error) {
-      console.error('Unexpected error:', error);
-
+      console.error("🚨 Unexpected error:", error);
+  
       if (error.response) {
-        alert(`❌ Server Error: ${error.response.data.error || 'Unknown backend error'}`);
+        console.error("❌ Server Response Error:", error.response.data);
+        alert(`❌ Server Error: ${error.response.data.error || "Unknown error"}`);
       } else if (error.request) {
-        alert('❌ Network error: No response from server. Check if backend is running.');
+        console.error("❌ Network error: No response from server");
+        alert("❌ Network error: No response from server. Check if backend is running.");
       } else {
+        console.error("❌ Client-side error:", error.message);
         alert(`❌ Error: ${error.message}`);
       }
     }
   };
+  
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -97,12 +159,8 @@ export default function PetAppointmentForm() {
         <div className="flex justify-center mb-4">
           <CheckCircleIcon className="w-16 h-16 text-green-500" />
         </div>
-        <h2 className="text-2xl font-bold text-gray-800 mb-2">
-          Schedule Updated!
-        </h2>
-        <p className="text-gray-600 mb-6">
-          Your pet's appointment time has been successfully scheduled.
-        </p>
+        <h2 className="text-2xl font-bold text-gray-800 mb-2">Schedule Updated!</h2>
+        <p className="text-gray-600 mb-6">Your pet's appointment time has been successfully scheduled.</p>
         <button
           onClick={() => setSubmitted(false)}
           className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
@@ -116,16 +174,25 @@ export default function PetAppointmentForm() {
   return (
     <div className="bg-white rounded-lg shadow-lg overflow-hidden">
       <div className="p-6">
-        <h2 className="text-lg font-medium text-gray-900 mb-4">
-          Appointment Details
-        </h2>
-        <div className="flex items-center mb-4">
-          <img src={selectedPet.image} alt={selectedPet.name} className="w-12 h-12 rounded-full object-cover mr-4" />
-          <div>
-            <div className="font-medium text-gray-900">{selectedPet.name}</div>
-            <div className="text-sm text-gray-500">{selectedPet.breed}</div>
-          </div>
-        </div>
+        <h2 className="text-lg font-medium text-gray-900 mb-4">Appointment Details</h2>
+
+        {isLoading ? (
+          <p>Loading pets...</p>
+        ) : (
+          selectedPet && (
+            <div className="flex items-center mb-4">
+              <img
+                src={selectedPet.image}
+                alt={selectedPet.name}
+                className="w-12 h-12 rounded-full object-cover mr-4"
+              />
+              <div>
+                <div className="font-medium text-gray-900">{selectedPet.name}</div>
+                <div className="text-sm text-gray-500">{selectedPet.breed}</div>
+              </div>
+            </div>
+          )
+        )}
 
         <form onSubmit={handleSubmit}>
           {/* Service Duration */}

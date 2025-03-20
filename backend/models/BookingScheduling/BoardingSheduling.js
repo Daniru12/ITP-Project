@@ -7,6 +7,7 @@ const SchedulingSchema = new mongoose.Schema(
             ref: "Pet",
             required: [true, "Pet is required"],
         },
+        
         service_id: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Services",
