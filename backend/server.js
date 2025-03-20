@@ -9,8 +9,10 @@ import appointmentRouter from "./routes/AppoimentScheduling/appointmentRouter.js
 import boardingRouter from "./routes/Servicess/boardingRoute.js";
 import scheduleRouter from "./routes/AppoimentScheduling/schedulingRoutes.js";
 import reviewRouter from "./routes/Reviews/reviewRoutes.js"; 
+import faqRouter from "./routes/Reviews/faqRoutes.js";
 import paymnetRouter from "./routes/Payment/paymentRouter.js";
 import AdvertisementRoutes from "./routes/Advertisement/advertisementRouter.js";
+
 
 dotenv.config();
 
@@ -40,8 +42,12 @@ app.use("/api/appointments", appointmentRouter);
 app.use("/api/boarding", boardingRouter);
 app.use("/api/scheduling", scheduleRouter);
 app.use("/api/reviews", reviewRouter);
+
+app.use("/api/faqs", faqRouter);
+
 app.use("/api/payment",paymnetRouter);
 app.use("/api/advertisement",AdvertisementRoutes);
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
