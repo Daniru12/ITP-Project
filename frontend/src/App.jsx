@@ -59,7 +59,7 @@ const AppContent = () => {
           <Route path='/booking' element={<PetCareBooking />} />
           <Route path='/schedule' element={<Schedule />} />
           <Route path='/AppointmentsList' element={<AppointmentsList />} />
-          <Route path='/Appointmentadd' element={<AppointmentCreate />} />
+          <Route path='/Appointmentadd/:id' element={<AppointmentCreate />} />
           <Route path='/Appointment' element={<UserAppointments />} />
           <Route path='/profile' element={<Profile />} />
           <Route path='/provider-profile' element={<ProviderProfile />} />
