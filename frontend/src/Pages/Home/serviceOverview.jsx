@@ -123,8 +123,10 @@ const ServiceOverview = () => {
                     {/* Book Now Button */}
                     <div className="text-center">
                         <Link
-                            to={`/book-service/${service._id}`}
+                             to={`/Appointmentadd/${service._id}`}
+                            // to={`/Appointmentadd`}
                             className="inline-block bg-blue-600 text-white px-8 py-3 rounded-md hover:bg-blue-700 transition duration-300"
+                            
                         >
                             Book Now
                         </Link>
