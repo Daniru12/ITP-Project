@@ -5,33 +5,14 @@ import Appointment from "../../models/BookingScheduling/Appointment.js"; // Impo
 
 
 // Create a new grooming appointment (Scheduling)
+// Create a new grooming appointment (Scheduling)
 export const createGroomingScheduling = async (req, res) => {
     try {
-        const { pet_id, service_id, appointment_id, Period, start_time, end_time, special_requests = "", notes = "" } = req.body;
+        const { pet_id, service_id, appointment_id, Period, start_time, special_requests = "", notes = "" } = req.body;
 
         // Validate required fields
         if (!pet_id || !service_id || !appointment_id || !start_time) {
             return res.status(400).json({ error: "All required fields must be provided!" });
-        }
-
-        // Calculate `end_time` based on `Period`
-        let computedEndTime = new Date(start_time);
-        switch (Period) {
-            case "30min":
-                computedEndTime.setMinutes(computedEndTime.getMinutes() + 30);
-                break;
-            case "1hour":
-                computedEndTime.setHours(computedEndTime.getHours() + 1);
-                break;
-            case "2hours":
-                computedEndTime.setHours(computedEndTime.getHours() + 2);
-                break;
-            default:
-                if (!end_time) {
-                    return res.status(400).json({ error: "Custom Period requires an end_time!" });
-                }
-                computedEndTime = new Date(end_time);
-                break;
         }
 
         // Save the grooming scheduling
@@ -41,7 +22,6 @@ export const createGroomingScheduling = async (req, res) => {
             appointment_id,
             Period,
             start_time,
-            end_time: computedEndTime,
             special_requests,
             notes
         });
@@ -57,6 +37,7 @@ export const createGroomingScheduling = async (req, res) => {
         res.status(500).json({ error: "Internal Server Error", details: error.message });
     }
 };
+
 
 //Get all grooming (Scheduling)
 

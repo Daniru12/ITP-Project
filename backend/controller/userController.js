@@ -8,22 +8,44 @@ import Pet from "../models/Pets.js";
 dotenv.config();
 
 export function registerUser(req, res) {
-  const data = req.body;
+  try {
+    const data = req.body;
 
-  // Hash the password before saving the user
-  data.password = bcrypt.hashSync(data.password, 8);
+    // Validate required fields
+    const requiredFields = ['username', 'password', 'full_name', 'email', 'phone_number', 'user_type'];
+    for (const field of requiredFields) {
+      if (!data[field]) {
+        return res.status(400).json({ message: `${field} is required` });
+      }
+    }
 
-  const newUser = new User(data);
+    // Set default profile picture if none provided
+    if (!data.profile_picture) {
+      data.profile_picture = 'https://via.placeholder.com/150';
+    }
 
-  newUser
-    .save()
-    .then(() => {
-      res.status(200).json({ message: "User created successfully" });
-    })
-    .catch((error) => {
-      console.error("Error creating user:", error);
-      res.status(500).json({ error: "Error creating user" });
-    });
+    // Hash the password before saving the user
+    data.password = bcrypt.hashSync(data.password, 8);
+
+    const newUser = new User(data);
+
+    newUser
+      .save()
+      .then(() => {
+        res.status(200).json({ message: "User created successfully" });
+      })
+      .catch((error) => {
+        console.error("Error creating user:", error);
+        if (error.code === 11000) { // Duplicate key error
+          res.status(400).json({ message: "Email already exists" });
+        } else {
+          res.status(500).json({ message: "Error creating user", error: error.message });
+        }
+      });
+  } catch (error) {
+    console.error("Error in registerUser:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
 }
 
 export function loginUser(req, res) {
@@ -102,28 +124,29 @@ export async function Profile(req, res) {
 
 export const registerPet = async (req, res) => {
   if (req.user == null) {
-    res.status(401).json({
+    return res.status(401).json({
       message: "Please login and try again",
     });
-    return;
   }
 
   if (req.user.user_type !== "pet_owner") {
-    res.status(403).json({
+    return res.status(403).json({
       message: "Only pet owners can register pets",
     });
-    return;
   }
 
   try {
+    const { name, species, breed, age, gender, pet_image } = req.body;
+
+    // Create pet data with owner ID
     const petData = {
       owner_id: req.user._id,
-      name: req.body.name,
-      species: req.body.species,
-      breed: req.body.breed,
-      age: req.body.age,
-      gender: req.body.gender,
-      pet_image: req.body.pet_image || "https://via.placeholder.com/150",
+      name,
+      species,
+      breed,
+      age,
+      gender,
+      pet_image: pet_image || [] // Use provided image URLs or empty array
     };
 
     const newPet = new Pet(petData);
