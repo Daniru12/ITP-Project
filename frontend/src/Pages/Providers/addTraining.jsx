@@ -3,7 +3,7 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
 
-const AddGrooming = () => {
+const AddTraining = () => {
   const navigate = useNavigate();
   
   // Simplified initial state with clear naming
@@ -163,7 +163,7 @@ const AddGrooming = () => {
     // Reconstruct the data in the format expected by the API
     const formData = {
       service_name: serviceName,
-      service_category: "pet_grooming",
+      service_category: "pet_training",
       description: description,
       location: location,
       image: imageUrl || undefined, // Only send if provided
@@ -192,7 +192,7 @@ const AddGrooming = () => {
   return (
     <div className="max-w-4xl mx-auto p-6">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Add New Grooming Service</h1>
+        <h1 className="text-2xl font-bold">Add New Training Service</h1>
         <Link
           to="/add-service"
           className="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600"
@@ -409,4 +409,4 @@ const AddGrooming = () => {
   );
 };
 
-export default AddGrooming;
+export default AddTraining;
