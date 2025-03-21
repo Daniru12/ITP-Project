@@ -21,8 +21,13 @@ import Schedule from './Pages/Schedule/groomingSchedule'
 import ProductDetail from './Pages/productMarket/ProductDetail'
 import PetMarketplace from './Pages/productMarket/PetMarketplace' 
 import AppointmentsList from './Pages/Appoiment/appoiments'
+
 import AppointmentCreate from './Pages/Appoiment/AppointmentCreate'
 import UserAppointments from './Pages/Appoiment/UserAppointments'
+
+import DisplayServices from './Pages/Home/displayServices'
+import ServiceOverview from './Pages/Home/serviceOverview'
+
 
 
 
@@ -64,6 +69,8 @@ const AppContent = () => {
           <Route path='/PaymentPage' element={<PaymentPage />} />
           <Route path='/petmarketplace' element={<PetMarketplace />} /> 
           <Route path="/product/:id" element={<ProductDetail />} />
+          <Route path='/display-services' element={<DisplayServices />} />
+          <Route path='/service-overview/:id' element={<ServiceOverview />} />
         </Routes>
       </div>
     </>
