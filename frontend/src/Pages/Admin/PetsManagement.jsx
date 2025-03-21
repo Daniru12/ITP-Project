@@ -22,9 +22,13 @@ const PetDetailsModal = ({ pet, onClose }) => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <img 
-              src={pet.pet_image || "https://images.pexels.com/photos/1404819/pexels-photo-1404819.jpeg"} 
+              src={pet.pet_image?.[0] || 'https://via.placeholder.com/150'} 
               alt={pet.name}
               className="w-full h-64 object-cover rounded-lg"
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.src = 'https://via.placeholder.com/150';
+              }}
             />
           </div>
           
@@ -172,9 +176,13 @@ const PetsManagement = () => {
                     <div className="flex items-center">
                       <div className="h-10 w-10 rounded-full overflow-hidden">
                         <img 
-                          src={pet.image || "https://images.pexels.com/photos/1404819/pexels-photo-1404819.jpeg"}
+                          src={pet.pet_image?.[0] || 'https://via.placeholder.com/150'} 
                           alt={pet.name}
                           className="h-full w-full object-cover"
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src = 'https://via.placeholder.com/150';
+                          }}
                         />
                       </div>
                       <div className="ml-4">

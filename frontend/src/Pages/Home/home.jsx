@@ -14,8 +14,8 @@ function home() {
     <>
     <div className="min-h-screen bg-white">
       <main>
-        <AdvertisementSlideshow/>
         <HeroSection />
+        <AdvertisementSlideshow/>
         <ServicesSection />
         <HowItWorksSection />
         <FeaturedSection />
