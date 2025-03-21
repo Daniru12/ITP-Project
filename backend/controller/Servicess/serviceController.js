@@ -10,7 +10,7 @@ export const addService = async (req, res) => {
       });
     }
 
-    const { service_name, description, packages, location, image } = req.body;
+    const { service_name, service_category, description, packages, location, image } = req.body;
 
     // Check if location is provided
     if (!location) {
@@ -18,13 +18,6 @@ export const addService = async (req, res) => {
         message: "Location is required",
       });
     }
-
-    // Validate image URL if provided
-    // if (image && !isValidUrl(image)) {
-    //   return res.status(400).json({
-    //     message: "Invalid image URL format",
-    //   });
-    // }
 
     // Validate that all three package tiers are provided
     const requiredTiers = ["basic", "premium", "luxury"];
@@ -84,7 +77,7 @@ export const addService = async (req, res) => {
     const serviceData = {
       provider_id: req.user._id,
       service_name,
-      service_category: "pet_grooming",
+      service_category,
       description,
       packages,
       location,
@@ -106,16 +99,6 @@ export const addService = async (req, res) => {
     });
   }
 };
-
-// Helper function to validate URL
-// const isValidUrl = (string) => {
-//   try {
-//     new URL(string);
-//     return true;
-//   } catch (_) {
-//     return false;
-//   }
-// };
 
 // Get provider's services
 export const getProviderServices = async (req, res) => {

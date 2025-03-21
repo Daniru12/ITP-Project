@@ -3,13 +3,6 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
 
-/**
- * AddService Component
- * This component creates a form to add different types of services:
- * - Grooming Services
- * - Boarding Services
- * - Training Services
- */
 const AddService = () => {
   // Hook for navigation
   const navigate = useNavigate();
@@ -18,25 +11,25 @@ const AddService = () => {
   const serviceTypes = [
     {
       id: "grooming",
-      name: "Grooming Service",
+      name: "Grooming Service", 
       path: "/add-grooming",
       description:
         "Add pet grooming services like bathing, haircuts, and nail trimming",
-      image: "/images/grooming.jpg", // You'll need to add these images to your public folder
+      image: "https://images.unsplash.com/photo-1516734212186-a967f81ad0d7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1471&q=80",
     },
     {
       id: "boarding",
       name: "Boarding Service",
-      path: "/add-boarding",
+      path: "/add-boarding", 
       description: "Add pet boarding and daycare services",
-      image: "/images/boarding.jpg",
+      image: "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1469&q=80",
     },
     {
       id: "training",
       name: "Training Service",
       path: "/add-training",
-      description: "Add pet training and behavior modification services",
-      image: "/images/training.jpg",
+      description: "Add pet training and behavior modification services", 
+      image: "https://images.unsplash.com/photo-1587300003388-59208cc962cb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
     },
   ];
 
@@ -65,24 +58,7 @@ const AddService = () => {
             <div className="bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-300 hover:-translate-y-1">
               {/* Image Container */}
               <div className="relative h-48 bg-gray-200">
-                {/* You can replace this div with an actual image once you have them */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-24 h-24 rounded-full border-2 border-gray-300 flex items-center justify-center">
-                    <svg
-                      className="w-12 h-12 text-gray-400"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                      />
-                    </svg>
-                  </div>
-                </div>
+                <img src={service.image} alt={service.name} className="w-full h-full object-cover" />
               </div>
 
               {/* Content */}
