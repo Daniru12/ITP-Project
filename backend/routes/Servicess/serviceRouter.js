@@ -3,7 +3,7 @@ import {
   addService,
   getProviderServices,
   getServicesByCategory,
-} from "../../controller/Servicess/groomingController.js";
+} from "../../controller/Servicess/serviceController.js";
 import { protect } from "../../middleware/authMiddleware.js";
 
 const groomingRouter = express.Router();

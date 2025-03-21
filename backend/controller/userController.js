@@ -71,7 +71,6 @@ export function loginUser(req, res) {
             
           },
           process.env.JWT_SECRET,
-          { expiresIn: "1h" }
         );
 
         res.status(200).json({

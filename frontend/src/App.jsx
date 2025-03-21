@@ -27,7 +27,8 @@ import UserAppointments from './Pages/Appoiment/UserAppointments'
 
 import DisplayServices from './Pages/Home/displayServices'
 import ServiceOverview from './Pages/Home/serviceOverview'
-
+import AddBoarding from './Pages/Providers/addBoarding'
+import AddTraining from './Pages/Providers/addTraining'
 
 
 
@@ -63,6 +64,8 @@ const AppContent = () => {
           <Route path='/profile' element={<Profile />} />
           <Route path='/provider-profile' element={<ProviderProfile />} />
           <Route path='/add-grooming' element={<AddGrooming />} />
+          <Route path='/add-boarding' element={<AddBoarding />} />
+          <Route path='/add-training' element={<AddTraining />} />
           <Route path='/add-service' element={<AddService />} />
           <Route path='/register-pet' element={<RegisterPet />} />
           <Route path='/faq' element={<FAQ />} />
