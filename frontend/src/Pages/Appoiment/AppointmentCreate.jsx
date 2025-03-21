@@ -22,27 +22,47 @@ const AppointmentCreate = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        const petRes = await axios.get(`${backendUrl}/api/pets`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        const serviceRes = await axios.get(`${backendUrl}/api/services`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        setPets(Array.isArray(petRes.data) ? petRes.data : petRes.data.pets || []);
-        setServices(Array.isArray(serviceRes.data) ? serviceRes.data : serviceRes.data.services || []);
-        setLoading(false);
-      } catch (err) {
-        console.error('Error fetching pets/services:', err);
-        toast.error('Failed to load pets or services');
-        setLoading(false);
+      if (!token) {
+        toast.error("You're not logged in.");
+        window.location.href = "/login";
+        return;
       }
+
+      try {
+        const petRes = await axios.get(`${backendUrl}/api/users/pets`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        const petsArray = Array.isArray(petRes.data) ? petRes.data : petRes.data.pets || [];
+        setPets(petsArray);
+        console.log("Pets loaded:", petsArray);
+      } catch (err) {
+        console.error("Error loading pets:", err.response?.data || err.message);
+        toast.error("Failed to load pets");
+        setPets([]);
+      }
+
+      try {
+        const serviceRes = await axios.get(`${backendUrl}/api/users/services`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        const servicesArray = Array.isArray(serviceRes.data)
+          ? serviceRes.data
+          : serviceRes.data.services || [];
+        setServices(servicesArray);
+        console.log("Services loaded:", servicesArray);
+      } catch (err) {
+        console.error("Error loading services:", err.response?.data || err.message);
+        toast.error("Failed to load services");
+        setServices([]);
+      }
+
+      setLoading(false);
     };
 
     fetchData();
-  }, []);
+  }, [backendUrl, token]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -71,7 +91,7 @@ const AppointmentCreate = () => {
         usePoints: false,
       });
     } catch (err) {
-      console.error('Booking error:', err);
+      console.error('Booking error:', err.response?.data || err.message);
       toast.error(err.response?.data?.message || 'Failed to book appointment');
     } finally {
       setSubmitLoading(false);
@@ -103,11 +123,15 @@ const AppointmentCreate = () => {
               className="w-full border p-2 rounded"
             >
               <option value="">-- Choose a pet --</option>
-              {pets.map((pet) => (
-                <option key={pet._id} value={pet._id}>
-                  {pet.name}
-                </option>
-              ))}
+              {pets.length > 0 ? (
+                pets.map((pet) => (
+                  <option key={pet._id} value={pet._id}>
+                    {pet.name}
+                  </option>
+                ))
+              ) : (
+                <option disabled>No pets available</option>
+              )}
             </select>
           </div>
 
@@ -122,15 +146,19 @@ const AppointmentCreate = () => {
               className="w-full border p-2 rounded"
             >
               <option value="">-- Choose a service --</option>
-              {services.map((service) => (
-                <option key={service._id} value={service._id}>
-                  {service.service_name}
-                </option>
-              ))}
+              {services.length > 0 ? (
+                services.map((service) => (
+                  <option key={service._id} value={service._id}>
+                    {service.service_name}
+                  </option>
+                ))
+              ) : (
+                <option disabled>No services available</option>
+              )}
             </select>
           </div>
 
-          {/* Date/Time */}
+          {/* Appointment Date & Time */}
           <div>
             <label className="block font-medium mb-1">Appointment Date & Time</label>
             <input
