@@ -73,7 +73,7 @@ export const ServicesSection = () => {
                 </h3>
                 <p className="text-gray-600">{service.description}</p>
                 <Link
-                  to="/displayServices"
+                  to="/display-services"
                   className="mt-4 inline-flex items-center text-blue-600 font-medium hover:text-blue-800"
                 >
                   Learn more

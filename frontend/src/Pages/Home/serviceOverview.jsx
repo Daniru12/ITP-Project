@@ -55,7 +55,7 @@ const ServiceOverview = () => {
             {/* Back Button */}
             <div className="max-w-4xl mx-auto mb-6">
                 <Link
-                    to="/displayServices"
+                    to="/display-services"
                     className="text-blue-600 hover:text-blue-800 flex items-center"
                 >
                     ← Back to Services
