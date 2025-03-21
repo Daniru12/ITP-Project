@@ -9,7 +9,7 @@ import {
   deleteUserAppointment,
   updateUserAppointment,
   getSingleUserAppointment,
-  getSingleProviderAppointment
+  getSingleProviderAppointment,
 } from "../../controller/Booking_Scheduling/appointmentController.js";
 import { protect } from "../../middleware/authMiddleware.js";
 
@@ -26,8 +26,8 @@ appointmentRouter.put("/user/:id", protect, updateUserAppointment);
 
 
 // New routes for managing appointments
-appointmentRouter.patch("/:id/status", protect, updateAppointmentStatus);
+appointmentRouter.put("/:id", protect, updateAppointmentStatus); // ✅ Add this!
 appointmentRouter.delete("/:id", protect, deleteAppointment);
 appointmentRouter.patch("/:id/cancel", protect, cancelAppointment);
-
+appointmentRouter.patch("/:id/status", protect, updateAppointmentStatus); // Optional/legacy
 export default appointmentRouter;
