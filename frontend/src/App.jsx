@@ -1,30 +1,3 @@
-<<<<<<< HEAD
-import './App.css';
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
-import Home from './Pages/Home/home';
-import LoginPage from './Pages/Login/login';
-import { Toaster } from 'react-hot-toast';
-import AdminDashboard from './Pages/Admin/adminDashboard';
-import RegisterPage from './Pages/Register/register';
-import NavBar from './Components/NavBar';
-import Profile from './Pages/PetOwner/profile';
-import ProviderProfile from './Pages/Providers/providerProfile';
-import UserManagement from './Pages/Admin/UserManagement';
-import ServiceManagement from './Pages/Admin/ServiceManagement';
-import PetsManagement from './Pages/Admin/PetsManagement';
-import AddGrooming from './Pages/Providers/addGrooming';
-import AddService from './Pages/Providers/addService';
-import RegisterPet from './Pages/PetOwner/registerPet';
-import CreateFaq from './Pages/FAQ/faq';  
-import PaymentPage from './Pages/Payment/PaymentPage';
-import { PetCareBooking } from './Pages/Booking/Create/PetCareBooking';
-import Schedule from './Pages/Schedule/groomingSchedule';
-import ProductDetail from './Pages/productMarket/ProductDetail';
-import PetMarketplace from './Pages/productMarket/PetMarketplace';
-import AppointmentsList from './Pages/Appoiment/appoiments';
-import DisplayServices from './Pages/Home/displayServices';
-import ServiceOverview from './Pages/Home/serviceOverview';
-=======
 import './App.css'
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import Home from './Pages/Home/home'
@@ -41,7 +14,7 @@ import PetsManagement from './Pages/Admin/PetsManagement'
 import AddGrooming from './Pages/Providers/addGrooming'
 import AddService from './Pages/Providers/addService'
 import RegisterPet from './Pages/PetOwner/registerPet'
-import FAQ from './Pages/FAQ/faq'
+import CreateFaq from './Pages/FAQ/faq'
 import PaymentPage from './Pages/Payment/PaymentPage'
 import { PetCareBooking } from './Pages/Booking/Create/PetCareBooking'
 import Schedule from './Pages/Schedule/groomingSchedule'
@@ -57,8 +30,6 @@ import ServiceOverview from './Pages/Home/serviceOverview'
 import AddBoarding from './Pages/Providers/addBoarding'
 import AddTraining from './Pages/Providers/addTraining'
 
-
->>>>>>> Development-Branch
 
 // Wrapper component to handle NavBar conditional rendering
 const AppContent = () => {
