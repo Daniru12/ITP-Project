@@ -1,5 +1,5 @@
 import express from "express";
-import { loginUser, Profile, registerUser, registerPet, getPets, getLoyaltyPoints, getAllUsers, getAllServices, getAllPets, deletePet, getServicesForDisplay, getServiceById, deleteService, adminDeleteService, adminDeletePet } from "../controller/userController.js";
+import { loginUser, Profile, registerUser, registerPet, getPets, getLoyaltyPoints, getAllUsers, getAllServices, getAllPets, deletePet, getServicesForDisplay, getServiceById, deleteService, adminDeleteService, adminDeletePet, getPetById, updatePet } from "../controller/userController.js";
 import { protect } from "../middleware/authMiddleware.js";
 
 const userRouter = express.Router();
@@ -19,5 +19,7 @@ userRouter.get("/service/:id", protect, getServiceById);
 userRouter.delete("/service/:id", protect, deleteService);
 userRouter.delete("/admin-delete-service/:id", protect, adminDeleteService);
 userRouter.delete("/admin-delete-pet/:id", protect, adminDeletePet);
+userRouter.get("/pet/:id", protect, getPetById);
+userRouter.put("/pet/:id", protect, updatePet);
 
 export default userRouter;
