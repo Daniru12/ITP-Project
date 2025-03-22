@@ -326,3 +326,56 @@ export const adminDeletePet = async (req, res) => {
     res.status(500).json({ message: "Error deleting pet", error: error.message });
   }
 };
+
+//get pet by id
+export const getPetById = async (req, res) => {
+  const pet = await Pet.findById(req.params.id).populate('owner_id', 'username full_name phone_number email')
+  res.status(200).json({
+    message: "Pet fetched successfully",
+    pet: pet
+  })
+}
+
+// Update pet information
+export const updatePet = async (req, res) => {
+  try {
+    const pet = await Pet.findById(req.params.id);
+    
+    // Check if pet exists
+    if (!pet) {
+      return res.status(404).json({ message: "Pet not found" });
+    }
+
+    // Check if user owns the pet
+    if (pet.owner_id.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: "You are not authorized to update this pet" });
+    }
+
+    const { name, species, breed, age, gender, pet_image } = req.body;
+
+    // Update pet data
+    const updatedPet = await Pet.findByIdAndUpdate(
+      req.params.id,
+      {
+        name,
+        species,
+        breed,
+        age,
+        gender,
+        pet_image: pet_image || pet.pet_image // Keep existing images if no new ones provided
+      },
+      { new: true } // Return the updated document
+    );
+
+    res.status(200).json({
+      message: "Pet updated successfully",
+      pet: updatedPet
+    });
+  } catch (error) {
+    console.error("Error updating pet:", error);
+    res.status(500).json({
+      message: "Error updating pet",
+      error: error.message
+    });
+  }
+};

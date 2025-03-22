@@ -29,8 +29,8 @@ import DisplayServices from './Pages/Home/displayServices'
 import ServiceOverview from './Pages/Home/serviceOverview'
 import AddBoarding from './Pages/Providers/addBoarding'
 import AddTraining from './Pages/Providers/addTraining'
-
-
+import UpdatePet from './Pages/PetOwner/updatePet'
+import UpdateService from './Pages/Providers/updateService'
 
 // Wrapper component to handle NavBar conditional rendering
 const AppContent = () => {
@@ -75,6 +75,8 @@ const AppContent = () => {
           <Route path="/product/:id" element={<ProductDetail />} />
           <Route path='/display-services' element={<DisplayServices />} />
           <Route path='/service-overview/:id' element={<ServiceOverview />} />
+          <Route path='/edit-pet/:id' element={<UpdatePet />} />
+          <Route path='/update-service/:id' element={<UpdateService />} />
         </Routes>
       </div>
     </>
