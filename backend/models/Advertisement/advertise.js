@@ -46,3 +46,8 @@ const advertisementSchema = new mongoose.Schema(
 const Advertisement = mongoose.model("Advertisement", advertisementSchema);
 
 export default Advertisement;
+
+
+
+
+
