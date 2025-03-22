@@ -49,11 +49,11 @@ const UserAppointments = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      toast.success("Appointment deleted successfully");
+      toast.success("Appointment cancelled successfully");
       setAppointments((prev) => prev.filter((appt) => appt._id !== id));
     } catch (err) {
       console.error("Delete error:", err.response?.data || err.message);
-      toast.error(err.response?.data?.message || "Failed to delete appointment");
+      toast.error(err.response?.data?.message || "Failed to cancel appointment");
     } finally {
       setDeletingId(null);
     }
@@ -66,11 +66,16 @@ const UserAppointments = () => {
   const getStatusStyle = (status) => {
     switch (status?.toLowerCase()) {
       case "confirmed":
+        toast.success("Appointment confirmed");
         return "bg-green-100 text-green-800 border border-green-300";
+      case "cancelled":
+        toast.success("Appointment cancelled");
+        return "bg-red-100 text-red-800 border border-red-300";
+      case "completed":
+        return "bg-gray-200 text-gray-600 border border-gray-300";
       case "pending":
-        return "bg-white text-gray-700 border border-gray-300";
       default:
-        return "bg-yellow-100 text-yellow-800 border border-yellow-300";
+        return "bg-white text-gray-700 border border-gray-300";
     }
   };
 
@@ -116,21 +121,24 @@ const UserAppointments = () => {
                 <p><strong>Discount:</strong> {appt.discount_applied ?? 0}%</p>
               </div>
 
-              <div className="mt-4 flex gap-3">
-                <button
-                  onClick={() => handleUpdate(appt._id)}
-                  className="bg-yellow-500 hover:bg-yellow-600 text-white py-1.5 px-4 rounded-md text-sm transition"
-                >
-                  Update
-                </button>
-                <button
-                  onClick={() => handleDelete(appt._id)}
-                  disabled={deletingId === appt._id}
-                  className="bg-red-500 hover:bg-red-600 text-white py-1.5 px-4 rounded-md text-sm transition disabled:opacity-50"
-                >
-                  {deletingId === appt._id ? "Deleting..." : "Delete"}
-                </button>
-              </div>
+              {/* Only show buttons if status is pending */}
+              {appt.status === "pending" && (
+                <div className="mt-4 flex gap-3">
+                  <button
+                    onClick={() => handleUpdate(appt._id)}
+                    className="bg-yellow-500 hover:bg-yellow-600 text-white py-1.5 px-4 rounded-md text-sm transition"
+                  >
+                    Update
+                  </button>
+                  <button
+                    onClick={() => handleDelete(appt._id)}
+                    disabled={deletingId === appt._id}
+                    className="bg-red-500 hover:bg-red-600 text-white py-1.5 px-4 rounded-md text-sm transition disabled:opacity-50"
+                  >
+                    {deletingId === appt._id ? "Deleting..." : "Cancel"}
+                  </button>
+                </div>
+              )}
             </div>
           ))}
         </div>
