@@ -1,9 +1,13 @@
 import mongoose from "mongoose";
 import Pet from "../../models/Pets.js"; // Import Pet model
 
-
 const TrainingScheduleSchema = new mongoose.Schema(
     {
+        appointment_id: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Appointment",
+            required: [true, "Appointment ID is required"],
+        },
         pet_id: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Pet",
@@ -11,7 +15,7 @@ const TrainingScheduleSchema = new mongoose.Schema(
         },
         service_id: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "Service",
+            ref: "Services",
             required: [true, "Service is required"],
         },
         week_start_date: {

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { Link } from 'react-router-dom';
+import { FaCalendarAlt } from 'react-icons/fa';
 
 export default function Profile() {
   // State to store user data
@@ -11,7 +12,8 @@ export default function Profile() {
     email: '',
     phone_number: '',
     profile_picture: '',
-    user_type: ''
+    user_type: '',
+    loyalty_points: 0
   });
   // State to store user pets
   const [userPets, setUserPets] = useState([]);
@@ -137,6 +139,15 @@ export default function Profile() {
                 <p className="text-gray-600 text-sm">Account Type</p>
                 <p className="text-gray-900 font-medium capitalize">{userData.user_type}</p>
               </div>
+
+              {/* Loyalty Points Display */}
+              <div className="pt-4 border-t">
+                <div className="bg-blue-50 rounded-lg p-4 text-center">
+                  <p className="text-gray-600 text-sm mb-1">Loyalty Points</p>
+                  <p className="text-3xl font-bold text-blue-600">{userData.loyalty_points || 0}</p>
+                  <p className="text-gray-500 text-xs mt-1">Points earned from your bookings</p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -186,9 +197,9 @@ export default function Profile() {
                       </div>
                     </div>
                     <div className="mt-4 flex justify-end space-x-2">
-                      <button className="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                      <Link to={`/edit-pet/${pet._id}`} className="text-blue-600 hover:text-blue-800 text-sm font-medium">
                         Edit
-                      </button>
+                      </Link>
                       <button onClick={() => handleDeletePet(pet._id)} className="text-red-600 hover:text-red-800 text-sm font-medium">
                         Delete
                       </button>
@@ -197,6 +208,24 @@ export default function Profile() {
                 ))}
               </div>
             )}
+          </div>
+        </div>
+
+        {/* Appointments Section */}
+        <div className="bg-white rounded-lg shadow-md p-6 mt-6">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-bold text-gray-800">My Appointments</h2>
+            <Link 
+              to="/Appointment"
+              className="flex items-center bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition duration-300"
+            >
+              <FaCalendarAlt className="mr-2" />
+              View My Appointments
+            </Link>
+          </div>
+          <div className="text-center py-6">
+            <p className="text-gray-500 mb-2">Track and manage all your pet grooming appointments</p>
+            <p className="text-gray-400 text-sm">View appointment status, history, and upcoming bookings</p>
           </div>
         </div>
       </div>

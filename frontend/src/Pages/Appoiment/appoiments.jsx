@@ -10,33 +10,39 @@ const AppointmentsList = () => {
   const [message, setMessage] = useState('');
 
   useEffect(() => {
+    let isMounted = true;
+
     const fetchAppointments = async () => {
       try {
         const token = localStorage.getItem('token');
         const backendUrl = import.meta.env.VITE_BACKEND_URL;
-        
+
         const response = await axios.get(`${backendUrl}/api/appointments/provider`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         });
 
-        if (response.data.appointments && response.data.appointments.length > 0) {
-          setAppointments(response.data.appointments);
-        } else {
-          setMessage(response.data.message || "You don't have any appointments yet.");
+        if (isMounted) {
+          if (response.data.appointments && response.data.appointments.length > 0) {
+            setAppointments(response.data.appointments);
+          } else {
+            setMessage(response.data.message || "You don't have any appointments yet.");
+          }
+          setLoading(false);
         }
-
-        setLoading(false);
       } catch (error) {
-        console.error('Error fetching appointments:', error);
-        setError('Failed to load appointments');
-        toast.error('Failed to load appointments');
-        setLoading(false);
+        if (isMounted) {
+          console.error('Error fetching appointments:', error);
+          setError(error.response?.data?.message || 'Failed to load appointments');
+          toast.error('Failed to load appointments');
+          setLoading(false);
+        }
       }
     };
 
     fetchAppointments();
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const handleConfirm = async (appointmentId) => {
@@ -45,50 +51,66 @@ const AppointmentsList = () => {
       const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
       await axios.put(
-        `${backendUrl}/api/appointments/${appointmentId}/confirm`,
-        {},
+        `${backendUrl}/api/appointments/${appointmentId}`,
+        { status: 'confirmed' },
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
       toast.success('Appointment confirmed!');
-      setAppointments((prevAppointments) =>
-        prevAppointments.map((appt) =>
+      setAppointments((prev) =>
+        prev.map((appt) =>
           appt._id === appointmentId ? { ...appt, status: 'confirmed' } : appt
         )
       );
     } catch (error) {
       console.error('Error confirming appointment:', error);
-      toast.error('Failed to confirm appointment');
+      toast.error(error.response?.data?.message || 'Failed to confirm appointment');
     }
   };
 
   const handleCancel = async (appointmentId) => {
+    const confirmCancel = window.confirm("Are you sure you want to cancel this appointment?");
+    if (!confirmCancel) return;
+
     try {
       const token = localStorage.getItem('token');
       const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
       await axios.put(
-        `${backendUrl}/api/appointments/${appointmentId}/cancel`,
-        {},
+        `${backendUrl}/api/appointments/${appointmentId}`,
+        { status: 'cancelled' },
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
       toast.success('Appointment cancelled!');
-      setAppointments((prevAppointments) =>
-        prevAppointments.map((appt) =>
+      setAppointments((prev) =>
+        prev.map((appt) =>
           appt._id === appointmentId ? { ...appt, status: 'cancelled' } : appt
         )
       );
     } catch (error) {
       console.error('Error cancelling appointment:', error);
-      toast.error('Failed to cancel appointment');
+      toast.error(error.response?.data?.message || 'Failed to cancel appointment');
+    }
+  };
+
+  const getStatusStyle = (status) => {
+    switch (status) {
+      case 'confirmed':
+        return 'bg-green-100 text-green-800';
+      case 'pending':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'cancelled':
+        return 'bg-red-100 text-red-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
     }
   };
 
   if (loading) {
     return (
       <div className="flex justify-center items-center h-screen">
-        <p className="text-xl">Loading...</p>
+        <p className="text-xl text-blue-500">Loading appointments...</p>
       </div>
     );
   }
@@ -112,55 +134,56 @@ const AppointmentsList = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {appointments.map((appointment) => (
-              <div key={appointment._id} className="border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-lg font-semibold flex items-center">
-                    <FaCalendarAlt className="mr-2 text-blue-500" />
-                    {appointment.appointment_date
-                      ? new Date(appointment.appointment_date).toLocaleDateString()
-                      : 'No Date'}
-                  </h3>
-                  <span
-                    className={`px-2 py-1 rounded-full text-xs ${
-                      appointment.status === 'confirmed'
-                        ? 'bg-green-100 text-green-800'
-                        : appointment.status === 'pending'
-                        ? 'bg-yellow-100 text-yellow-800'
-                        : 'bg-red-100 text-red-800'
-                    }`}
-                  >
-                    {appointment.status || 'Unknown'}
-                  </span>
-                </div>
+            {appointments.map((appointment) => {
+              const service = appointment.service_id || {};
+              const pet = appointment.pet_id || {};
+              const owner = pet.owner_id || {};
 
-                <p className="text-gray-600 text-sm">Service: {appointment.service_id?.service_name || 'Unknown'}</p>
-                <p className="text-gray-600 text-sm">Price: ${appointment.service_id?.price ?? 'N/A'}</p>
-                <p className="text-gray-600 text-sm">Duration: {appointment.service_id?.duration ?? 'N/A'} mins</p>
-                <p className="text-gray-600 text-sm">Pet: {appointment.pet_id?.name || 'Unknown'}</p>
-                <p className="text-gray-600 text-sm">Package: {appointment.package_type || 'N/A'}</p>
-                <p className="text-gray-600 text-sm">Discount Applied: ${appointment.discount_applied ?? 0}</p>
+              return (
+                <div
+                  key={appointment._id}
+                  className="border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow p-4"
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-lg font-semibold flex items-center">
+                      <FaCalendarAlt className="mr-2 text-blue-500" />
+                      {appointment.appointment_date
+                        ? new Date(appointment.appointment_date).toLocaleDateString()
+                        : 'No Date'}
+                    </h3>
+                    <span className={`px-2 py-1 rounded-full text-xs ${getStatusStyle(appointment.status)}`}>
+                      {appointment.status || 'Unknown'}
+                    </span>
+                  </div>
 
-                <div className="flex justify-end space-x-2 mt-4">
-                  {appointment.status === 'pending' && (
-                    <button
-                      onClick={() => handleConfirm(appointment._id)}
-                      className="text-green-600 hover:text-green-800 flex items-center"
-                    >
-                      <FaCheck className="mr-1" /> Confirm
-                    </button>
-                  )}
-                  {appointment.status !== 'completed' && (
-                    <button
-                      onClick={() => handleCancel(appointment._id)}
-                      className="text-red-600 hover:text-red-800 flex items-center"
-                    >
-                      <FaTimes className="mr-1" /> Cancel
-                    </button>
-                  )}
+                  <p className="text-gray-600 text-sm">Service: {service.service_name || 'Unknown'}</p>
+                  <p className="text-gray-600 text-sm">Pet: {pet.name || 'Unknown'}</p>
+                  <p className="text-gray-600 text-sm">Owner: {owner.full_name || 'Unknown'}</p>
+                  <p className="text-gray-600 text-sm">Contact: {owner.phone_number || 'Unknown'}</p>
+                  <p className="text-gray-600 text-sm">Package: {appointment.package_type || 'N/A'}</p>
+                  <p className="text-gray-600 text-sm">Discount Applied: ${appointment.discount_applied ?? 0}</p>
+
+                  <div className="flex justify-end space-x-2 mt-4">
+                    {appointment.status === 'pending' && (
+                      <button
+                        onClick={() => handleConfirm(appointment._id)}
+                        className="flex items-center bg-green-100 text-green-700 hover:bg-green-200 px-3 py-1 rounded-full text-sm transition"
+                      >
+                        <FaCheck className="mr-1" /> Confirm
+                      </button>
+                    )}
+                    {appointment.status !== 'completed' && appointment.status !== 'cancelled' && (
+                      <button
+                        onClick={() => handleCancel(appointment._id)}
+                        className="flex items-center bg-red-100 text-red-700 hover:bg-red-200 px-3 py-1 rounded-full text-sm transition"
+                      >
+                        <FaTimes className="mr-1" /> Cancel
+                      </button>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
@@ -169,4 +192,3 @@ const AppointmentsList = () => {
 };
 
 export default AppointmentsList;
-

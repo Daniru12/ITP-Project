@@ -3,16 +3,16 @@ import bodyParser from "body-parser";
 import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
-import groomingRouter from "./routes/Servicess/groomingRoute.js";
+import groomingRouter from "./routes/Servicess/serviceRouter.js";
 import userRouter from "./routes/userRouter.js";
 import appointmentRouter from "./routes/AppoimentScheduling/appointmentRouter.js";
-import boardingRouter from "./routes/Servicess/boardingRoute.js";
 import scheduleRouter from "./routes/AppoimentScheduling/schedulingRoutes.js";
 import reviewRouter from "./routes/Reviews/reviewRoutes.js"; 
 import faqRouter from "./routes/Reviews/faqRoutes.js";
 import paymnetRouter from "./routes/Payment/paymentRouter.js";
 import AdvertisementRoutes from "./routes/Advertisement/advertisementRouter.js";
 
+import productRouter from "./routes/Products/productRouter.js";
 
 dotenv.config();
 
@@ -39,12 +39,12 @@ mongoose
 app.use("/api/users", userRouter);
 app.use("/api/grooming", groomingRouter);
 app.use("/api/appointments", appointmentRouter);
-app.use("/api/boarding", boardingRouter);
 app.use("/api/scheduling", scheduleRouter);
 app.use("/api/reviews", reviewRouter);
 app.use("/api/faqs", faqRouter);
 app.use("/api/payment",paymnetRouter);
 app.use("/api/advertisement",AdvertisementRoutes);
+app.use("/api/Products", productRouter);
 
 
 const PORT = process.env.PORT || 3000;

@@ -21,8 +21,16 @@ import Schedule from './Pages/Schedule/groomingSchedule'
 import ProductDetail from './Pages/productMarket/ProductDetail'
 import PetMarketplace from './Pages/productMarket/PetMarketplace' 
 import AppointmentsList from './Pages/Appoiment/appoiments'
+import UpdateAppointment from './Pages/Appoiment/UpdateAppointment'
+import AppointmentCreate from './Pages/Appoiment/AppointmentCreate'
+import UserAppointments from './Pages/Appoiment/UserAppointments'
 
-
+import DisplayServices from './Pages/Home/displayServices'
+import ServiceOverview from './Pages/Home/serviceOverview'
+import AddBoarding from './Pages/Providers/addBoarding'
+import AddTraining from './Pages/Providers/addTraining'
+import UpdatePet from './Pages/PetOwner/updatePet'
+import UpdateService from './Pages/Providers/updateService'
 
 // Wrapper component to handle NavBar conditional rendering
 const AppContent = () => {
@@ -50,16 +58,25 @@ const AppContent = () => {
           <Route path='/register' element={<RegisterPage />} />
           <Route path='/booking' element={<PetCareBooking />} />
           <Route path='/schedule' element={<Schedule />} />
-          <Route path='/AppointmentsList' element={<AppointmentsList />} />
+          <Route path='/AppointmentLIST' element={<AppointmentsList />} />
+          <Route path='/Appointmentadd/:id' element={<AppointmentCreate />} />
+          <Route path='/Appointment' element={<UserAppointments />} />
+          <Route path="/appointments/update/:id" element={<UpdateAppointment />} />
           <Route path='/profile' element={<Profile />} />
           <Route path='/provider-profile' element={<ProviderProfile />} />
           <Route path='/add-grooming' element={<AddGrooming />} />
+          <Route path='/add-boarding' element={<AddBoarding />} />
+          <Route path='/add-training' element={<AddTraining />} />
           <Route path='/add-service' element={<AddService />} />
           <Route path='/register-pet' element={<RegisterPet />} />
           <Route path='/faq' element={<FAQ />} />
           <Route path='/PaymentPage' element={<PaymentPage />} />
           <Route path='/petmarketplace' element={<PetMarketplace />} /> 
           <Route path="/product/:id" element={<ProductDetail />} />
+          <Route path='/display-services' element={<DisplayServices />} />
+          <Route path='/service-overview/:id' element={<ServiceOverview />} />
+          <Route path='/edit-pet/:id' element={<UpdatePet />} />
+          <Route path='/update-service/:id' element={<UpdateService />} />
         </Routes>
       </div>
     </>
