@@ -22,13 +22,13 @@ const paymentSchema = new mongoose.Schema(
         ref: "Service",
         required: [true, "Service is required"],
     },
-    currency: {
-      type: String,
-      default: "USD",
-    },
     amount: {
       type: Number,
       required: [true, "Payment amount is required"],
+    },
+    currency: {
+      type: String,
+      default: "USD",
     },
     payment_method: {
       type: String,
@@ -63,7 +63,7 @@ const paymentSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["Pending", "Completed", "Failed", "Refunded"],
+      enum: ["Pending", "Completed", "Failed"],
       default: "Pending",
     },
     transaction_id: {
