@@ -4,7 +4,6 @@ import User from "../../models/User.js"; //User model for service providers
 // Create Product 
 export const createProduct = async (req, res) => {
   const {
-    product_id,
     name,
     description,
     price,
@@ -18,7 +17,7 @@ export const createProduct = async (req, res) => {
   try {
     // Log the user role and serviceProviderId for debugging
     console.log("User Role:", req.user.user_type);
-    console.log("Service Provider ID:", serviceProviderId);
+    console.log("Service Provider ID:", req.user._id);
 
     // Check if the user is a service provider or admin
     if (req.user.role !== "admin" && req.user.user_type !== "service_provider") {
@@ -27,7 +26,6 @@ export const createProduct = async (req, res) => {
 
     // Create a new product
     const newProduct = new Product({
-      product_id,
       name,
       description,
       price,
