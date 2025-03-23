@@ -12,10 +12,10 @@ import { useNavigate } from 'react-router-dom';
 
 const AppointmentsList = () => {
   const [appointments, setAppointments] = useState([]);
-  const [schedules, setSchedules] = useState([]);
+  const [boardingSchedules, setBoardingSchedules] = useState([]);
+  const [groomingSchedules, setGroomingSchedules] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [message, setMessage] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -24,17 +24,25 @@ const AppointmentsList = () => {
         const token = localStorage.getItem('token');
         const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
-        const [appointmentsRes, schedulesRes] = await Promise.all([
+        const [appointmentsRes, boardingRes, groomingRes] = await Promise.all([
           axios.get(`${backendUrl}/api/appointments/provider`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
           axios.get(`${backendUrl}/api/scheduling/bordingschedule`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
+          axios.get(`${backendUrl}/api/scheduling/groomingschedule`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
         ]);
 
         setAppointments(appointmentsRes.data.appointments || []);
-        setSchedules(schedulesRes.data || []);
+        setBoardingSchedules(
+          Array.isArray(boardingRes.data) ? boardingRes.data : boardingRes.data?.schedules || []
+        );
+        setGroomingSchedules(
+          Array.isArray(groomingRes.data) ? groomingRes.data : groomingRes.data?.schedules || []
+        );
         setLoading(false);
       } catch (err) {
         console.error(err);
@@ -47,8 +55,14 @@ const AppointmentsList = () => {
     fetchAll();
   }, []);
 
-  const hasSchedule = (appointmentId) => {
-    return schedules.some((s) => s.appointment_id?._id === appointmentId);
+  const hasSchedule = (appointmentId, category) => {
+    if (category === 'pet_boarding') {
+      return boardingSchedules.some(s => s.appointment_id?._id === appointmentId);
+    }
+    if (category === 'pet_grooming') {
+      return groomingSchedules.some(s => s.appointment_id?._id === appointmentId);
+    }
+    return false;
   };
 
   const handleConfirm = async (appointmentId) => {
@@ -139,7 +153,7 @@ const AppointmentsList = () => {
     const category = appointment?.service_id?.service_category;
     const routeMap = {
       pet_boarding: '/schedule/boarding',
-      pet_grooming: '/ViewGroomingSchedule',
+      pet_grooming: '/schedule/grooming',
       pet_training: '/ViewTrainingSchedule',
     };
 
@@ -181,7 +195,8 @@ const AppointmentsList = () => {
           const service = appointment.service_id || {};
           const pet = appointment.pet_id || {};
           const owner = pet.owner_id || {};
-          const scheduled = hasSchedule(appointment._id);
+          const category = service.service_category;
+          const scheduled = hasSchedule(appointment._id, category);
 
           return (
             <div key={appointment._id} className="relative border rounded-xl p-4 shadow hover:shadow-md">

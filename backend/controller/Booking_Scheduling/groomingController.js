@@ -38,35 +38,26 @@ export const createGroomingScheduling = async (req, res) => {
     }
 };
 
-
-//Get all grooming (Scheduling)
-
+// Get all grooming schedules (populated)
 export const getAllGroomingSchedulings = async (req, res) => {
-  try {
-      const schedules = await Grooming.find()
-          .populate({
-              path: "pet_id",
-              select: "name species breed age owner_id", // Select required fields
-          })
-          .populate({
-              path: "service_id",
-              select: "name description price", // Select required fields from Service
-          })
-          .populate({
-              path: "appointment_id",
-              select: "date status", // Select required fields
-          });
-
-      res.status(200).json({
-          success: true,
-          count: schedules.length,
-          data: schedules,
+    try {
+      const groomings = await Grooming.find()
+        .populate("appointment_id")
+        .populate("pet_id")
+        .populate("service_id");
+  
+      // ✅ Return as array (not wrapped in { data: ... })
+      res.status(200).json(groomings);
+    } catch (error) {
+      res.status(500).json({
+        error: "Failed to fetch grooming schedules",
+        details: error.message,
       });
-  } catch (error) {
-      res.status(500).json({ error: "Internal Server Error", details: error.message });
-  }
-};
-
+    }
+  };
+  
+  
+  
 
 // Get a single grooming schedule by ID
 export const getGroomingSchedulingById = async (req, res) => {

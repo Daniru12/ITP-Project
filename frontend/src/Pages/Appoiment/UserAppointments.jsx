@@ -3,14 +3,14 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { FaCalendarCheck } from "react-icons/fa";
-import { format, eachDayOfInterval } from "date-fns";
 
 const UserAppointments = () => {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [deletingId, setDeletingId] = useState(null);
   const [selectedSchedule, setSelectedSchedule] = useState(null);
-  const [schedules, setSchedules] = useState([]);
+  const [boardingSchedules, setBoardingSchedules] = useState([]);
+  const [groomingSchedules, setGroomingSchedules] = useState([]);
 
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const token = localStorage.getItem("token");
@@ -42,12 +42,21 @@ const UserAppointments = () => {
 
     const fetchSchedules = async () => {
       try {
-        const res = await axios.get(`${backendUrl}/api/scheduling/bordingschedule`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setSchedules(res.data || []);
+        const [boardingRes, groomingRes] = await Promise.all([
+          axios.get(`${backendUrl}/api/scheduling/bordingschedule`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+          axios.get(`${backendUrl}/api/scheduling/groomingschedule`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+        ]);
+
+        setBoardingSchedules(Array.isArray(boardingRes.data) ? boardingRes.data : []);
+        setGroomingSchedules(Array.isArray(groomingRes.data) ? groomingRes.data : []);
       } catch (err) {
         toast.error("Failed to load schedules");
+        setBoardingSchedules([]);
+        setGroomingSchedules([]);
       }
     };
 
@@ -80,9 +89,20 @@ const UserAppointments = () => {
   };
 
   const handleScheduleDetails = (appointmentId) => {
-    const match = schedules.find((s) => s.appointment_id?._id === appointmentId);
-    if (match) setSelectedSchedule(match);
-    else toast("No schedule found for this appointment");
+    const boardingMatch = boardingSchedules.find(
+      (s) => s.appointment_id?._id === appointmentId
+    );
+    const groomingMatch = groomingSchedules.find(
+      (s) => s.appointment_id?._id === appointmentId
+    );
+
+    if (boardingMatch) {
+      setSelectedSchedule({ ...boardingMatch, type: "Boarding" });
+    } else if (groomingMatch) {
+      setSelectedSchedule({ ...groomingMatch, type: "Grooming" });
+    } else {
+      toast("No schedule found for this appointment");
+    }
   };
 
   const getStatusStyle = (status) => {
@@ -116,7 +136,13 @@ const UserAppointments = () => {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {appointments.map((appt) => {
-            const hasSchedule = schedules.find((s) => s.appointment_id?._id === appt._id);
+            const hasBoardingSchedule = boardingSchedules.find(
+              (s) => s.appointment_id?._id === appt._id
+            );
+            const hasGroomingSchedule = groomingSchedules.find(
+              (s) => s.appointment_id?._id === appt._id
+            );
+
             return (
               <div
                 key={appt._id}
@@ -161,7 +187,7 @@ const UserAppointments = () => {
                   </div>
                 )}
 
-                {appt.status === "confirmed" && hasSchedule && (
+                {appt.status === "confirmed" && (hasBoardingSchedule || hasGroomingSchedule) && (
                   <button
                     onClick={() => handleScheduleDetails(appt._id)}
                     className="absolute top-3 right-3 bg-blue-100 hover:bg-blue-200 text-blue-800 p-2 rounded-full"
@@ -176,17 +202,18 @@ const UserAppointments = () => {
         </div>
       )}
 
-      {/* Popup */}
+      {/* Schedule Popup */}
       {selectedSchedule && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 overflow-y-auto p-4">
           <div className="bg-white rounded-xl shadow-lg p-6 max-w-md w-full">
-            <h3 className="text-xl font-bold mb-4 text-center">Scheduled Details</h3>
-            <p><strong>Duration:</strong> {selectedSchedule.duration}</p>
+            <h3 className="text-xl font-bold mb-4 text-center">
+              {selectedSchedule.type} Schedule Details
+            </h3>
             <p><strong>Start Time:</strong> {new Date(selectedSchedule.start_time).toLocaleString()}</p>
             <p><strong>End Time:</strong> {new Date(selectedSchedule.end_time).toLocaleString()}</p>
             <p><strong>Status:</strong> {selectedSchedule.status}</p>
 
-            {selectedSchedule.confirmed_days && selectedSchedule.confirmed_days.length > 0 && (
+            {selectedSchedule?.confirmed_days?.length > 0 && (
               <div className="mt-4">
                 <p className="font-semibold">Confirmed Days:</p>
                 <ul className="list-disc ml-5 text-sm mt-1 text-green-700">
@@ -195,6 +222,10 @@ const UserAppointments = () => {
                   ))}
                 </ul>
               </div>
+            )}
+
+            {selectedSchedule.notes && (
+              <p className="mt-2 text-sm text-gray-600"><strong>Notes:</strong> {selectedSchedule.notes}</p>
             )}
 
             <button
