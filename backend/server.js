@@ -42,9 +42,7 @@ app.use("/api/grooming", groomingRouter);
 app.use("/api/appointments", appointmentRouter);
 app.use("/api/scheduling", scheduleRouter);
 app.use("/api/reviews", reviewRouter);
-
 app.use("/api/faqs", faqRouter);
-
 app.use("/api/payment",paymnetRouter);
 app.use("/api/advertisement",AdvertisementRoutes);
 app.use("/api/Products", productRouter);
