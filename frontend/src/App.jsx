@@ -35,6 +35,9 @@ import AddTraining from './Pages/Providers/addTraining'
 
 import UpdatePet from './Pages/PetOwner/updatePet'
 import UpdateService from './Pages/Providers/updateService'
+import CreateBoedingScheduleForm from './Pages/Schedule/bordingschedule/CreateScheduleForm'
+import BoardingScheduleList from './Pages/Schedule/bordingschedule/ScheduleList';
+import UpdateBoedingScheduleForm from './Pages/Schedule/bordingschedule/UpdateBoedingScheduleForm'
 
 
 // Wrapper component to handle NavBar conditional rendering
@@ -67,6 +70,9 @@ const AppContent = () => {
           <Route path='/Appointmentadd/:id' element={<AppointmentCreate />} />
           <Route path='/Appointment' element={<UserAppointments />} />
           <Route path="/appointments/update/:id" element={<UpdateAppointment />} />
+          <Route path="/Bordingscheduleadd" element={<CreateBoedingScheduleForm />} />
+          <Route path="/schedule/boarding" element={<BoardingScheduleList />} />
+          <Route path="/scheduling/boarding/:id" element={<UpdateBoedingScheduleForm />} />
           <Route path='/profile' element={<Profile />} />
           <Route path='/provider-profile' element={<ProviderProfile />} />
           <Route path='/add-grooming' element={<AddGrooming />} />
