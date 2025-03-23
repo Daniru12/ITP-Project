@@ -7,63 +7,24 @@ import { useParams } from "react-router-dom";
 const CreateFaq = () => {
   const [formData, setFormData] = useState({
     question: "",
-    answer: "",
-    service: "",
+    category: "General", // Default category
   });
 
-  const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [submitLoading, setSubmitLoading] = useState(false);
 
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const token = localStorage.getItem("token");
-  const { id } = useParams(); // Optional service ID
 
   useEffect(() => {
-    const fetchData = async () => {
-      if (!token) {
-        toast.error("You're not logged in.");
-        window.location.href = "/login";
-        return;
-      }
-
-      try {
-        let servicesArray = [];
-
-        // If service id is provided, fetch only that
-        if (id) {
-          const serviceRes = await axios.get(`${backendUrl}/api/users/service/${id}`, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-
-          const singleService = serviceRes.data?.service;
-          if (singleService) {
-            servicesArray = [singleService];
-            setFormData((prev) => ({ ...prev, service: singleService._id }));
-          }
-        } else {
-          const serviceRes = await axios.get(`${backendUrl}/api/users/services`, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-
-          servicesArray = Array.isArray(serviceRes.data)
-            ? serviceRes.data
-            : serviceRes.data.services || [];
-        }
-
-        setServices(servicesArray);
-        console.log("Services loaded:", servicesArray);
-      } catch (err) {
-        console.error("Error loading services:", err.response?.data || err.message);
-        toast.error("Failed to load services");
-        setServices([]);
-      }
-
-      setLoading(false);
-    };
-
-    fetchData();
-  }, [backendUrl, token, id]);
+    // Check if user is logged in
+    if (!token) {
+      toast.error("You're not logged in.");
+      window.location.href = "/login";
+      return;
+    }
+    setLoading(false);
+  }, [token]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -83,7 +44,7 @@ const CreateFaq = () => {
       });
 
       toast.success("FAQ created successfully!");
-      setFormData({ question: "", answer: "", service: "" });
+      setFormData({ question: "", category: "General" }); // Reset form
     } catch (err) {
       console.error("FAQ create error:", err.response?.data || err.message);
       toast.error(err.response?.data?.message || "Failed to create FAQ");
@@ -118,39 +79,24 @@ const CreateFaq = () => {
         </div>
 
         <div className="mb-4">
-          <label className="block mb-1 font-semibold">Answer</label>
-          <textarea
-            name="answer"
-            value={formData.answer}
-            onChange={handleChange}
-            className="w-full border border-gray-300 rounded px-3 py-2"
-            required
-          ></textarea>
-        </div>
-
-        <div className="mb-4">
-          <label className="block mb-1 font-semibold">Select Service</label>
+          <label className="block mb-1 font-semibold">Category</label>
           <select
-            name="service"
-            value={formData.service}
+            name="category"
+            value={formData.category}
             onChange={handleChange}
             className="w-full border border-gray-300 rounded px-3 py-2"
             required
           >
-            <option value="">-- Select a service --</option>
-            {services.map((service) => (
-              <option key={service._id} value={service._id}>
-                {service.service_name}
-              </option>
-            ))}
+            <option value="General">General</option>
+            <option value="Financial">Financial</option>
+            <option value="Technical">Technical</option>
+            <option value="Related to Services">Related to Services</option>
           </select>
         </div>
 
         <button
           type="submit"
-          className={`w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition ${
-            submitLoading ? "opacity-50 cursor-not-allowed" : ""
-          }`}
+          className={`w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition ${submitLoading ? "opacity-50 cursor-not-allowed" : ""}`}
           disabled={submitLoading}
         >
           {submitLoading ? "Submitting..." : "Create FAQ"}
