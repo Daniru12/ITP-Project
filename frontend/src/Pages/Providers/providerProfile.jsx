@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import { FaStar, FaEdit, FaTrash } from 'react-icons/fa';
+import { FaStar, FaEdit, FaTrash, FaCalendarAlt } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 
 const ProviderProfile = () => {
@@ -161,9 +161,9 @@ function handleDeleteService(serviceId) {
                     {service.is_available ? 'Available' : 'Unavailable'}
                   </span>
                   <div className="flex space-x-2">
-                    <button className="text-blue-600 hover:text-blue-800">
+                    <Link to={`/update-service/${service._id}`} className="text-blue-600 hover:text-blue-800">
                       <FaEdit />
-                    </button>
+                    </Link>
                     <button className="text-red-600 hover:text-red-800" onClick={()=>handleDeleteService(service._id)}>
                       <FaTrash />
                     </button>
@@ -175,12 +175,21 @@ function handleDeleteService(serviceId) {
         )}
       </div>
       
-      {/* Appointments Section (Optional) */}
+      {/* Appointments Section */}
       <div className="bg-white rounded-lg shadow-md p-6">
-        <h2 className="text-xl font-semibold mb-6">Upcoming Appointments</h2>
-        {/* Appointments would go here */}
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-xl font-semibold">Appointments</h2>
+          <Link 
+            to="/AppointmentLIST"
+            className="flex items-center bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition duration-300"
+          >
+            <FaCalendarAlt className="mr-2" />
+            View All Appointments
+          </Link>
+        </div>
         <div className="text-center py-8">
-          <p className="text-gray-500">No upcoming appointments.</p>
+          <p className="text-gray-500 mb-4">Manage all your appointments in one place</p>
+          <p className="text-gray-400 text-sm">Click the button above to view, confirm, or cancel appointments</p>
         </div>
       </div>
     </div>

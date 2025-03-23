@@ -1,5 +1,6 @@
 import React from 'react'
 import { CreditCardIcon, SmartphoneIcon, BanknoteIcon } from 'lucide-react'
+
 const PaymentForm = ({ paymentMethod, onPaymentMethodChange }) => {
   return (
     <div className="bg-white p-6 rounded-lg shadow-sm mb-6">
@@ -140,4 +141,5 @@ const PaymentForm = ({ paymentMethod, onPaymentMethodChange }) => {
     </div>
   )
 }
+
 export default PaymentForm

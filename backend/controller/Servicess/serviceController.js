@@ -134,8 +134,6 @@ export const getProviderServices = async (req, res) => {
   }
 };
 
-
-
 // Get services by category
 export const getServicesByCategory = async (req, res) => {
   try {
@@ -150,6 +148,60 @@ export const getServicesByCategory = async (req, res) => {
     res.status(500).json({
       message: "Error fetching services by category",
       error: error.message,
+    });
+  }
+};
+
+// Update service
+export const updateService = async (req, res) => {
+  try {
+    const service = await GroomingService.findById(req.params.id);
+    
+    // Check if service exists
+    if (!service) {
+      return res.status(404).json({ message: "Service not found" });
+    }
+
+    // Check if user owns the service
+    if (service.provider_id.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: "You are not authorized to update this service" });
+    }
+
+    // Get updated data from request body
+    const { 
+      service_name, 
+      service_category,
+      description, 
+      location,
+      image,
+      packages,
+      is_available 
+    } = req.body;
+
+    // Update service data
+    const updatedService = await GroomingService.findByIdAndUpdate(
+      req.params.id,
+      {
+        service_name,
+        service_category,
+        description,
+        location,
+        image: image || service.image, // Keep existing image if no new one provided
+        packages,
+        is_available: is_available !== undefined ? is_available : service.is_available
+      },
+      { new: true } // Return the updated document
+    );
+
+    res.status(200).json({
+      message: "Service updated successfully",
+      service: updatedService
+    });
+  } catch (error) {
+    console.error("Error updating service:", error);
+    res.status(500).json({
+      message: "Error updating service",
+      error: error.message
     });
   }
 };
