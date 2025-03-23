@@ -265,27 +265,40 @@ export const deletePet = async (req, res) => {
 };
 
 export const getServicesForDisplay = async (req, res) => {
-  const services = await Service.find().populate('provider_id', 'username full_name phone_number email')
-  res.status(200).json({
-    message: "Services fetched successfully",
-    services: services
-  })
+  try {
+    const services = await Service.find().populate('provider_id', 'username full_name phone_number email')
+    res.status(200).json({
+      message: "Services fetched successfully",
+      services: services
+    })
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching services", error: error.message });
+  }
 }
 
 export const getServiceById = async (req, res) => {
-  const service = await Service.findById(req.params.id).populate('provider_id', 'username full_name phone_number email')
-  res.status(200).json({
-    message: "Service fetched successfully",
-    service: service
-  })
+  try {
+    const service = await Service.findById(req.params.id).populate('provider_id', 'username full_name phone_number email')
+    res.status(200).json({
+      message: "Service fetched successfully",
+      service: service
+    })
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching service", error: error.message });
+  }
 }
 
 export const deleteService = async (req, res) => {
-  const service = await Service.findById(req.params.id);
-  if(service.provider_id.toString() !== req.user._id.toString()){
-    return res.status(403).json({ message: "You are not authorized to delete this service" });
+  try {
+    const service = await Service.findById(req.params.id);
+    if(service.provider_id.toString() !== req.user._id.toString()){
+      return res.status(403).json({ message: "You are not authorized to delete this service" });
+    }
+    await Service.findByIdAndDelete(req.params.id);
+    res.status(200).json({ message: "Service deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Error deleting service", error: error.message });
   }
-  await Service.findByIdAndDelete(req.params.id);
 }
 
 export const adminDeleteService = async (req, res) => {
