@@ -4,10 +4,7 @@ import Pet from "../../models/Pets.js";
 import User from "../../models/User.js";
 import Service from "../../models/Service.js";
 
-/**
- * @desc Create a new payment
- * @route POST /api/payments
- */
+ //Create a new payment
 export const createPayment = async (req, res) => {
   try {
     const { appointment_id, user_id, pet_id, service_id, amount, currency, payment_method, card_details } = req.body;
@@ -62,10 +59,9 @@ export const createPayment = async (req, res) => {
   }
 };
 
-/**
- * @desc Get a payment by ID
- * @route GET /api/payments/:id
- */
+
+ //desc Get a payment by ID
+ 
 export const getPaymentById = async (req, res) => {
   try {
     const payment = await Payment.findById(req.params.id).populate("appointment_id user_id pet_id service_id");
@@ -78,10 +74,8 @@ export const getPaymentById = async (req, res) => {
   }
 };
 
-/**
- * @desc Get all payments
- * @route GET /api/payments
- */
+//Get all payments
+
 export const getAllPayments = async (req, res) => {
   try {
     const payments = await Payment.find().populate("appointment_id user_id pet_id service_id");
@@ -91,10 +85,8 @@ export const getAllPayments = async (req, res) => {
   }
 };
 
-/**
- * @desc Update payment status
- * @route PATCH /api/payments/:id/status
- */
+//Update payment status
+
 export const updatePaymentStatus = async (req, res) => {
   try {
     const { status } = req.body;
@@ -123,10 +115,8 @@ export const updatePaymentStatus = async (req, res) => {
   }
 };
 
-/**
- * @desc Delete a payment
- * @route DELETE /api/payments/:id
- */
+//Delete a payment
+
 export const deletePayment = async (req, res) => {
   try {
     const payment = await Payment.findById(req.params.id);

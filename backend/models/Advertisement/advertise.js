@@ -2,6 +2,11 @@ import mongoose from "mongoose";
 
 const advertisementSchema = new mongoose.Schema(
   {
+    advertiser_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: [true, "Advertiser reference is required"],
+    },
     title: {
       type: String,
       required: [true, "Advertisement title is required"],
@@ -10,12 +15,7 @@ const advertisementSchema = new mongoose.Schema(
       type: String,
       required: [true, "Advertisement description is required"],
     },
-    advertiser_id: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: [true, "Advertiser reference is required"],
-    },
-    category: {
+   category: {
       type: String,
       enum: ["Service", "Product", "Rescue Pet"],
       required: [true, "Advertisement category is required"],
@@ -46,3 +46,8 @@ const advertisementSchema = new mongoose.Schema(
 const Advertisement = mongoose.model("Advertisement", advertisementSchema);
 
 export default Advertisement;
+
+
+
+
+
