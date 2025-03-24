@@ -93,16 +93,16 @@ const AppContent = () => {
           <Route path='/register-pet' element={<RegisterPet />} />
           <Route path='/Faq' element={<CreateFaq />} />  
           <Route path='/PaymentPage' element={<PaymentPage />} />
-<<<<<<< HEAD
+
           <Route path='/ServiceSummary' element={<ServiceSummary/>}/>
           <Route path='/PaymentForm' element={<PaymentForm/>}/>
           <Route path='/AppointmentSummary' element={<AppointmentSummary/>}/>
           <Route path='/AddAdvertisementForm' element={<AddAdvertisementForm/>}/>
           
           <Route path='/petmarketplace' element={<PetMarketplace />} /> 
-=======
+
           <Route path='/petmarketplace' element={<PetMarketplace />} />
->>>>>>> Development-Branch
+
           <Route path="/product/:id" element={<ProductDetail />} />
           <Route path='/display-services' element={<DisplayServices />} />
           <Route path='/service-overview/:id' element={<ServiceOverview />} />
