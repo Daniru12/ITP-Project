@@ -3,6 +3,7 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { FaCalendarCheck } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 const UserAppointments = () => {
   const [appointments, setAppointments] = useState([]);
@@ -105,6 +106,10 @@ const UserAppointments = () => {
     }
   };
 
+  const handlePayment = (id) => {
+    navigate(`/payment/${id}`);
+  };
+
   const getStatusStyle = (status) => {
     switch (status?.toLowerCase()) {
       case "confirmed":
@@ -184,6 +189,17 @@ const UserAppointments = () => {
                     >
                       {deletingId === appt._id ? "Deleting..." : "Cancel"}
                     </button>
+                  </div>
+                )}
+
+                {appt.status === "confirmed" && (
+                  <div className="mt-4 flex gap-3">
+                    <Link
+                      to={`/payment/${appt._id}`}
+                      className="bg-indigo-500 hover:bg-indigo-600 text-white py-1.5 px-4 rounded-md text-sm transition"
+                    >
+                      Make Payment
+                    </Link>
                   </div>
                 )}
 
