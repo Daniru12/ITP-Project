@@ -31,7 +31,9 @@ import UpdateAppointment from './Pages/Appoiment/UpdateAppointment'
 import AppointmentCreate from './Pages/Appoiment/AppointmentCreate'
 import UserAppointments from './Pages/Appoiment/UserAppointments'
 import CreateReview from './Pages/Review/review'
-
+import FaqList from './Pages/FAQ/faqCategory'
+import FaqAdmin from './Pages/FAQ/FaqAnswers'
+import ServiceReviews from './Pages/Review/reviewdisplay'
 import DisplayServices from './Pages/Home/displayServices'
 import ServiceOverview from './Pages/Home/serviceOverview'
 import AddBoarding from './Pages/Providers/addBoarding'
@@ -113,6 +115,10 @@ const AppContent = () => {
 
           <Route path='/edit-pet/:id' element={<UpdatePet />} />
           <Route path='/update-service/:id' element={<UpdateService />} />
+          <Route path='/faqList' element={<FaqList />} />
+          <Route path='/faqAdmin' element={<FaqAdmin/>}/> 
+          <Route path='/reviewdisplay' element={<ServiceReviews/>}/>
+
         </Routes>
       </div>
     </>

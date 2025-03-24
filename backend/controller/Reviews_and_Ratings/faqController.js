@@ -79,6 +79,35 @@ export const updateFaq = async (req, res) => {
   }
 };
 
+export const addFaqAnswer = async (req, res) => {
+  try {
+    const { faqId } = req.params;
+    const { answer } = req.body;
+    const userRole = req.user?.user_type; // Assuming role is available in authentication middleware
+
+    // Check if the user is an admin
+    if (userRole !== "admin") {
+      return res.status(403).json({ message: "Unauthorized: Only admins can add answers." });
+    }
+
+    // Find the FAQ
+    const faq = await Faq.findById(faqId);
+    if (!faq) {
+      return res.status(404).json({ message: "FAQ not found" });
+    }
+
+    // Update the answer
+    faq.answer = answer;
+    await faq.save();
+
+    res.status(200).json({ message: "Answer added successfully", faq });
+  } catch (error) {
+    console.error("Error adding answer:", error);
+    res.status(500).json({ message: "Error adding answer", error: error.message });
+  }
+};
+
+
 // ✅ Delete an FAQ (Only admin and service provider can delete it)
 export const deleteFaq = async (req, res) => {
   try {
