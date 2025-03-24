@@ -24,11 +24,6 @@ const advertisementSchema = new mongoose.Schema(
       type: String,
       required: [true, "Advertisement image is required"],
     },
-    status: {
-      type: String,
-      enum: ["Active", "Inactive", "Pending"],
-      default: "Pending",
-    },
     start_date: {
       type: Date,
       required: [true, "Start date is required"],
@@ -46,6 +41,8 @@ const advertisementSchema = new mongoose.Schema(
 const Advertisement = mongoose.model("Advertisement", advertisementSchema);
 
 export default Advertisement;
+
+
 
 
 
