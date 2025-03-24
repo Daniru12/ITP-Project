@@ -1,90 +1,109 @@
-import React from 'react'
-const FAQ = () => {
-  const faqItems = [
-    {
-      question: 'What type of pet supplies do you offer?',
-      answer:
-        'We offer a wide variety of pet supplies for dogs, cats, and other small animals, including food, toys, bedding, grooming products, and more.',
-    },
-    {
-      question: 'What brands do you carry?',
-      answer:
-        'We carry a range of Premium Quality and trusted pet supply brands, including Happy Dog, Josera, Trxie and many more.',
-    },
-    {
-      question: 'Do you offer free shipping?',
-      answer:
-        'We offer free shipping on orders over 5,000. Please check our website for more information on shipping policies.',
-    },
-    {
-      question: "Can I return an item if I'm not satisfied with it?",
-      answer:
-        'Yes, you can return an item for any reason within a certain time period after purchase. Please see our returns policy for more information.',
-    },
-    {
-      question: 'Do you offer any special deals or discounts?',
-      answer: (
-        <>
-          We offer a variety of deals and discounts throughout the year. Sign up
-          for our{' '}
-          <a href="/loyalty" className="text-red-600 hover:underline">
-            Loyalty program
-          </a>{' '}
-          to stay up-to-date on our latest promotions.
-        </>
-      ),
-    },
-    {
-      question: 'What payment methods do you accept?',
-      answer:
-        'We accept a variety of payment methods, including credit and debit cards, Cash On delivery and bank transfers.',
-    },
-    {
-      question: 'Do you have a physical store that I can visit?',
-      answer: (
-        <>
-          Yes, we have a physical store that you can visit to see and purchase
-          our products in person.{' '}
-          <a href="/locations" className="text-red-600 hover:underline">
-            Please check our website for store locations and hours.
-          </a>
-        </>
-      ),
-    },
-  ]
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useParams } from "react-router-dom";
+
+const CreateFaq = () => {
+  const [formData, setFormData] = useState({
+    question: "",
+    category: "General", // Default category
+  });
+
+  const [loading, setLoading] = useState(true);
+  const [submitLoading, setSubmitLoading] = useState(false);
+
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+  const token = localStorage.getItem("token");
+
+  useEffect(() => {
+    // Check if user is logged in
+    if (!token) {
+      toast.error("You're not logged in.");
+      window.location.href = "/login";
+      return;
+    }
+    setLoading(false);
+  }, [token]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setSubmitLoading(true);
+
+    try {
+      await axios.post(`${backendUrl}/api/faqs/create`, formData, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      toast.success("FAQ created successfully!");
+      setFormData({ question: "", category: "General" }); // Reset form
+    } catch (err) {
+      console.error("FAQ create error:", err.response?.data || err.message);
+      toast.error(err.response?.data?.message || "Failed to create FAQ");
+    } finally {
+      setSubmitLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <p className="text-xl">Loading...</p>
+      </div>
+    );
+  }
+
   return (
-    <div className="space-y-8">
-      <div className="relative -mx-4 h-64 mb-12 overflow-hidden">
-        <div
-          className="absolute inset-0 bg-cover bg-center"
-          style={{
-            backgroundImage:
-              "url('https://www.pexels.com/photo/two-person-with-rings-on-ring-fingers-792775/')",
-          }}
-        />
-        <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" />
-        <div className="absolute inset-0 flex flex-col items-center justify-center space-y-2">
-          <h1 className="text-6xl font-bold text-white tracking-wider">FAQ</h1>
-          <p className="text-white/90 text-lg">
-            Find answers to commonly asked questions
-          </p>
+    <div className="max-w-xl mx-auto p-6 bg-white shadow-md rounded-lg mt-10">
+      <ToastContainer />
+      <h2 className="text-2xl font-bold mb-6 text-center">Create FAQ</h2>
+      <form onSubmit={handleSubmit}>
+        <div className="mb-4">
+          <label className="block mb-1 font-semibold">Question</label>
+          <input
+            type="text"
+            name="question"
+            value={formData.question}
+            onChange={handleChange}
+            className="w-full border border-gray-300 rounded px-3 py-2"
+            required
+          />
         </div>
-      </div>
-      <h2 className="text-xl text-gray-700">Frequently Asked Questions</h2>
-      <div className="space-y-8">
-        {faqItems.map((item, index) => (
-          <div key={index} className="space-y-2">
-            <p className="font-medium text-gray-800 text-lg">
-              Q: {item.question}
-            </p>
-            <p className="text-gray-700 pl-4">
-              <span className="font-medium">A: </span>
-              {item.answer}
-            </p>
-          </div>
-        ))}
-      </div>
+
+        <div className="mb-4">
+          <label className="block mb-1 font-semibold">Category</label>
+          <select
+            name="category"
+            value={formData.category}
+            onChange={handleChange}
+            className="w-full border border-gray-300 rounded px-3 py-2"
+            required
+          >
+            <option value="General">General</option>
+            <option value="Financial">Financial</option>
+            <option value="Technical">Technical</option>
+            <option value="Related to Services">Related to Services</option>
+          </select>
+        </div>
+
+        <button
+          type="submit"
+          className={`w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition ${submitLoading ? "opacity-50 cursor-not-allowed" : ""}`}
+          disabled={submitLoading}
+        >
+          {submitLoading ? "Submitting..." : "Create FAQ"}
+        </button>
+      </form>
     </div>
-  )
-}
-export default FAQ
+  );
+};
+
+export default CreateFaq;

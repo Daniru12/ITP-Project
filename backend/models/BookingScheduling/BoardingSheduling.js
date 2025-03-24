@@ -15,7 +15,7 @@ const SchedulingSchema = new mongoose.Schema(
         },
         appointment_id: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "Appoiment",
+            ref: "Appointment",
             required: [true, "appoiment is required"],
           },
         duration : {
@@ -34,7 +34,12 @@ const SchedulingSchema = new mongoose.Schema(
             type: String,
             enum: ["Scheduled", "In Progress", "Completed", "Canceled"],
             default: "Scheduled",
-        }
+        },
+        confirmed_days: {
+            type: [String], // Dates like ["2025-03-23"]
+            default: [],
+          },
+          
     }
 )
 

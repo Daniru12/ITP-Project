@@ -1,10 +1,32 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import { jwtDecode } from 'jwt-decode';
 
 const NavBar = () => {
   const navigate = useNavigate();
   const isLoggedIn = localStorage.getItem('token');
+  
+  const isServiceProvider = () => {
+    if (!isLoggedIn) return false;
+    try {
+      const decoded = jwtDecode(isLoggedIn);
+      return decoded.user_type === 'service_provider';
+    } catch (error) {
+      return false;
+    }
+  };
+
+  const isPetOwner = () => {
+    if (!isLoggedIn) return false;
+    try {
+      const decoded = jwtDecode(isLoggedIn);
+      return decoded.user_type === 'pet_owner';
+    } catch (error) {
+      return false;
+    }
+  };
+
   const handleLogout = () => {
     localStorage.removeItem('token');
     toast.success('Logged out successfully');
@@ -28,9 +50,16 @@ const NavBar = () => {
             
             {isLoggedIn ? (
               <>
-                <Link to="/profile" className="text-white hover:text-blue-200 transition-colors duration-200 text-sm font-medium">
-                  Profile
-                </Link>
+                {isPetOwner() && (
+                  <Link to="/profile" className="text-white hover:text-blue-200 transition-colors duration-200 text-sm font-medium">
+                    Profile
+                  </Link>
+                )}
+                {isServiceProvider() && (
+                  <Link to="/provider-profile" className="text-white hover:text-blue-200 transition-colors duration-200 text-sm font-medium">
+                    Dashboard
+                  </Link>
+                )}
                 <button
                   onClick={handleLogout}
                   className="bg-white/10 hover:bg-white/20 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 text-sm border border-white/20"

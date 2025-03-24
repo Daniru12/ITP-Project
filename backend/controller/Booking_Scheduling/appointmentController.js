@@ -81,7 +81,7 @@ export const getProviderAppointments = async (req, res) => {
         path: "pet_id",
         populate: { path: "owner_id", select: "full_name phone_number" },
       })
-      .populate({ path: "service_id", select: "service_name" })
+      .populate({ path: "service_id", select: "service_name service_category" })
       .sort({ appointment_date: 1 });
 
     res.status(200).json(

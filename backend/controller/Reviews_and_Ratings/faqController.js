@@ -1,23 +1,15 @@
 import Faq from "../../models/Reviews/faq.js";
-import Service from "../../models/Service.js";
+import User from "../../models/User.js";
 
 // ✅ Add a new FAQ
 export const addFaq = async (req, res) => {
   try {
-    const { question, answer, service } = req.body;
+    const { question } = req.body;
     const userId = req.user?._id; // Assuming authentication middleware
-
-    // Check if the service exists
-    const existingService = await Service.findById(service);
-    if (!existingService) {
-      return res.status(404).json({ message: "Service not found" });
-    }
 
     // Create a new FAQ
     const newFaq = new Faq({
       question,
-      answer,
-      service,
       user: userId || null, // If the FAQ is added by an admin, userId may be null
     });
 
@@ -33,9 +25,7 @@ export const addFaq = async (req, res) => {
 // ✅ Get all FAQs
 export const getAllFaqs = async (req, res) => {
   try {
-    const faqs = await Faq.find()
-      .populate("service", "name")
-      .populate("user", "name"); // Populating user if exists
+    const faqs = await Faq.find().populate("user", "name"); // Populating user if exists
     res.status(200).json(faqs);
   } catch (error) {
     console.error("Error fetching FAQs:", error);
@@ -43,26 +33,29 @@ export const getAllFaqs = async (req, res) => {
   }
 };
 
-// ✅ Get FAQs for a specific service
-export const getServiceFaqs = async (req, res) => {
+// ✅ Get a single FAQ by ID
+export const getFaqById = async (req, res) => {
   try {
-    const { serviceId } = req.params;
-    const faqs = await Faq.find({ service: serviceId })
-      .populate("service", "name")
-      .populate("user", "name");
+    const { faqId } = req.params;
+    const faq = await Faq.findById(faqId).populate("user", "name");
+    
+    if (!faq) {
+      return res.status(404).json({ message: "FAQ not found" });
+    }
 
-    res.status(200).json(faqs);
+    res.status(200).json(faq);
   } catch (error) {
-    console.error("Error fetching service FAQs:", error);
-    res.status(500).json({ message: "Error fetching service FAQs", error: error.message });
+    console.error("Error fetching FAQ:", error);
+    res.status(500).json({ message: "Error fetching FAQ", error: error.message });
   }
 };
 
-// ✅ Update an FAQ
+// ✅ Update an FAQ (Only the user who created it can update it)
 export const updateFaq = async (req, res) => {
   try {
     const { faqId } = req.params;
-    const { question, answer, isActive } = req.body;
+    const { question } = req.body;
+    const userId = req.user?._id;
 
     // Find the FAQ
     const existingFaq = await Faq.findById(faqId);
@@ -70,11 +63,13 @@ export const updateFaq = async (req, res) => {
       return res.status(404).json({ message: "FAQ not found" });
     }
 
-    // Update fields
-    existingFaq.question = question || existingFaq.question;
-    existingFaq.answer = answer || existingFaq.answer;
-    if (isActive !== undefined) existingFaq.isActive = isActive; // Allow toggling active state
+    // Check if the user is the owner
+    if (existingFaq.user.toString() !== userId.toString()) {
+      return res.status(403).json({ message: "Unauthorized: You can only update your own FAQ." });
+    }
 
+    // Update the question
+    existingFaq.question = question || existingFaq.question;
     await existingFaq.save();
 
     res.status(200).json({ message: "FAQ updated successfully", faq: existingFaq });
@@ -84,12 +79,17 @@ export const updateFaq = async (req, res) => {
   }
 };
 
-// ✅ Delete an FAQ
+// ✅ Delete an FAQ (Only admin and service provider can delete it)
 export const deleteFaq = async (req, res) => {
   try {
     const { faqId } = req.params;
-    const deletedFaq = await Faq.findByIdAndDelete(faqId);
+    const userRole = req.user?.role; // Assuming role is available in authentication middleware
 
+    if (user_type !== "admin" && user_type !== "service_provider") {
+      return res.status(403).json({ message: "Unauthorized: Only admin and service providers can delete FAQs." });
+    }
+
+    const deletedFaq = await Faq.findByIdAndDelete(faqId);
     if (!deletedFaq) {
       return res.status(404).json({ message: "FAQ not found" });
     }
