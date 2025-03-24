@@ -17,7 +17,7 @@ import RegisterPet from './Pages/PetOwner/registerPet'
 import CreateFaq from './Pages/FAQ/faq'
 import PaymentPage from './Pages/Payment/PaymentPage'
 import { PetCareBooking } from './Pages/Booking/Create/PetCareBooking'
-import Schedule from './Pages/Schedule/groomingSchedule'
+
 import ProductDetail from './Pages/productMarket/ProductDetail'
 import PetMarketplace from './Pages/productMarket/PetMarketplace' 
 import AppointmentsList from './Pages/Appoiment/appoiments'
@@ -37,6 +37,11 @@ import AddTraining from './Pages/Providers/addTraining'
 
 import UpdatePet from './Pages/PetOwner/updatePet'
 import UpdateService from './Pages/Providers/updateService'
+import CreateBoedingScheduleForm from './Pages/Schedule/bordingschedule/CreateScheduleForm'
+import BoardingScheduleList from './Pages/Schedule/bordingschedule/ScheduleList';
+import UpdateBoedingScheduleForm from './Pages/Schedule/bordingschedule/UpdateBoedingScheduleForm'
+import CreateGroomingScheduleForm from './Pages/Schedule/PetGrromingScheduling/CreateGroomingScheduleForm'
+import GroomingScheduleList from "./Pages/Schedule/PetGrromingScheduling/GroomingScheduleList";
 
 
 // Wrapper component to handle NavBar conditional rendering
@@ -64,11 +69,17 @@ const AppContent = () => {
 
           <Route path='/register' element={<RegisterPage />} />
           <Route path='/booking' element={<PetCareBooking />} />
-          <Route path='/schedule' element={<Schedule />} />
+          
           <Route path='/AppointmentLIST' element={<AppointmentsList />} />
           <Route path='/Appointmentadd/:id' element={<AppointmentCreate />} />
           <Route path='/Appointment' element={<UserAppointments />} />
           <Route path="/appointments/update/:id" element={<UpdateAppointment />} />
+
+          <Route path="/Groomingscheduleadd" element={<CreateGroomingScheduleForm />} />
+          <Route path="/schedule/grooming" element={<GroomingScheduleList />} />
+          <Route path="/Bordingscheduleadd" element={<CreateBoedingScheduleForm />} />
+          <Route path="/schedule/boarding" element={<BoardingScheduleList />} />
+          <Route path="/scheduling/boarding/:id" element={<UpdateBoedingScheduleForm />} />
           <Route path='/profile' element={<Profile />} />
           <Route path='/provider-profile' element={<ProviderProfile />} />
           <Route path='/add-grooming' element={<AddGrooming />} />
