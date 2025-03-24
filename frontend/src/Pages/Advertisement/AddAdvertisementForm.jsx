@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import toast from 'react-hot-toast';
 
-const AddAdvertisementForm = () => {
+const AddAdvertisementForm = ({ onClose }) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState('Service');
@@ -10,29 +11,33 @@ const AddAdvertisementForm = () => {
   const [end_date, setEndDate] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [successMessage, setSuccessMessage] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
-    setSuccessMessage(null);
 
     try {
-      // Assuming you have a logged-in user and can access their ID
-      const advertiser_id = 'YOUR_USER_ID'; // Replace with actual user ID
+      const token = localStorage.getItem('token');
+      if (!token) {
+        toast.error('Please login to add an advertisement');
+        return;
+      }
 
-      const response = await axios.post('http://localhost:3000/api/advertisement/create', {
+      const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
+      const response = await axios.post(`${backendUrl}/api/advertisement/create`, {
         title,
         description,
         category,
         image_url,
         start_date,
-        end_date,
-        advertiser_id,
+        end_date
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
       });
 
-      setSuccessMessage('Advertisement added successfully!');
+      toast.success('Advertisement added successfully!');
       // Reset form fields
       setTitle('');
       setDescription('');
@@ -40,8 +45,13 @@ const AddAdvertisementForm = () => {
       setImageUrl('');
       setStartDate('');
       setEndDate('');
+      
+      if (onClose) {
+        onClose();
+      }
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to add advertisement.');
+      toast.error(err.response?.data?.message || 'Failed to add advertisement.');
     } finally {
       setLoading(false);
     }
@@ -50,11 +60,6 @@ const AddAdvertisementForm = () => {
   return (
     <div className="max-w-md mx-auto p-6 bg-white rounded-md shadow-md">
       <h2 className="text-2xl font-semibold mb-4">Add Advertisement</h2>
-      {successMessage && (
-        <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4">
-          {successMessage}
-        </div>
-      )}
       {error && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
           {error}

@@ -95,7 +95,7 @@ const AppContent = () => {
           <Route path='/PaymentPage' element={<PaymentPage />} />
 
           <Route path='/ServiceSummary' element={<ServiceSummary/>}/>
-          <Route path='/PaymentForm/:id' element={<PaymentForm/>}/>
+          <Route path='/payment/:id' element={<PaymentForm/>}/>
           <Route path='/AppointmentSummary' element={<AppointmentSummary/>}/>
           <Route path='/AddAdvertisementForm' element={<AddAdvertisementForm/>}/>
           

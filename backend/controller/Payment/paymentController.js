@@ -1,5 +1,6 @@
 import Payment from "../../models/Payment/payment.js";
 import Appointment from "../../models/BookingScheduling/Appointment.js";
+import bcrypt from "bcryptjs";
 
 // Create a new payment
 export const createPayment = async (req, res) => {
@@ -20,13 +21,25 @@ export const createPayment = async (req, res) => {
       return res.status(400).json({ message: "Card details are required for card payments" });
     }
 
+    // Hash CVV if payment method is Card
+    let hashedCardDetails = null;
+    if (payment_method === "Card" && card_details) {
+      const salt = await bcrypt.genSalt(10);
+      const hashedCVV = await bcrypt.hash(card_details.cvv, salt);
+      
+      hashedCardDetails = {
+        ...card_details,
+        cvv: hashedCVV
+      };
+    }
+
     // Create new payment
     const newPayment = new Payment({
       appointment_id,
       amount,
       currency: currency || "USD",
       payment_method,
-      card_details: payment_method === "Card" ? card_details : null,
+      card_details: hashedCardDetails,
     });
 
     // Save payment

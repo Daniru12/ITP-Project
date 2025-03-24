@@ -2,7 +2,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { MdAddCircleOutline, MdDelete } from 'react-icons/md';
 import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
 import axios from 'axios';
-import AddAdvertisementForm from '../Pages/Advertisement/AddAdvertisementForm'; // Import the form component
+import AddAdvertisementForm from '../Pages/Advertisement/AddAdvertisementForm';
+import toast from 'react-hot-toast';
 
 export const AdvertisementSlideshow = () => {
   const [advertisements, setAdvertisements] = useState([]);
@@ -18,17 +19,23 @@ export const AdvertisementSlideshow = () => {
       setLoading(true);
       setError(null);
       try {
-        const response = await axios.get('http://localhost:3000/api/advertisement/'); // Replace with your API endpoint
+        const token = localStorage.getItem('token');
+        const backendUrl = import.meta.env.VITE_BACKEND_URL;
+        
+        const response = await axios.get(`${backendUrl}/api/advertisement`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
         setAdvertisements(response.data);
       } catch (err) {
         setError(err);
+        toast.error('Failed to load advertisements');
       } finally {
         setLoading(false);
       }
     };
 
     fetchAdvertisements();
-  }, [showAddForm]); // Refetch when form is closed or data changes
+  }, [showAddForm]);
 
   const nextSlide = useCallback(() => {
     setCurrentIndex((prevIndex) => (prevIndex + 1) % advertisements.length);
@@ -50,10 +57,17 @@ export const AdvertisementSlideshow = () => {
 
   const handleDelete = async (adId) => {
     try {
-      await axios.delete(`http://localhost:3000/api/advertisement/delete${adId}`); // Replace with your delete API endpoint
+      const token = localStorage.getItem('token');
+      const backendUrl = import.meta.env.VITE_BACKEND_URL;
+      
+      await axios.delete(`${backendUrl}/api/advertisement/delete/${adId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       setAdvertisements(advertisements.filter((ad) => ad._id !== adId));
+      toast.success('Advertisement deleted successfully');
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to delete advertisement.');
+      toast.error('Failed to delete advertisement');
     }
   };
 
