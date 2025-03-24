@@ -32,11 +32,11 @@ import { protect } from "../../middleware/authMiddleware.js";
 
 
 
-router.post("/groomingschedule/create", createGroomingScheduling);            // Schedule a grooming appointment
-router.get("/groomingschedule", getAllGroomingSchedulings);            // View all grooming appointments
-router.get("/groomingschedule/:id", getGroomingSchedulingById);         // View a specific appointment
-router.put("/groomingschedule/update/:id", updateGroomingSheduling);          // Update an appointment
-router.delete("/groomingschedule/delete/:id", deleteGroomingScheduling);   
+router.post("/groomingschedule/create",protect, createGroomingScheduling);            // Schedule a grooming appointment
+router.get("/groomingschedule",protect, getAllGroomingSchedulings);            // View all grooming appointments
+router.get("/groomingschedule/:id",protect, getGroomingSchedulingById);         // View a specific appointment
+router.put("/groomingschedule/update/:id",protect, updateGroomingSheduling);          // Update an appointment
+router.delete("/groomingschedule/delete/:id",protect, deleteGroomingScheduling);   
 
 
 //Training Scheduling Routes
