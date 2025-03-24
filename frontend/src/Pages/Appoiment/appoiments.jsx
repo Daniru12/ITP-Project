@@ -154,7 +154,7 @@ const AppointmentsList = () => {
     const routeMap = {
       pet_boarding: '/schedule/boarding',
       pet_grooming: '/schedule/grooming',
-      pet_training: '/ViewTrainingSchedule',
+      pet_training: '/Trainingscheduleadd',
     };
 
     const path = routeMap[category];

@@ -10,10 +10,10 @@ import {
 
 import {
     createTrainingSchedule,
-    getAllTrainingSchedules,
-    getTrainingScheduleById,
-    updateTrainingSchedule,
-    deleteTrainingSchedule
+  getAllSchedules,
+  getScheduleById,
+  updateSchedule,
+  deleteSchedule,
 } from "../../controller/Booking_Scheduling/trainingController.js";
 
 import {
@@ -40,11 +40,11 @@ router.delete("/groomingschedule/delete/:id",protect, deleteGroomingScheduling);
 
 
 //Training Scheduling Routes
-router.post("/trainigschedule/create",protect, createTrainingSchedule);
-router.get("/trainigschedule",protect, getAllTrainingSchedules);
-router.get("/trainigschedule/:id",protect, getTrainingScheduleById);
-router.put("/trainigschedule/update/:id",protect, updateTrainingSchedule);
-router.delete("/trainigschedule/delete/:id",protect, deleteTrainingSchedule);
+router.post('/trainingschedule/create',protect, createTrainingSchedule);
+router.get('/trainingschedule', getAllSchedules);
+router.get('/trainingschedule/:id',protect, getScheduleById);
+router.put('/trainingschedule/update/:id',protect, updateSchedule);
+router.delete('/trainingschedule/delete/:id', protect,deleteSchedule);
 
 
 

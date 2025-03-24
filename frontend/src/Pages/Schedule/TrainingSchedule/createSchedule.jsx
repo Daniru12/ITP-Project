@@ -1,185 +1,236 @@
-import React, { useState } from "react";
-import { Dialog } from "@headlessui/react";
-import axios from "axios";
-import { toast } from "react-toastify";
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import toast from 'react-hot-toast';
+import { useLocation, useNavigate } from 'react-router-dom';
 
-const backendUrl = "http://localhost:3000";
-const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
-const timeSlots = [
-  "09:00 AM", "12:00 PM", "02:00 PM", "04:00 PM", "06:00 PM", "08:00 PM"
-];
+const CreateTrainingScheduleForm = () => {
+  const { state } = useLocation();
+  const navigate = useNavigate();
 
-const TrainingScheduleGrid = () => {
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
-  const [duration, setDuration] = useState("1hour");
-  const [showGrid, setShowGrid] = useState(false);
+  const appointmentDetails = state?.appointmentDetails;
 
-  const [notesMap, setNotesMap] = useState({});
-  const [selectedSlot, setSelectedSlot] = useState(null);
-  const [noteInput, setNoteInput] = useState("");
-  const [isOpen, setIsOpen] = useState(false);
+  const [formData, setFormData] = useState({
+    appointment_id: '',
+    pet_id: '',
+    service_id: '',
+    week_start_date: '',
+    schedule: [],
+  });
 
-  const token = localStorage.getItem("token");
+  const [newSession, setNewSession] = useState({
+    day: 'Monday',
+    time: '',
+    training_type: '',
+    duration: '1hour',
+    notes: '',
+  });
 
-  const handleStart = () => {
-    if (!startDate || !endDate || !duration) {
-      toast.error("Please select start date, end date, and duration");
+  const todayStr = new Date().toISOString().split('T')[0]; // format: 'YYYY-MM-DD'
+
+  useEffect(() => {
+    if (!appointmentDetails) {
+      toast.error('Appointment details not provided.');
       return;
     }
-    setShowGrid(true);
+
+    console.log('📦 Loaded appointment details:', appointmentDetails);
+
+    setFormData((prev) => ({
+      ...prev,
+      appointment_id: appointmentDetails._id || '',
+      pet_id: appointmentDetails.pet_id?._id || '',
+      service_id: appointmentDetails.service_id?._id || '',
+    }));
+  }, []);
+
+  const handleChange = (e) => {
+    setFormData((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
   };
 
-  const openNoteModal = (day, time) => {
-    const key = `${day}_${time}`;
-    setSelectedSlot({ day, time });
-    setNoteInput(notesMap[key] || "");
-    setIsOpen(true);
+  const handleSessionChange = (e) => {
+    setNewSession((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
   };
 
-  const handleSaveNote = () => {
-    const key = `${selectedSlot.day}_${selectedSlot.time}`;
-    setNotesMap({ ...notesMap, [key]: noteInput });
-    setIsOpen(false);
-  };
+  const handleAddSession = () => {
+    if (!newSession.time || !newSession.training_type) {
+      toast.error('Please provide time and training type.');
+      return;
+    }
 
-  const handleSubmitSchedule = async () => {
-    const schedule = daysOfWeek.map((day) => ({
-      day,
-      sessions: timeSlots.map((time) => ({
-        time,
-        training_type: "Custom", // or allow editing later
-        duration,
-        status: "Scheduled",
-        notes: notesMap[`${day}_${time}`] || ""
-      }))
+    const existingDay = formData.schedule.find((d) => d.day === newSession.day);
+    const session = { ...newSession, status: 'Scheduled' };
+    let updatedSchedule;
+
+    if (existingDay) {
+      existingDay.sessions.push(session);
+      updatedSchedule = [...formData.schedule];
+    } else {
+      updatedSchedule = [
+        ...formData.schedule,
+        {
+          day: newSession.day,
+          sessions: [session],
+        },
+      ];
+    }
+
+    setFormData((prev) => ({
+      ...prev,
+      schedule: updatedSchedule,
     }));
 
+    setNewSession({ day: 'Monday', time: '', training_type: '', duration: '1hour', notes: '' });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const { appointment_id, pet_id, service_id, week_start_date, schedule } = formData;
+
+    const today = new Date();
+    const selectedDate = new Date(week_start_date);
+
+    if (selectedDate < new Date(today.setHours(0, 0, 0, 0))) {
+      toast.error('Week start date cannot be in the past.');
+      return;
+    }
+
+    if (!appointment_id || !pet_id || !service_id || !week_start_date || schedule.length === 0) {
+      toast.error('All fields required and at least one session must be added.');
+      return;
+    }
+
     try {
-      const res = await axios.post(
-        `${backendUrl}/api/training-schedules`,
-        {
-          appointment_id: "PLACEHOLDER_ID",
-          pet_id: "PLACEHOLDER_PET",
-          service_id: "PLACEHOLDER_SERVICE",
-          week_start_date: startDate,
-          schedule,
+      const token = localStorage.getItem('token');
+      const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
+      await axios.post(`${backendUrl}/api/scheduling/trainingschedule/create`, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
         },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      toast.success("Training schedule saved!");
-    } catch (err) {
-      console.error(err);
-      toast.error("Error saving schedule");
+      });
+
+      toast.success('✅ Training schedule created!');
+      navigate('/schedule/training');
+    } catch (error) {
+      console.error('❌ Schedule error:', error);
+      toast.error(error.response?.data?.message || 'Failed to create schedule');
     }
   };
 
   return (
-    <div className="p-6 max-w-6xl mx-auto">
-      {!showGrid && (
-        <div className="bg-white p-4 rounded shadow-md">
-          <h2 className="text-xl font-bold mb-4">Training Schedule Setup</h2>
+    <div className="max-w-2xl mx-auto mt-10 bg-white p-8 shadow-xl rounded-xl border border-blue-200">
+      <h2 className="text-3xl font-extrabold text-center text-blue-700 mb-6">Create Training Schedule</h2>
 
-          <label className="block mb-2">Week Start Date:</label>
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Week Start */}
+        <div>
+          <label className="block mb-1 font-medium text-gray-700">Week Start Date</label>
           <input
             type="date"
-            className="w-full p-2 border mb-4"
-            value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
+            name="week_start_date"
+            min={todayStr}
+            value={formData.week_start_date}
+            onChange={handleChange}
+            required
+            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400"
           />
+        </div>
 
-          <label className="block mb-2">Week End Date:</label>
-          <input
-            type="date"
-            className="w-full p-2 border mb-4"
-            value={endDate}
-            onChange={(e) => setEndDate(e.target.value)}
-          />
-
-          <label className="block mb-2">Session Duration:</label>
-          <select
-            className="w-full p-2 border mb-4"
-            value={duration}
-            onChange={(e) => setDuration(e.target.value)}
-          >
-            <option value="30min">30 minutes</option>
-            <option value="1hour">1 hour</option>
-            <option value="2hours">2 hours</option>
-          </select>
-
+        {/* Session Inputs */}
+        <div className="bg-gray-50 p-4 rounded-lg shadow-inner">
+          <h3 className="text-lg font-semibold text-blue-600 mb-3">Add Session</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <select name="day" value={newSession.day} onChange={handleSessionChange} className="p-2 border rounded">
+              {daysOfWeek.map((d) => (
+                <option key={d} value={d}>{d}</option>
+              ))}
+            </select>
+            <input
+              type="text"
+              name="time"
+              placeholder="Time (e.g. 09:00 AM)"
+              value={newSession.time}
+              onChange={handleSessionChange}
+              className="p-2 border rounded"
+            />
+            <input
+              type="text"
+              name="training_type"
+              placeholder="Training Type"
+              value={newSession.training_type}
+              onChange={handleSessionChange}
+              className="p-2 border rounded"
+            />
+            <select
+              name="duration"
+              value={newSession.duration}
+              onChange={handleSessionChange}
+              className="p-2 border rounded"
+            >
+              <option value="30min">30 min</option>
+              <option value="1hour">1 hour</option>
+              <option value="2hours">2 hours</option>
+              <option value="custom">Custom</option>
+            </select>
+            <input
+              type="text"
+              name="notes"
+              placeholder="Notes"
+              value={newSession.notes}
+              onChange={handleSessionChange}
+              className="p-2 border rounded col-span-2"
+            />
+          </div>
           <button
-            onClick={handleStart}
-            className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
+            type="button"
+            onClick={handleAddSession}
+            className="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
           >
-            Continue to Training Grid
+            ➕ Add Session
           </button>
         </div>
-      )}
 
-      {showGrid && (
-        <div>
-          <h2 className="text-2xl font-bold text-center mb-4">Weekly Training Plan</h2>
+        {/* Submit Button */}
+        <button
+          type="submit"
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 font-semibold rounded-xl shadow"
+        >
+          Submit Schedule
+        </button>
+      </form>
 
-          <div className="grid grid-cols-8 border text-sm">
-            <div className="bg-green-100 font-semibold p-2">Time</div>
-            {daysOfWeek.map((day) => (
-              <div key={day} className="bg-green-300 text-center font-semibold p-2">{day}</div>
-            ))}
-
-            {timeSlots.map((time) => (
-              <React.Fragment key={time}>
-                <div className="bg-green-100 p-2">{time}</div>
-                {daysOfWeek.map((day) => {
-                  const key = `${day}_${time}`;
-                  return (
-                    <div
-                      key={key}
-                      className="border p-2 h-20 cursor-pointer hover:bg-green-50"
-                      onClick={() => openNoteModal(day, time)}
-                    >
-                      {notesMap[key] || ""}
-                    </div>
-                  );
-                })}
-              </React.Fragment>
+      {/* Preview */}
+      {formData.schedule.length > 0 && (
+        <div className="mt-8">
+          <h4 className="text-lg font-bold mb-3 text-blue-700">📅 Scheduled Sessions</h4>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {formData.schedule.map((group, idx) => (
+              <div key={idx} className="bg-blue-50 border rounded p-3">
+                <h5 className="font-semibold text-blue-800 mb-2">{group.day}</h5>
+                {group.sessions.map((s, i) => (
+                  <div key={i} className="text-sm border-b py-1">
+                    <p><strong>Time:</strong> {s.time}</p>
+                    <p><strong>Type:</strong> {s.training_type}</p>
+                    <p><strong>Duration:</strong> {s.duration}</p>
+                    {s.notes && <p><strong>Notes:</strong> {s.notes}</p>}
+                  </div>
+                ))}
+              </div>
             ))}
           </div>
-
-          <button
-            onClick={handleSubmitSchedule}
-            className="mt-6 bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700"
-          >
-            Save Full Schedule
-          </button>
         </div>
       )}
-
-      {/* Note Editor Dialog */}
-      <Dialog open={isOpen} onClose={() => setIsOpen(false)} className="relative z-50">
-        <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
-        <div className="fixed inset-0 flex items-center justify-center p-4">
-          <Dialog.Panel className="bg-white p-6 rounded shadow-lg max-w-md w-full">
-            <Dialog.Title className="text-lg font-bold mb-2">Edit Note</Dialog.Title>
-            <p className="text-sm mb-1">Day: {selectedSlot?.day}, Time: {selectedSlot?.time}</p>
-            <textarea
-              value={noteInput}
-              onChange={(e) => setNoteInput(e.target.value)}
-              className="w-full h-24 border p-2 mb-4"
-            />
-            <div className="flex justify-end space-x-2">
-              <button onClick={() => setIsOpen(false)} className="px-4 py-2 border rounded">Cancel</button>
-              <button onClick={handleSaveNote} className="px-4 py-2 bg-green-600 text-white rounded">Save</button>
-            </div>
-          </Dialog.Panel>
-        </div>
-      </Dialog>
     </div>
   );
 };
 
-export default TrainingScheduleGrid;
+export default CreateTrainingScheduleForm;
