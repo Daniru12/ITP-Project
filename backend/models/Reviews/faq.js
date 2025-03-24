@@ -18,8 +18,13 @@ const faqSchema = new mongoose.Schema(
     category: {
       type: String,
       required: true,  
-      enum: ['General', 'Financial', 'Technical', 'Related to Services'], 
+      enum: ['General', 'Financial', 'Technical', 'Related to Services','Products'], 
       default: 'General'
+    },
+    answer: {
+      type: String,  // ✅ Allow answer updates later
+      default: "",   // ✅ Default empty, so it’s optional on creation
+      trim: true
     }
   },
   { timestamps: true }

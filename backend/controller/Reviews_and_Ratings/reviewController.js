@@ -35,9 +35,14 @@ export const addReview = async (req, res) => {
 };
 
 // ✅ Get all reviews
+
+// ✅ Get all reviews
 export const getAllReviews = async (req, res) => {
   try {
-    const reviews = await Review.find().populate("user", "name").populate("service", "name");
+    const reviews = await Review.find()
+      .populate("user", "name") // Fetch user name only
+      .populate("service", "service_name"); // Fetch service name only
+
     res.status(200).json(reviews);
   } catch (error) {
     console.error("Error fetching reviews:", error);
