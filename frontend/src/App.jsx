@@ -18,8 +18,7 @@ import CreateFaq from './Pages/FAQ/faq'
 import PaymentPage from './Pages/Payment/PaymentPage'
 import { PetCareBooking } from './Pages/Booking/Create/PetCareBooking'
 
-import ProductDetail from './Pages/productMarket/ProductDetail'
-import PetMarketplace from './Pages/productMarket/PetMarketplace' 
+
 import AppointmentsList from './Pages/Appoiment/appoiments'
 import UpdateAppointment from './Pages/Appoiment/UpdateAppointment'
 import AppointmentCreate from './Pages/Appoiment/AppointmentCreate'
@@ -41,6 +40,10 @@ import UpdateBoedingScheduleForm from './Pages/Schedule/bordingschedule/UpdateBo
 import CreateGroomingScheduleForm from './Pages/Schedule/PetGrromingScheduling/CreateGroomingScheduleForm'
 import GroomingScheduleList from "./Pages/Schedule/PetGrromingScheduling/GroomingScheduleList";
 
+// Product Marketplace
+import ProductDetail from './Pages/productMarket/ProductDetail'
+import PetMarketplace from './Pages/productMarket/PetMarketplace'
+import CreateProduct from './Pages/productMarket/CreateProduct'
 
 // Wrapper component to handle NavBar conditional rendering
 const AppContent = () => {
@@ -87,8 +90,6 @@ const AppContent = () => {
           <Route path='/register-pet' element={<RegisterPet />} />
           <Route path='/Faq' element={<CreateFaq />} />  
           <Route path='/PaymentPage' element={<PaymentPage />} />
-          <Route path='/petmarketplace' element={<PetMarketplace />} />
-          <Route path="/product/:id" element={<ProductDetail />} />
           <Route path='/display-services' element={<DisplayServices />} />
           <Route path='/service-overview/:id' element={<ServiceOverview />} />
 
@@ -96,6 +97,11 @@ const AppContent = () => {
 
           <Route path='/edit-pet/:id' element={<UpdatePet />} />
           <Route path='/update-service/:id' element={<UpdateService />} />
+
+          <Route path='/createproduct' element={<CreateProduct />} />     
+          <Route path='/petmarketplace' element={<PetMarketplace />} />
+          <Route path="/product/:id" element={<ProductDetail />} />
+
         </Routes>
       </div>
     </>

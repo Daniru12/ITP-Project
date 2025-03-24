@@ -16,7 +16,7 @@ export const createProduct = async (req, res) => {
 
   try {
     // Check user
-    if (req.user.role !== "admin" && req.user.user_type !== "service_provider") {
+    if (req.user.type !== "admin" && req.user.user_type !== "service_provider") {
       return res.status(403).json({ message: "Access denied. Only admins and service providers can create products." });
     }
 
