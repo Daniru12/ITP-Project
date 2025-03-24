@@ -33,6 +33,7 @@ export const createPayment = async (req, res) => {
     await newPayment.save();
     res.status(201).json({ message: "Payment created successfully", payment: newPayment });
   } catch (error) {
+    console.error(error); // Log error for debugging
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };

@@ -106,7 +106,7 @@ const UserAppointments = () => {
   };
 
   const handlePayment = (id) => {
-    navigate(`/payment/${id}`);
+    navigate(`/PaymentForm/${id}`);
   };
 
   const getStatusStyle = (status) => {

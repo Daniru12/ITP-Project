@@ -57,7 +57,7 @@ const PaymentCreate = ({ appointmentId, onPaymentSuccess }) => {
       const response = await axios.post(
         `${backendUrl}/api/payment/create`,
         {
-          appointment_id: appointmentId,
+          appointment_id: "67e11dfe9fdddfa7ce93bf93", // Passing appointmentId as a prop
           amount,
           currency,
           payment_method: paymentMethod,
