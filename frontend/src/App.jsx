@@ -16,6 +16,12 @@ import AddService from './Pages/Providers/addService'
 import RegisterPet from './Pages/PetOwner/registerPet'
 import FAQ from './Pages/FAQ/faq'
 import PaymentPage from './Pages/Payment/PaymentPage'
+import ServiceSummary from './Pages/Payment/AppointmentSummary'
+import PaymentForm from './Pages/Payment/PaymentForm'
+import AppointmentSummary from './Pages/Payment/OrderSummary'
+import AddAdvertisementForm from './Pages/Advertisement/AddAdvertisementForm'
+
+
 import { PetCareBooking } from './Pages/Booking/Create/PetCareBooking'
 import Schedule from './Pages/Schedule/groomingSchedule'
 import ProductDetail from './Pages/productMarket/ProductDetail'
@@ -71,6 +77,11 @@ const AppContent = () => {
           <Route path='/register-pet' element={<RegisterPet />} />
           <Route path='/faq' element={<FAQ />} />
           <Route path='/PaymentPage' element={<PaymentPage />} />
+          <Route path='/ServiceSummary' element={<ServiceSummary/>}/>
+          <Route path='/PaymentForm' element={<PaymentForm/>}/>
+          <Route path='/AppointmentSummary' element={<AppointmentSummary/>}/>
+          <Route path='/AddAdvertisementForm' element={<AddAdvertisementForm/>}/>
+          
           <Route path='/petmarketplace' element={<PetMarketplace />} /> 
           <Route path="/product/:id" element={<ProductDetail />} />
           <Route path='/display-services' element={<DisplayServices />} />
