@@ -40,11 +40,11 @@ router.delete("/groomingschedule/delete/:id",protect, deleteGroomingScheduling);
 
 
 //Training Scheduling Routes
-router.post("/trainigschedule/create", createTrainingSchedule);
-router.get("/trainigschedule", getAllTrainingSchedules);
-router.get("/trainigschedule/:id", getTrainingScheduleById);
-router.put("/trainigschedule/update/:id", updateTrainingSchedule);
-router.delete("/trainigschedule/delete/:id", deleteTrainingSchedule);
+router.post("/trainigschedule/create",protect, createTrainingSchedule);
+router.get("/trainigschedule",protect, getAllTrainingSchedules);
+router.get("/trainigschedule/:id",protect, getTrainingScheduleById);
+router.put("/trainigschedule/update/:id",protect, updateTrainingSchedule);
+router.delete("/trainigschedule/delete/:id",protect, deleteTrainingSchedule);
 
 
 

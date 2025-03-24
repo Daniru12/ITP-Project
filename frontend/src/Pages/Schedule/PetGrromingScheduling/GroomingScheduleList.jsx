@@ -53,7 +53,7 @@ const GroomingScheduleList = () => {
   };
 
   const handleUpdate = (id) => {
-    navigate(`/groomingschedule/update/${id}`);
+    navigate(`/update-groomingschedule/${id}`);
   };
 
   const formatDate = (dateString) => new Date(dateString).toLocaleDateString();

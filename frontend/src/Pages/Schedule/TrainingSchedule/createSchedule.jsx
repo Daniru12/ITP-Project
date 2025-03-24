@@ -1,136 +1,185 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import { Dialog } from "@headlessui/react";
 import axios from "axios";
+import { toast } from "react-toastify";
 
-const CreateSchedule = () => {
-  const [pets, setPets] = useState([]);
-  const [services, setServices] = useState([]);
-  const [formData, setFormData] = useState({
-    pet_id: "",
-    service_id: "",
-    week_start_date: "",
-    schedule: [],
-    comments: "",
-  });
+const backendUrl = "http://localhost:3000";
+const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
-  const [day, setDay] = useState("Monday");
-  const [session, setSession] = useState({
-    time: "",
-    training_type: "",
-    duration: "1hour",
-    status: "Scheduled",
-    notes: "",
-  });
+const timeSlots = [
+  "09:00 AM", "12:00 PM", "02:00 PM", "04:00 PM", "06:00 PM", "08:00 PM"
+];
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const petRes = await axios.get("http://localhost:3000/api/pets"); // Update as per your route
-        const serviceRes = await axios.get("http://localhost:3000/api/services"); // Update as per your route
-        setPets(petRes.data);
-        setServices(serviceRes.data);
-      } catch (error) {
-        console.error("Error fetching pets/services", error);
-      }
-    };
-    fetchData();
-  }, []);
+const TrainingScheduleGrid = () => {
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [duration, setDuration] = useState("1hour");
+  const [showGrid, setShowGrid] = useState(false);
 
-  const addSessionToDay = () => {
-    const updated = [...formData.schedule];
-    const existingDay = updated.find((d) => d.day === day);
+  const [notesMap, setNotesMap] = useState({});
+  const [selectedSlot, setSelectedSlot] = useState(null);
+  const [noteInput, setNoteInput] = useState("");
+  const [isOpen, setIsOpen] = useState(false);
 
-    if (existingDay) {
-      existingDay.sessions.push(session);
-    } else {
-      updated.push({ day, sessions: [session] });
+  const token = localStorage.getItem("token");
+
+  const handleStart = () => {
+    if (!startDate || !endDate || !duration) {
+      toast.error("Please select start date, end date, and duration");
+      return;
     }
-
-    setFormData({ ...formData, schedule: updated });
-    setSession({ time: "", training_type: "", duration: "1hour", status: "Scheduled", notes: "" });
+    setShowGrid(true);
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const openNoteModal = (day, time) => {
+    const key = `${day}_${time}`;
+    setSelectedSlot({ day, time });
+    setNoteInput(notesMap[key] || "");
+    setIsOpen(true);
+  };
+
+  const handleSaveNote = () => {
+    const key = `${selectedSlot.day}_${selectedSlot.time}`;
+    setNotesMap({ ...notesMap, [key]: noteInput });
+    setIsOpen(false);
+  };
+
+  const handleSubmitSchedule = async () => {
+    const schedule = daysOfWeek.map((day) => ({
+      day,
+      sessions: timeSlots.map((time) => ({
+        time,
+        training_type: "Custom", // or allow editing later
+        duration,
+        status: "Scheduled",
+        notes: notesMap[`${day}_${time}`] || ""
+      }))
+    }));
+
     try {
-      await axios.post("http://localhost:3000/api/scheduling/trainigschedule/create", formData);
-      alert("Schedule created successfully!");
-      setFormData({ pet_id: "", service_id: "", week_start_date: "", schedule: [], comments: "" });
-    } catch (error) {
-      console.error("Error submitting schedule", error);
-      alert("Failed to create schedule");
+      const res = await axios.post(
+        `${backendUrl}/api/training-schedules`,
+        {
+          appointment_id: "PLACEHOLDER_ID",
+          pet_id: "PLACEHOLDER_PET",
+          service_id: "PLACEHOLDER_SERVICE",
+          week_start_date: startDate,
+          schedule,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      toast.success("Training schedule saved!");
+    } catch (err) {
+      console.error(err);
+      toast.error("Error saving schedule");
     }
   };
 
   return (
-    <div className="p-6 max-w-3xl mx-auto bg-white shadow rounded">
-      <h2 className="text-xl font-bold mb-4">Create Training Schedule</h2>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <select value={formData.pet_id} onChange={(e) => setFormData({ ...formData, pet_id: e.target.value })} required>
-          <option value="">Select Pet</option>
-          {pets.map((pet) => (
-            <option key={pet._id} value={pet._id}>{pet.name}</option>
-          ))}
-        </select>
+    <div className="p-6 max-w-6xl mx-auto">
+      {!showGrid && (
+        <div className="bg-white p-4 rounded shadow-md">
+          <h2 className="text-xl font-bold mb-4">Training Schedule Setup</h2>
 
-        <select value={formData.service_id} onChange={(e) => setFormData({ ...formData, service_id: e.target.value })} required>
-          <option value="">Select Main Service</option>
-          {services.map((s) => (
-            <option key={s._id} value={s._id}>{s.name}</option>
-          ))}
-        </select>
-
-        <input
-          type="date"
-          value={formData.week_start_date}
-          onChange={(e) => setFormData({ ...formData, week_start_date: e.target.value })}
-          required
-        />
-
-        <div className="border p-4 rounded">
-          <h3 className="font-semibold mb-2">Add Session</h3>
-          <select value={day} onChange={(e) => setDay(e.target.value)}>
-            {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"].map((d) => (
-              <option key={d}>{d}</option>
-            ))}
-          </select>
+          <label className="block mb-2">Week Start Date:</label>
           <input
-            type="text"
-            placeholder="Time (e.g., 06:00 AM)"
-            value={session.time}
-            onChange={(e) => setSession({ ...session, time: e.target.value })}
-            required
+            type="date"
+            className="w-full p-2 border mb-4"
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
           />
+
+          <label className="block mb-2">Week End Date:</label>
           <input
-            type="text"
-            placeholder="Training Type"
-            value={session.training_type}
-            onChange={(e) => setSession({ ...session, training_type: e.target.value })}
-            required
+            type="date"
+            className="w-full p-2 border mb-4"
+            value={endDate}
+            onChange={(e) => setEndDate(e.target.value)}
           />
-          <select value={session.duration} onChange={(e) => setSession({ ...session, duration: e.target.value })}>
-            <option value="30min">30min</option>
-            <option value="1hour">1hour</option>
-            <option value="2hours">2hours</option>
-            <option value="custom">custom</option>
+
+          <label className="block mb-2">Session Duration:</label>
+          <select
+            className="w-full p-2 border mb-4"
+            value={duration}
+            onChange={(e) => setDuration(e.target.value)}
+          >
+            <option value="30min">30 minutes</option>
+            <option value="1hour">1 hour</option>
+            <option value="2hours">2 hours</option>
           </select>
-          <textarea
-            placeholder="Notes"
-            value={session.notes}
-            onChange={(e) => setSession({ ...session, notes: e.target.value })}
-          />
-          <button type="button" onClick={addSessionToDay}>Add Session</button>
+
+          <button
+            onClick={handleStart}
+            className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
+          >
+            Continue to Training Grid
+          </button>
         </div>
+      )}
 
-        <textarea
-          placeholder="Comments"
-          value={formData.comments}
-          onChange={(e) => setFormData({ ...formData, comments: e.target.value })}
-        />
+      {showGrid && (
+        <div>
+          <h2 className="text-2xl font-bold text-center mb-4">Weekly Training Plan</h2>
 
-        <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">Create Schedule</button>
-      </form>
+          <div className="grid grid-cols-8 border text-sm">
+            <div className="bg-green-100 font-semibold p-2">Time</div>
+            {daysOfWeek.map((day) => (
+              <div key={day} className="bg-green-300 text-center font-semibold p-2">{day}</div>
+            ))}
+
+            {timeSlots.map((time) => (
+              <React.Fragment key={time}>
+                <div className="bg-green-100 p-2">{time}</div>
+                {daysOfWeek.map((day) => {
+                  const key = `${day}_${time}`;
+                  return (
+                    <div
+                      key={key}
+                      className="border p-2 h-20 cursor-pointer hover:bg-green-50"
+                      onClick={() => openNoteModal(day, time)}
+                    >
+                      {notesMap[key] || ""}
+                    </div>
+                  );
+                })}
+              </React.Fragment>
+            ))}
+          </div>
+
+          <button
+            onClick={handleSubmitSchedule}
+            className="mt-6 bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700"
+          >
+            Save Full Schedule
+          </button>
+        </div>
+      )}
+
+      {/* Note Editor Dialog */}
+      <Dialog open={isOpen} onClose={() => setIsOpen(false)} className="relative z-50">
+        <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
+        <div className="fixed inset-0 flex items-center justify-center p-4">
+          <Dialog.Panel className="bg-white p-6 rounded shadow-lg max-w-md w-full">
+            <Dialog.Title className="text-lg font-bold mb-2">Edit Note</Dialog.Title>
+            <p className="text-sm mb-1">Day: {selectedSlot?.day}, Time: {selectedSlot?.time}</p>
+            <textarea
+              value={noteInput}
+              onChange={(e) => setNoteInput(e.target.value)}
+              className="w-full h-24 border p-2 mb-4"
+            />
+            <div className="flex justify-end space-x-2">
+              <button onClick={() => setIsOpen(false)} className="px-4 py-2 border rounded">Cancel</button>
+              <button onClick={handleSaveNote} className="px-4 py-2 bg-green-600 text-white rounded">Save</button>
+            </div>
+          </Dialog.Panel>
+        </div>
+      </Dialog>
     </div>
   );
 };
 
-export default CreateSchedule;
+export default TrainingScheduleGrid;
