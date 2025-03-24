@@ -105,6 +105,10 @@ const UserAppointments = () => {
     }
   };
 
+  const handlePayment = (id) => {
+    navigate(`/payment/${id}`);
+  };
+
   const getStatusStyle = (status) => {
     switch (status?.toLowerCase()) {
       case "confirmed":
@@ -183,6 +187,17 @@ const UserAppointments = () => {
                       className="bg-red-500 hover:bg-red-600 text-white py-1.5 px-4 rounded-md text-sm transition disabled:opacity-50"
                     >
                       {deletingId === appt._id ? "Deleting..." : "Cancel"}
+                    </button>
+                  </div>
+                )}
+
+                {appt.status === "confirmed" && (
+                  <div className="mt-4 flex gap-3">
+                    <button
+                      onClick={() => handlePayment(appt._id)}
+                      className="bg-indigo-500 hover:bg-indigo-600 text-white py-1.5 px-4 rounded-md text-sm transition"
+                    >
+                      Make Payment
                     </button>
                   </div>
                 )}
