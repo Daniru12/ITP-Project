@@ -7,21 +7,6 @@ const paymentSchema = new mongoose.Schema(
       ref: "Appointment",
       required: [true, "Appointment reference is required"],
     },
-    user_id: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: [true, "User is required"],
-    },
-    pet_id: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Pet",
-        required: [true, "Pet is required"],
-    },
-    service_id: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Service",
-        required: [true, "Service is required"],
-    },
     amount: {
       type: Number,
       required: [true, "Payment amount is required"],
@@ -61,18 +46,6 @@ const paymentSchema = new mongoose.Schema(
         },
       },
     },
-    status: {
-      type: String,
-      enum: ["Pending", "Completed", "Failed"],
-      default: "Pending",
-    },
-    transaction_id: {
-      type: String,
-      unique: true,
-      required: function () {
-        return this.status === "Completed";
-      },
-    },
   },
   {
     timestamps: true,
@@ -82,4 +55,3 @@ const paymentSchema = new mongoose.Schema(
 const Payment = mongoose.model("Payment", paymentSchema);
 
 export default Payment;
-
