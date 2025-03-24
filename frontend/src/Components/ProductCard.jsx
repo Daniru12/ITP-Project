@@ -17,15 +17,18 @@ export const ProductCard = ({ product }) => {
     setIsLiked(!isLiked)
   }
 
+  const rating = typeof product.rating === 'number' ? product.rating : 0
+  const price = typeof product.price === 'number' ? product.price : 0.0
+
   return (
     <Link
-      to={`/product/${product.id}`}
+      to={`/product/${product._id}`}
       className="block bg-white rounded-xl shadow-sm overflow-hidden transform transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
     >
       <div className="relative overflow-hidden group">
         <img
-          src={product.image}
-          alt={product.name}
+          src={product.image || 'https://via.placeholder.com/300x200?text=No+Image'}
+          alt={product.name || 'Product'}
           className="w-full h-48 object-cover transition-transform duration-700 group-hover:scale-110"
         />
         <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-10 transition-opacity duration-300" />
@@ -45,24 +48,24 @@ export const ProductCard = ({ product }) => {
             {[...Array(5)].map((_, i) => (
               <StarIcon
                 key={i}
-                className={`w-4 h-4 transition-colors duration-300 ${i < product.rating ? 'text-yellow-400' : 'text-gray-300'}`}
-                fill={i < product.rating ? 'currentColor' : 'none'}
+                className={`w-4 h-4 transition-colors duration-300 ${i < rating ? 'text-yellow-400' : 'text-gray-300'}`}
+                fill={i < rating ? 'currentColor' : 'none'}
               />
             ))}
           </div>
           <span className="text-xs text-gray-500 ml-1">
-            ({product.rating.toFixed(1)})
+            ({rating.toFixed(1)})
           </span>
         </div>
         <h3 className="font-medium text-gray-900 mb-1 group-hover:text-blue-600 transition-colors duration-300">
-          {product.name}
+          {product.name || 'Unnamed Product'}
         </h3>
         <p className="text-sm text-gray-500 mb-3 line-clamp-2">
-          {product.description}
+          {product.description || 'No description available.'}
         </p>
         <div className="flex items-center justify-between">
           <span className="text-lg font-bold text-gray-900">
-            ${product.price.toFixed(2)}
+            ${price.toFixed(2)}
           </span>
           <button
             onClick={handleAddToCart}
