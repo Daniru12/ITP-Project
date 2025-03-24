@@ -20,7 +20,9 @@ import ServiceSummary from './Pages/Payment/AppointmentSummary'
 import PaymentForm from './Pages/Payment/PaymentForm'
 import AppointmentSummary from './Pages/Payment/OrderSummary'
 import AddAdvertisementForm from './Pages/Advertisement/AddAdvertisementForm'
-
+import UpdateUser from './Pages/Admin/UpdateUser'
+import AdminUpdatePet from './Pages/Admin/UpdatePet'
+import AdminUpdateService from './Pages/Admin/UpdateService'
 
 import { PetCareBooking } from './Pages/Booking/Create/PetCareBooking'
 
@@ -36,8 +38,6 @@ import DisplayServices from './Pages/Home/displayServices'
 import ServiceOverview from './Pages/Home/serviceOverview'
 import AddBoarding from './Pages/Providers/addBoarding'
 import AddTraining from './Pages/Providers/addTraining'
-
-
 
 import UpdatePet from './Pages/PetOwner/updatePet'
 import UpdateService from './Pages/Providers/updateService'
@@ -65,6 +65,9 @@ const AppContent = () => {
           {/* Admin Dashboard with nested routes */}
           <Route path='/admin' element={<AdminDashboard />}>
             <Route path="users" element={<UserManagement />} />
+            <Route path="users/update/:id" element={<UpdateUser />} />
+            <Route path="services/update/:id" element={<AdminUpdateService />} />
+            <Route path="pets/update/:id" element={<AdminUpdatePet />} />
             <Route path="products" element={<div className="p-6"><h2 className="text-2xl font-semibold mb-6">Products Management</h2></div>} />
             <Route path="Services" element={<ServiceManagement />} />
             <Route path="AllPets" element={<PetsManagement />} />
