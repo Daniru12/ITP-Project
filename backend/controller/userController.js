@@ -4,8 +4,11 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import Pet from "../models/Pets.js";
+import express from "express";
 
 dotenv.config();
+
+const router = express.Router();
 
 export function registerUser(req, res) {
   try {
@@ -392,3 +395,134 @@ export const updatePet = async (req, res) => {
     });
   }
 };
+
+export const updateUser = async (req, res) => {
+  try {
+    // Check if the requester is an admin
+    if (req.user.user_type !== "admin") {
+      return res.status(403).json({
+        message: "Only admins can update user details"
+      });
+    }
+
+    const userId = req.params.id;
+    const updateData = req.body;
+    
+    // Remove sensitive fields that shouldn't be updated directly
+    delete updateData.password;
+    delete updateData.user_type; // Prevent changing user type for security
+    
+    // Find and update the user
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { $set: updateData },
+      { new: true, runValidators: true }
+    ).select('-password'); // Exclude password from response
+
+    if (!updatedUser) {
+      return res.status(404).json({
+        message: "User not found"
+      });
+    }
+
+    res.status(200).json({
+      message: "User updated successfully",
+      user: updatedUser
+    });
+  } catch (error) {
+    console.error("Error updating user:", error);
+    res.status(500).json({
+      message: "Error updating user",
+      error: error.message
+    });
+  }
+};
+
+export const adminUpdatePet = async (req, res) => {
+  try {
+    // Check if user is admin
+    if (req.user.user_type !== "admin") {
+      return res.status(403).json({
+        message: "Only admins can update pet details"
+      });
+    }
+
+    const petId = req.params.id;
+    const updateData = req.body;
+
+    // Find and update the pet
+    const updatedPet = await Pet.findByIdAndUpdate(
+      petId,
+      { $set: updateData },
+      { new: true, runValidators: true }
+    ).populate('owner_id', 'username full_name email phone_number');
+
+    if (!updatedPet) {
+      return res.status(404).json({
+        message: "Pet not found"
+      });
+    }
+
+    res.status(200).json({
+      message: "Pet updated successfully",
+      pet: updatedPet
+    });
+  } catch (error) {
+    console.error("Error updating pet:", error);
+    res.status(500).json({
+      message: "Error updating pet",
+      error: error.message
+    });
+  }
+};
+
+export const adminUpdateService = async (req, res) => {
+  try {
+    // Check if user is admin
+    if (req.user.user_type !== "admin") {
+      return res.status(403).json({ message: "Only admins can update services" });
+    }
+
+    const service = await Service.findById(req.params.id);
+    
+    // Check if service exists
+    if (!service) {
+      return res.status(404).json({ message: "Service not found" });
+    }
+
+    // Get updated data from request body
+    const { 
+      service_name, 
+      description, 
+      service_category,
+      packages,
+      is_available 
+    } = req.body;
+
+    // Update service data
+    const updatedService = await Service.findByIdAndUpdate(
+      req.params.id,
+      {
+        service_name,
+        description,
+        service_category,
+        packages,
+        is_available: is_available !== undefined ? is_available : service.is_available
+      },
+      { new: true } // Return the updated document
+    ).populate('provider_id', 'username full_name phone_number email');
+
+    res.status(200).json({
+      message: "Service updated successfully",
+      service: updatedService
+    });
+  } catch (error) {
+    console.error("Error updating service:", error);
+    res.status(500).json({
+      message: "Error updating service",
+      error: error.message
+    });
+  }
+};
+
+export default router;

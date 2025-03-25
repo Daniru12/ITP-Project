@@ -56,7 +56,7 @@ const DisplayServices = () => {
                         {/* Service Image */}
                         <div className="h-48 overflow-hidden">
                             <img
-                                src={service.image || "https://via.placeholder.com/400x300?text=Pet+Service"}
+                                src={service.image?.[0] || "https://via.placeholder.com/400x300?text=Pet+Service"}
                                 alt={service.service_name}
                                 className="w-full h-full object-cover"
                             />

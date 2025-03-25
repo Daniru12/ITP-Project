@@ -3,6 +3,7 @@ import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { FiEdit2, FiTrash2 } from 'react-icons/fi';
 import { FiX } from 'react-icons/fi';
+import { useNavigate } from 'react-router-dom';
 
 const PetDetailsModal = ({ pet, onClose }) => {
   if (!pet) return null;
@@ -67,6 +68,7 @@ const PetDetailsModal = ({ pet, onClose }) => {
 };
 
 const PetsManagement = () => {
+  const navigate = useNavigate();
   const [pets, setPets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -122,6 +124,11 @@ const PetsManagement = () => {
       const errorMessage = error.response?.data?.message || 'Failed to delete pet';
       toast.error(errorMessage);
     }
+  };
+
+  const handleEditPet = (e, petId) => {
+    e.stopPropagation(); // Prevent row click event
+    navigate(`/admin/pets/update/${petId}`);
   };
 
   if (loading) {
@@ -205,12 +212,15 @@ const PetsManagement = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <div className="flex space-x-3">
-                      <button className="text-blue-600 hover:text-blue-900">
+                      <button 
+                        onClick={(e) => handleEditPet(e, pet._id)}
+                        className="text-blue-600 hover:text-blue-900"
+                      >
                         <FiEdit2 className="h-5 w-5" />
                       </button>
                       <button 
                         onClick={(e) => {
-                          e.stopPropagation(); // Prevent row click event
+                          e.stopPropagation();
                           handleDeletePet(pet._id);
                         }} 
                         className="text-red-600 hover:text-red-900"

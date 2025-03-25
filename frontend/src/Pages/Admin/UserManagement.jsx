@@ -157,9 +157,7 @@ const UserManagement = () => {
   };
 
   const handleEditUser = (userId) => {
-    // In a real application, this would open a modal or navigate to an edit page
-    console.log(`Edit user with ID: ${userId}`);
-    toast.success('Edit functionality will be implemented soon');
+    navigate(`/admin/users/update/${userId}`);
   };
 
   const roles = ['All', 'Admin', 'Pet Owner', 'Service Provider'];
