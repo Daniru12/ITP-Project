@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { useParams, useNavigate } from "react-router-dom";
+
 import HamsterLoader from '../../components/HamsterLoader';
 
 const AppointmentCreate = () => {
@@ -126,7 +127,7 @@ const AppointmentCreate = () => {
   const getMinDateTime = () => {
     const now = new Date();
     now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-    return now.toISOString().slice(0, 16); // Format: YYYY-MM-DDTHH:MM
+    return now.toISOString().slice(0, 16);
   };
 
   if (loading) {
@@ -136,22 +137,79 @@ const AppointmentCreate = () => {
   }
 
   return (
-    <div className="max-w-3xl mx-auto px-6 py-10">
-      <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-200">
-        <h2 className="text-2xl font-bold text-gray-800 mb-8 text-center">
-          🐾 Book a New Appointment
-        </h2>
+    <div className="max-w-3xl mx-auto px-6 py-10 font-sans">
+      <div className="bg-white rounded-2xl shadow-lg p-8 border border-blue-100">
+        <div className="text-center mb-8">
+          <img
+            src="/logo.png"
+            alt="Paws & Relax"
+            className="w-16 h-16 mx-auto rounded-full mb-2"
+          />
+          <h1 className="text-2xl font-bold text-blue-700">{services[0]?.service_name || "Unknown service"}</h1>
+          <p className="text-gray-500">Book your pet’care services</p>
+        </div>
+        <div>
+            <h3 className="text-blue-600 font-semibold mb-2">🐾 Pet Profile</h3>
+            <div className="flex gap-4 flex-wrap">
+              {pets.map((pet) => (
+                <div
+                  key={pet._id}
+                  className="flex items-center gap-3 border border-blue-200 px-4 py-2 rounded-xl bg-blue-50"
+                >
+                  <img
+                    src={pet.photo || "/default-pet.png"}
+                    alt={pet.name}
+                    className="w-10 h-10 rounded-full object-cover"
+                  />
+                  <div className="text-sm">
+                    <p className="font-semibold text-gray-700">{pet.name}</p>
+                    <p className="text-gray-500 text-xs">{pet.breed}, {pet.age} years</p>
+                  </div>
+                </div>
+              ))}
+              <br></br>
+            </div>
+            
+          </div>
+          <br></br><br></br>
+        <form onSubmit={handleSubmit} className="space-y-8">
+          {/* Pet Profile */}
+         
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Service Name (Display Only) */}
+          {/* Service Name */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Service</label>
-            <div className="bg-gray-100 text-gray-800 p-3 rounded-lg border border-gray-300">
+            <h3 className="text-blue-600 font-semibold mb-2"> Selected Service</h3>
+            <div className="bg-blue-50 text-blue-900 p-3 rounded-lg border border-blue-200">
               {services[0]?.service_name || "Unknown service"}
             </div>
           </div>
 
-          {/* Pet Selection */}
+          {/* Package Options */}
+          <div>
+            <h3 className="text-blue-600 font-semibold mb-2"> Package Options</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {["basic", "premium", "luxury"].map((type) => (
+                <div
+                  key={type}
+                  onClick={() => setFormData({ ...formData, package_type: type })}
+                  className={`cursor-pointer border rounded-xl p-4 text-sm ${
+                    formData.package_type === type
+                      ? "bg-blue-100 border-blue-500"
+                      : "border-gray-200"
+                  }`}
+                >
+                  <h4 className="font-semibold capitalize text-blue-700">{type} Care</h4>
+                  <p className="text-gray-500 mt-1">
+                    {type === "basic" && "Simple care for your pet"}
+                    {type === "premium" && "Advanced grooming & care"}
+                    {type === "luxury" && "Top-tier grooming + extras"}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+                        {/* Pet Selection */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Select Pet</label>
             <select
@@ -174,11 +232,10 @@ const AppointmentCreate = () => {
             </select>
           </div>
 
+
           {/* Appointment Date & Time */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Appointment Date & Time
-            </label>
+            <h3 className="text-blue-600 font-semibold mb-2"> Book Appointment</h3>
             <input
               type="datetime-local"
               name="appointment_date"
@@ -186,40 +243,24 @@ const AppointmentCreate = () => {
               value={formData.appointment_date}
               onChange={handleChange}
               required
-              className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full border border-blue-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
             />
-          </div>
-
-          {/* Package Type */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Package</label>
-            <select
-              name="package_type"
-              value={formData.package_type}
-              onChange={handleChange}
-              required
-              className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="basic">Basic</option>
-              <option value="premium">Premium</option>
-              <option value="luxury">Luxury</option>
-            </select>
           </div>
 
           {/* Special Notes */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Special Notes</label>
+            <h3 className="text-blue-600 font-semibold mb-2">📝 Special Notes</h3>
             <textarea
               name="special_notes"
               value={formData.special_notes}
               onChange={handleChange}
-              placeholder="Add any special requests or notes..."
-              className="w-full border border-gray-300 rounded-lg p-3 h-28 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Add any special instructions, allergies, or preferences here..."
+              className="w-full border border-blue-300 rounded-lg p-3 h-28 resize-none focus:outline-none focus:ring-2 focus:ring-blue-400"
             />
           </div>
 
           {/* Use Loyalty Points */}
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center gap-2">
             <input
               type="checkbox"
               name="usePoints"
@@ -227,17 +268,19 @@ const AppointmentCreate = () => {
               onChange={handleChange}
               className="accent-blue-600 w-5 h-5"
             />
-            <label className="text-sm text-gray-700">Use Loyalty Points</label>
+            <span className="text-sm text-gray-700">Use Loyalty Points</span>
           </div>
 
-          {/* Submit Button */}
-          <button
-            type="submit"
-            disabled={submitLoading}
-            className="w-full bg-blue-600 text-white font-semibold py-3 rounded-lg shadow hover:bg-blue-700 transition duration-200 disabled:opacity-50"
-          >
-            {submitLoading ? "Booking..." : "Book Appointment"}
-          </button>
+          {/* Submit */}
+          <div className="text-right">
+            <button
+              type="submit"
+              disabled={submitLoading}
+              className="bg-blue-600 text-white font-semibold px-6 py-3 rounded-lg shadow hover:bg-blue-700 transition duration-200 disabled:opacity-50"
+            >
+              {submitLoading ? "Booking..." : "Book"}
+            </button>
+          </div>
         </form>
       </div>
     </div>

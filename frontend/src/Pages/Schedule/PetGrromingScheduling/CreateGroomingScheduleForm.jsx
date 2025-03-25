@@ -19,17 +19,21 @@ const CreateGroomingScheduleForm = () => {
     notes: '',
   });
 
+  // Helper to get current local datetime in 'YYYY-MM-DDTHH:mm' format
+  const getLocalDatetime = () => {
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    return now.toISOString().slice(0, 16);
+  };
+
   useEffect(() => {
-    // Safety check: If no data passed, redirect
     if (!appointmentDetails) {
       toast.error("Appointment details not provided.");
-      
       return;
     }
 
     console.log("Loaded appointment details:", appointmentDetails);
 
-    // Populate IDs
     setFormData((prev) => ({
       ...prev,
       pet_id: appointmentDetails.pet_id?._id || '',
@@ -59,7 +63,7 @@ const CreateGroomingScheduleForm = () => {
       const token = localStorage.getItem('token');
       const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
-      const response = await axios.post(
+      await axios.post(
         `${backendUrl}/api/scheduling/groomingschedule/create`,
         formData,
         {
@@ -84,6 +88,7 @@ const CreateGroomingScheduleForm = () => {
     <div className="max-w-2xl mx-auto mt-10 bg-white p-8 shadow-2xl rounded-2xl border border-blue-100">
       <h2 className="text-3xl font-extrabold text-center text-blue-700 mb-6">Create Grooming Schedule</h2>
       <form onSubmit={handleSubmit} className="space-y-6">
+
         {/* Period */}
         <div>
           <label className="block text-gray-700 font-medium mb-2">Select Period</label>
@@ -109,6 +114,7 @@ const CreateGroomingScheduleForm = () => {
             value={formData.start_time}
             onChange={handleChange}
             required
+            min={getLocalDatetime()}
             className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none"
           />
         </div>

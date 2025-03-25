@@ -49,7 +49,7 @@ const BoardingScheduleList = () => {
       const token = localStorage.getItem('token');
       const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
-      await axios.delete(`${backendUrl}/api/scheduling/bordingschedule/${id}`, {
+      await axios.delete(`${backendUrl}/api/scheduling/bordingschedule/delete/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 

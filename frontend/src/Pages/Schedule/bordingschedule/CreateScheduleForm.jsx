@@ -7,7 +7,6 @@ const CreateBoedingScheduleForm = () => {
   const { state } = useLocation();
   const navigate = useNavigate();
 
-  const appointmentId = state?.appointmentId;
   const appointmentDetails = state?.appointmentDetails;
 
   const [formData, setFormData] = useState({
@@ -16,7 +15,7 @@ const CreateBoedingScheduleForm = () => {
     appointment_id: '',
     duration: 'day',
     start_time: '',
-    end_time: '', // only used if duration is "custom"
+    end_time: '',
   });
 
   useEffect(() => {
@@ -37,29 +36,54 @@ const CreateBoedingScheduleForm = () => {
     }));
   };
 
+  const validateForm = () => {
+    const now = new Date();
+    const startTime = new Date(formData.start_time);
+
+    if (!formData.start_time) {
+      toast.error("Start date is required");
+      return false;
+    }
+
+    if (startTime < now) {
+      toast.error("Start date cannot be in the past");
+      return false;
+    }
+
+    if (formData.duration === 'custom') {
+      if (!formData.end_time) {
+        toast.error("End date is required for custom duration");
+        return false;
+      }
+      const endTime = new Date(formData.end_time);
+      if (endTime <= startTime) {
+        toast.error("End date must be after start date");
+        return false;
+      }
+    }
+
+    return true;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!validateForm()) return;
+
     try {
       const token = localStorage.getItem('token');
       const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
-      const payload = {
-        ...formData,
-      };
+      const payload = { ...formData };
 
-      // Remove end_time if duration is not custom
       if (formData.duration !== 'custom') {
         delete payload.end_time;
       }
 
-      const response = await axios.post(
+      await axios.post(
         `${backendUrl}/api/scheduling/bordingschedule/create`,
         payload,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
 
       toast.success("Boarding schedule created!");
@@ -69,6 +93,8 @@ const CreateBoedingScheduleForm = () => {
       toast.error(error.response?.data?.error || "Failed to create schedule");
     }
   };
+
+  const minDateTime = new Date().toISOString().slice(0,16);
 
   return (
     <div className="max-w-xl mx-auto mt-10 bg-white p-6 shadow rounded-xl">
@@ -91,26 +117,28 @@ const CreateBoedingScheduleForm = () => {
         </div>
 
         <div>
-          <label className="block font-medium mb-1">Start Time</label>
+          <label className="block font-medium mb-1">Start Date</label>
           <input
             type="datetime-local"
             name="start_time"
             value={formData.start_time}
             onChange={handleChange}
             required
+            min={minDateTime}
             className="w-full border rounded p-2"
           />
         </div>
 
         {formData.duration === 'custom' && (
           <div>
-            <label className="block font-medium mb-1">End Time</label>
+            <label className="block font-medium mb-1">End Date</label>
             <input
               type="datetime-local"
               name="end_time"
               value={formData.end_time}
               onChange={handleChange}
               required
+              min={formData.start_time || minDateTime}
               className="w-full border rounded p-2"
             />
           </div>

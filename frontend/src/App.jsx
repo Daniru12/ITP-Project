@@ -84,7 +84,7 @@ const AppContent = () => {
           <Route path='/Appointment' element={<UserAppointments />} />
           <Route path="/appointments/update/:id" element={<UpdateAppointment />} />
           <Route path="/Trainingscheduleadd" element={<CreateTrainingSchedule />} />
-          <Route path="/TrainingScheduleView" element={<TrainingScheduleView />} />
+          <Route path="/schedule/training" element={<TrainingScheduleView />} />
           <Route path="/Groomingscheduleadd" element={<CreateGroomingScheduleForm />} />
           <Route path="/update-groomingschedule/:id" element={<UpdateSchedule />} />
           <Route path="/schedule/grooming" element={<GroomingScheduleList />} />
