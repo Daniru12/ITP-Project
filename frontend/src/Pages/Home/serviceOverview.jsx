@@ -159,11 +159,19 @@ const ServiceOverview = () => {
                     <div className="text-center">
                         <Link
                              to={`/Appointmentadd/${service._id}`}
-                            // to={`/Appointmentadd`}
                             className="inline-block bg-blue-600 text-white px-8 py-3 rounded-md hover:bg-blue-700 transition duration-300"
-                            
                         >
                             Book Now
+                        </Link>
+                    </div>
+                    
+                    {/* Review Button */}
+                    <div className="text-center mt-4">
+                        <Link
+                            to={`/review/${service._id}`}
+                            className="inline-block bg-green-600 text-white px-8 py-3 rounded-md hover:bg-green-700 transition duration-300"
+                        >
+                            Add Review
                         </Link>
                     </div>
                 </div>
