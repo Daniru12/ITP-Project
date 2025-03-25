@@ -1,6 +1,6 @@
 import Advertisement from "../../models/Advertisement/advertise.js";
 
-//Create a new advertisement
+// Create a new advertisement
 export const createAdvertisement = async (req, res) => {
   try {
     const { title, description, category, image_url, start_date, end_date } = req.body;
@@ -23,7 +23,7 @@ export const createAdvertisement = async (req, res) => {
   }
 };
 
-// @desc    Get all advertisements
+// @desc Get all advertisements
 export const getAdvertisements = async (req, res) => {
   try {
     const ads = await Advertisement.find();
@@ -33,7 +33,16 @@ export const getAdvertisements = async (req, res) => {
   }
 };
 
-//Get a single advertisement by ID
+export const getApprovedAdvertisements = async (req, res) => {
+  try {
+    const ads = await Advertisement.find({ status: 'approved' }); // Fetch only approved ads
+    res.status(200).json(ads);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Get a single advertisement by ID
 export const getAdvertisementById = async (req, res) => {
   try {
     const ad = await Advertisement.findById(req.params.id);
@@ -46,7 +55,7 @@ export const getAdvertisementById = async (req, res) => {
   }
 };
 
-// @desc    Update an advertisement
+// @desc Update an advertisement
 export const updateAdvertisement = async (req, res) => {
   try {
     const ad = await Advertisement.findById(req.params.id);
@@ -67,7 +76,7 @@ export const updateAdvertisement = async (req, res) => {
   }
 };
 
-// @desc    Delete an advertisement
+// @desc Delete an advertisement
 export const deleteAdvertisement = async (req, res) => {
   try {
     const ad = await Advertisement.findById(req.params.id);
@@ -82,6 +91,40 @@ export const deleteAdvertisement = async (req, res) => {
 
     await ad.deleteOne();
     res.status(200).json({ message: "Advertisement deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc Approve an advertisement
+export const approveAdvertisement = async (req, res) => {
+  try {
+    const ad = await Advertisement.findByIdAndUpdate(
+      req.params.id,
+      { status: 'approved' },
+      { new: true }
+    );
+    if (!ad) {
+      return res.status(404).json({ message: "Advertisement not found" });
+    }
+    res.status(200).json(ad);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc Reject an advertisement
+export const rejectAdvertisement = async (req, res) => {
+  try {
+    const ad = await Advertisement.findByIdAndUpdate(
+      req.params.id,
+      { status: 'rejected' },
+      { new: true }
+    );
+    if (!ad) {
+      return res.status(404).json({ message: "Advertisement not found" });
+    }
+    res.status(200).json(ad);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

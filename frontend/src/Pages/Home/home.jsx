@@ -7,7 +7,8 @@ import FeaturedSection from '../../Components/FeaturedSection'
 import { TestimonialsSection } from '../../Components/TestimonialsSection'
 import CTASection from '../../Components/CTASection'
 import { Footer } from '../../Components/Footer'
-import { AdvertisementSlideshow } from '../../Components/Advertisement'
+import HomePageAdShow from '../../Components/HomePageAdShow '
+
 
 function home() {
   return (
@@ -15,7 +16,7 @@ function home() {
     <div className="min-h-screen bg-white">
       <main>
         <HeroSection />
-        <AdvertisementSlideshow/>
+        <HomePageAdShow/>
         <ServicesSection />
         <HowItWorksSection />
         <FeaturedSection />
