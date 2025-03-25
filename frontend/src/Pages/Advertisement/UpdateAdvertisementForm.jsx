@@ -1,8 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useNavigate, useParams } from 'react-router-dom'; // to navigate and access ad ID
 import toast from 'react-hot-toast';
 
-const AddAdvertisementForm = ({ onClose }) => {
+const UpdateAdvertisementForm = () => {
+  const { id } = useParams(); // Get the ad ID from the URL
+  const navigate = useNavigate(); // Used to redirect to other pages
+  
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState('Service');
@@ -12,6 +16,38 @@ const AddAdvertisementForm = ({ onClose }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  // Fetch ad details on component mount
+  useEffect(() => {
+    const fetchAdDetails = async () => {
+      try {
+        const backendUrl = import.meta.env.VITE_BACKEND_URL;
+        const token = localStorage.getItem('token');
+        if (!token) {
+          toast.error('Please login to update the advertisement');
+          return;
+        }
+
+        const response = await axios.get(
+          `${backendUrl}/api/advertisement/${id}`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+
+        // Set fetched ad details to state
+        const ad = response.data;
+        setTitle(ad.title);
+        setDescription(ad.description);
+        setCategory(ad.category);
+        setImageUrl(ad.image_url);
+        setStartDate(ad.start_date);
+        setEndDate(ad.end_date);
+      } catch (error) {
+        toast.error('Error fetching advertisement details');
+      }
+    };
+
+    fetchAdDetails();
+  }, [id]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -20,30 +56,24 @@ const AddAdvertisementForm = ({ onClose }) => {
     try {
       const token = localStorage.getItem('token');
       if (!token) {
-        toast.error('Please login to add an advertisement');
+        toast.error('Please login to update an advertisement');
         setLoading(false);
         return;
       }
 
       const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
-      await axios.post(
-        `${backendUrl}/api/advertisement/create`,
+      await axios.put(
+        `${backendUrl}/api/advertisement/update/${id}`,
         { title, description, category, image_url, start_date, end_date },
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      toast.success('Advertisement added successfully!');
-      setTitle('');
-      setDescription('');
-      setCategory('Service');
-      setImageUrl('');
-      setStartDate('');
-      setEndDate('');
-      if (onClose) onClose();
+      toast.success('Advertisement updated successfully!');
+      navigate('/ads'); // Redirect to ads list page (you can change this as needed)
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to add advertisement.');
-      toast.error(err.response?.data?.message || 'Failed to add advertisement.');
+      setError(err.response?.data?.message || 'Failed to update advertisement.');
+      toast.error(err.response?.data?.message || 'Failed to update advertisement.');
     } finally {
       setLoading(false);
     }
@@ -52,9 +82,10 @@ const AddAdvertisementForm = ({ onClose }) => {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <div className="w-full max-w-xl bg-white p-6 rounded-xl shadow-lg">
-        <h2 className="text-2xl font-semibold text-center text-gray-800 mb-6">Add Advertisement</h2>
+        <h2 className="text-2xl font-semibold text-center text-gray-800 mb-6">Update Advertisement</h2>
         {error && <div className="text-red-600 text-center mb-4">{error}</div>}
         <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Form Fields - Similar to AddAdvertisementForm */}
           <div>
             <label className="block text-gray-700 text-lg mb-1">Title</label>
             <input
@@ -126,7 +157,7 @@ const AddAdvertisementForm = ({ onClose }) => {
                 loading ? 'opacity-50 cursor-not-allowed' : ''
               }`}
             >
-              {loading ? 'Adding...' : 'Add Advertisement'}
+              {loading ? 'Updating...' : 'Update Advertisement'}
             </button>
           </div>
         </form>
@@ -135,4 +166,4 @@ const AddAdvertisementForm = ({ onClose }) => {
   );
 };
 
-export default AddAdvertisementForm;
+export default UpdateAdvertisementForm;

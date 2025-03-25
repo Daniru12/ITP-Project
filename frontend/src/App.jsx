@@ -22,8 +22,9 @@ import PaymentForm from './Pages/Payment/PaymentForm'
 import AppointmentSummary from './Pages/Payment/OrderSummary'
 
 import AddAdvertisementForm from './Pages/Advertisement/AddAdvertisementForm'
-
 import AdReviewComponent from './Pages/Advertisement/AdReviewComponent'
+import UpdateAdvertisementForm from './Pages/Advertisement/UpdateAdvertisementForm'
+import DeleteAdvertisement from './Pages/Advertisement/DeleteAdvertisement'
 
 import UpdateUser from './Pages/Admin/UpdateUser'
 import AdminUpdatePet from './Pages/Admin/UpdatePet'
@@ -112,8 +113,9 @@ const AppContent = () => {
 
           <Route path='/AddAdvertisementForm' element={<AddAdvertisementForm/>}/>
           <Route path='/AdReviewComponent' element={<AdReviewComponent/>}/>
-       
-          
+          <Route path='/UpdateAdvertisementForm' element={<UpdateAdvertisementForm/>}/>
+          <Route path='/DeleteAdvertisement' element={<DeleteAdvertisement/>}/>
+
           <Route path='/petmarketplace' element={<PetMarketplace />} /> 
 
           <Route path='/petmarketplace' element={<PetMarketplace />} />
