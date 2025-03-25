@@ -18,26 +18,53 @@ const AddAdvertisementForm = ({ onClose }) => {
     setError(null);
 
     try {
+      // Retrieve token
       const token = localStorage.getItem('token');
       if (!token) {
         toast.error('Please login to add an advertisement');
         return;
       }
 
+      // Retrieve backend URL
       const backendUrl = import.meta.env.VITE_BACKEND_URL;
+      if (!backendUrl) {
+        setError('Backend URL is not defined.');
+        toast.error('Backend URL is missing.');
+        return;
+      }
 
-      const response = await axios.post(`${backendUrl}/api/advertisement/create`, {
-        title,
-        description,
-        category,
-        image_url,
-        start_date,
-        end_date
-      }, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      // Retrieve user ID from localStorage
+      const advertiser_id = localStorage.getItem('userId'); // Ensure this matches the key used to store the userId
+      if (!advertiser_id) {
+        setError('User ID not found. Please log in again.');
+        toast.error('User ID not found. Please log in again.');
+        return;
+      }
+
+      // Validate form inputs
+      if (!title.trim() || !description.trim() || !image_url.trim()) {
+        setError('All fields are required.');
+        toast.error('All fields are required.');
+        return;
+      }
+
+      // Send request
+      await axios.post(
+        `${backendUrl}/api/advertisement/create`,
+        {
+          title,
+          description,
+          category,
+          image_url,
+          start_date,
+          end_date,
+          advertiser_id,
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
 
       toast.success('Advertisement added successfully!');
+
       // Reset form fields
       setTitle('');
       setDescription('');
@@ -45,7 +72,7 @@ const AddAdvertisementForm = ({ onClose }) => {
       setImageUrl('');
       setStartDate('');
       setEndDate('');
-      
+
       if (onClose) {
         onClose();
       }
@@ -67,9 +94,7 @@ const AddAdvertisementForm = ({ onClose }) => {
       )}
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label htmlFor="title" className="block text-sm font-medium text-gray-700">
-            Title
-          </label>
+          <label htmlFor="title" className="block text-sm font-medium text-gray-700">Title</label>
           <input
             type="text"
             id="title"
@@ -80,9 +105,7 @@ const AddAdvertisementForm = ({ onClose }) => {
           />
         </div>
         <div>
-          <label htmlFor="description" className="block text-sm font-medium text-gray-700">
-            Description
-          </label>
+          <label htmlFor="description" className="block text-sm font-medium text-gray-700">Description</label>
           <textarea
             id="description"
             value={description}
@@ -92,9 +115,7 @@ const AddAdvertisementForm = ({ onClose }) => {
           />
         </div>
         <div>
-          <label htmlFor="category" className="block text-sm font-medium text-gray-700">
-            Category
-          </label>
+          <label htmlFor="category" className="block text-sm font-medium text-gray-700">Category</label>
           <select
             id="category"
             value={category}
@@ -107,9 +128,7 @@ const AddAdvertisementForm = ({ onClose }) => {
           </select>
         </div>
         <div>
-          <label htmlFor="image_url" className="block text-sm font-medium text-gray-700">
-            Image URL
-          </label>
+          <label htmlFor="image_url" className="block text-sm font-medium text-gray-700">Image URL</label>
           <input
             type="url"
             id="image_url"
@@ -120,9 +139,7 @@ const AddAdvertisementForm = ({ onClose }) => {
           />
         </div>
         <div>
-          <label htmlFor="start_date" className="block text-sm font-medium text-gray-700">
-            Start Date
-          </label>
+          <label htmlFor="start_date" className="block text-sm font-medium text-gray-700">Start Date</label>
           <input
             type="date"
             id="start_date"
@@ -133,9 +150,7 @@ const AddAdvertisementForm = ({ onClose }) => {
           />
         </div>
         <div>
-          <label htmlFor="end_date" className="block text-sm font-medium text-gray-700">
-            End Date
-          </label>
+          <label htmlFor="end_date" className="block text-sm font-medium text-gray-700">End Date</label>
           <input
             type="date"
             id="end_date"
