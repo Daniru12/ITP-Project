@@ -3,12 +3,9 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { useNavigate, Link } from "react-router-dom";
 import { FaCalendarCheck } from "react-icons/fa";
-<<<<<<< HEAD
 
-=======
-import { Link } from "react-router-dom";
 import HamsterLoader from '../../components/HamsterLoader';
->>>>>>> Development-Branch
+
 const UserAppointments = () => {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
