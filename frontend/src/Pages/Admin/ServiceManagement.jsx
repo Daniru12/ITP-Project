@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FiEdit2, FiTrash2, FiCheck, FiX, FiX as FiClose, FiPhone, FiMail, FiUser } from 'react-icons/fi';
 import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
 
 // Component for displaying package information (Basic, Premium, Luxury)
 const PackageCard = ({ tier, details }) => {
@@ -119,6 +120,7 @@ const ServiceManagement = () => {
   const [loading, setLoading] = useState(true); // Loading state
   const [error, setError] = useState(null); // Error state
   const [selectedService, setSelectedService] = useState(null); // Currently selected service
+  const navigate = useNavigate();
 
   // Fetch services when component mounts
   useEffect(() => {
@@ -153,8 +155,9 @@ const ServiceManagement = () => {
       const token = localStorage.getItem('token');
       const backendUrl = import.meta.env.VITE_BACKEND_URL;
       
-      await axios.patch(
-        `${backendUrl}/api/services/${serviceId}/toggle-status`,
+      // Use the admin update service endpoint
+      await axios.put(
+        `${backendUrl}/api/users/admin-update-service/${serviceId}`,
         { is_available: !currentStatus },
         {
           headers: {
@@ -192,6 +195,11 @@ const ServiceManagement = () => {
   const getProviderName = (service) => {
     if (!service.provider_id) return 'Unknown Provider';
     return service.provider_id.full_name || service.provider_id.username || 'Unknown Provider';
+  };
+
+  const handleEditService = (e, serviceId) => {
+    e.stopPropagation(); // Prevent row click event
+    navigate(`/admin/services/update/${serviceId}`);
   };
 
   // Show loading spinner while fetching data
@@ -336,17 +344,14 @@ const ServiceManagement = () => {
                     <div className="flex space-x-3">
                       <button 
                         className="text-blue-600 hover:text-blue-900"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          // Handle edit (to be implemented)
-                        }}
+                        onClick={(e) => handleEditService(e, service._id)}
                       >
                         <FiEdit2 className="h-5 w-5" />
                       </button>
                       <button 
                         className="text-red-600 hover:text-red-900"
                         onClick={(e) => {
-                          e.stopPropagation(); // Prevent row click event
+                          e.stopPropagation();
                           handleDeleteService(service._id);
                         }}
                       >
