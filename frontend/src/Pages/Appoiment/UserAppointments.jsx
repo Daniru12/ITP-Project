@@ -4,7 +4,7 @@ import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { FaCalendarCheck } from "react-icons/fa";
 import { Link } from "react-router-dom";
-
+import HamsterLoader from '../../components/HamsterLoader';
 const UserAppointments = () => {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -126,9 +126,7 @@ const UserAppointments = () => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-screen">
-        <p className="text-lg">Loading appointments...</p>
-      </div>
+      <HamsterLoader />
     );
   }
 

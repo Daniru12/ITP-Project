@@ -9,7 +9,7 @@ import {
   FaTrash
 } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
-
+import HamsterLoader from '../../components/HamsterLoader';
 const AppointmentsList = () => {
   const [appointments, setAppointments] = useState([]);
   const [boardingSchedules, setBoardingSchedules] = useState([]);
@@ -184,7 +184,7 @@ const AppointmentsList = () => {
     }
   };
 
-  if (loading) return <div className="text-center py-20 text-blue-600">Loading...</div>;
+  if (loading) return <HamsterLoader />;
   if (error) return <div className="text-center text-red-600">{error}</div>;
 
   return (

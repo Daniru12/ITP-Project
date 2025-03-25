@@ -4,7 +4,7 @@ import { toast } from 'react-hot-toast';
 import { FiEdit2, FiTrash2 } from 'react-icons/fi';
 import { FiX } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
-
+import HamsterLoader from '../../components/HamsterLoader';
 const PetDetailsModal = ({ pet, onClose }) => {
   if (!pet) return null;
 
@@ -133,9 +133,7 @@ const PetsManagement = () => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-      </div>
+      <HamsterLoader />
     );
   }
 

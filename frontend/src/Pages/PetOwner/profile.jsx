@@ -3,6 +3,7 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import { Link } from 'react-router-dom';
 import { FaCalendarAlt } from 'react-icons/fa';
+import HamsterLoader from '../../components/HamsterLoader';
 
 export default function Profile() {
   // State to store user data
@@ -89,9 +90,7 @@ export default function Profile() {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center h-screen">
-        <p className="text-xl">Loading...</p>
-      </div>
+      <HamsterLoader />
     );
   }
 
@@ -226,6 +225,23 @@ export default function Profile() {
           <div className="text-center py-6">
             <p className="text-gray-500 mb-2">Track and manage all your pet grooming appointments</p>
             <p className="text-gray-400 text-sm">View appointment status, history, and upcoming bookings</p>
+          </div>
+        </div>
+        {/* Products Section */}
+        <div className="bg-white rounded-lg shadow-md p-6 mt-6">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-bold text-gray-800">My Products</h2>
+            <Link 
+              to="/#"
+              className="flex items-center bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition duration-300"
+            >
+              <FaCalendarAlt className="mr-2" />
+              View My Products
+            </Link>
+          </div>
+          <div className="text-center py-6">
+            <p className="text-gray-500 mb-2">Track and manage all your pet grooming products</p>
+            <p className="text-gray-400 text-sm">View product status, history, and upcoming bookings</p>
           </div>
         </div>
       </div>
