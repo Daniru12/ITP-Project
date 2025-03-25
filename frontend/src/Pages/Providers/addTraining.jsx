@@ -3,6 +3,7 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
 import mediaUpload from "../../../utils/mediaUpload";
+import HamsterLoader from "../../components/HamsterLoader";
 
 const AddTraining = () => {
   const navigate = useNavigate();
@@ -225,6 +226,10 @@ const AddTraining = () => {
     }
   };
   
+  if (isLoading) {
+    return <HamsterLoader />;
+  }
+
   return (
     <div className="max-w-4xl mx-auto p-6">
       <div className="flex justify-between items-center mb-6">
