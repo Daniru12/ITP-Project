@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
+import { FaEdit, FaTrash } from 'react-icons/fa';
 
 const AdReviewComponent = () => {
   const [adDetails, setAdDetails] = useState([]);
@@ -95,7 +96,17 @@ const AdReviewComponent = () => {
       <div className="space-y-6">
         {adDetails.map((ad) => (
           <div key={ad._id} className="border rounded-md p-4 shadow-md">
-            <h3 className="text-xl font-medium mb-2">{ad.title}</h3>
+            <div className="flex justify-between items-center mb-2">
+              <h3 className="text-xl font-medium">{ad.title}</h3>
+              <div className="flex space-x-4">
+                <button className="text-green-600 hover:text-green-800 text-2xl">
+                  <FaEdit />
+                </button>
+                <button className="text-red-600 hover:text-red-800 text-2xl">
+                  <FaTrash />
+                </button>
+              </div>
+            </div>
             <p className="mb-2">{ad.description}</p>
             <div className="mb-2"><strong>Category:</strong> {ad.category}</div>
             <div className="mb-2">
