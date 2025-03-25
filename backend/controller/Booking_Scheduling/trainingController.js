@@ -63,17 +63,26 @@ export const createTrainingSchedule = async (req, res) => {
 
 
 
+// controllers/trainingScheduleController.js
+
 export const getAllSchedules = async (req, res) => {
   try {
     const schedules = await TrainingSchedule.find()
-      .populate('appointment_id')
+      .populate({
+        path: 'appointment_id',
+        populate: {
+          path: 'pet_id service_id', // deeply populate if needed
+        }
+      })
       .populate('pet_id')
       .populate('service_id');
+
     res.status(200).json({ success: true, data: schedules });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
 };
+
 
 export const getScheduleById = async (req, res) => {
   try {
@@ -88,20 +97,81 @@ export const getScheduleById = async (req, res) => {
   }
 };
 
-export const updateSchedule = async (req, res) => {
+
+export const getScheduleByAppointmentId = async (req, res) => {
   try {
-    const updated = await TrainingSchedule.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    res.status(200).json({ success: true, data: updated });
+    const appointmentId = req.params.id;
+
+    const schedule = await TrainingSchedule.findOne({ appointment_id: appointmentId })
+      .populate({
+        path: 'appointment_id',
+        populate: {
+          path: 'pet_id service_id',
+        },
+      })
+      .populate('pet_id')
+      .populate('service_id');
+
+    if (!schedule) {
+      return res.status(404).json({ success: false, message: 'Schedule not found' });
+    }
+
+    res.status(200).json({ success: true, schedule });
+  } catch (error) {
+    console.error('Error fetching training schedule:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+
+
+// PUT /api/scheduling/trainingschedule/:id/session
+export const updateTrainingSession = async (req, res) => {
+  try {
+    const { id } = req.params; // schedule ID
+    const { day, sessionIndex, sessionData } = req.body;
+
+    const schedule = await TrainingSchedule.findById(id);
+    if (!schedule) return res.status(404).json({ message: 'Schedule not found' });
+
+    const dayObj = schedule.schedule.find(d => d.day === day);
+    if (!dayObj || sessionIndex < 0 || sessionIndex >= dayObj.sessions.length) {
+      return res.status(400).json({ message: 'Session not found in the given day' });
+    }
+
+    // Update the session
+    dayObj.sessions[sessionIndex] = { ...dayObj.sessions[sessionIndex], ...sessionData };
+
+    await schedule.save();
+    res.status(200).json({ success: true, message: 'Session updated', schedule });
   } catch (err) {
+    console.error(err);
     res.status(500).json({ success: false, message: err.message });
   }
 };
 
-export const deleteSchedule = async (req, res) => {
+
+// DELETE /api/scheduling/trainingschedule/:id/session
+export const deleteTrainingSession = async (req, res) => {
   try {
-    await TrainingSchedule.findByIdAndDelete(req.params.id);
-    res.status(200).json({ success: true, message: 'Deleted successfully' });
+    const { id } = req.params; // schedule document ID
+    const { day, sessionIndex } = req.body;
+
+    const schedule = await TrainingSchedule.findById(id);
+    if (!schedule) return res.status(404).json({ message: 'Schedule not found' });
+
+    const dayObj = schedule.schedule.find(d => d.day === day);
+    if (!dayObj || sessionIndex < 0 || sessionIndex >= dayObj.sessions.length) {
+      return res.status(400).json({ message: 'Session not found for given day and index' });
+    }
+
+    // Remove the session
+    dayObj.sessions.splice(sessionIndex, 1);
+
+    await schedule.save();
+    res.status(200).json({ success: true, message: 'Session deleted' });
   } catch (err) {
+    console.error(err);
     res.status(500).json({ success: false, message: err.message });
   }
 };

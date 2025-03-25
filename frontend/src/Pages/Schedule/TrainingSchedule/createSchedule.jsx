@@ -27,6 +27,8 @@ const CreateTrainingScheduleForm = () => {
     notes: '',
   });
 
+  const [timeError, setTimeError] = useState('');
+
   const todayStr = new Date().toISOString().split('T')[0]; // format: 'YYYY-MM-DD'
 
   useEffect(() => {
@@ -53,15 +55,31 @@ const CreateTrainingScheduleForm = () => {
   };
 
   const handleSessionChange = (e) => {
+    const { name, value } = e.target;
+
+    if (name === 'time') {
+      const timeRegex = /^(0[1-9]|1[0-2]):[0-5][0-9] (AM|PM)$/;
+      if (value === '' || timeRegex.test(value)) {
+        setTimeError('');
+      } else {
+        setTimeError('Invalid time format. Use HH:MM AM/PM (e.g. 09:00 AM)');
+      }
+    }
+
     setNewSession((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value,
+      [name]: value,
     }));
   };
 
   const handleAddSession = () => {
     if (!newSession.time || !newSession.training_type) {
       toast.error('Please provide time and training type.');
+      return;
+    }
+
+    if (timeError) {
+      toast.error('Please fix time format before adding.');
       return;
     }
 
@@ -154,14 +172,21 @@ const CreateTrainingScheduleForm = () => {
                 <option key={d} value={d}>{d}</option>
               ))}
             </select>
-            <input
-              type="text"
-              name="time"
-              placeholder="Time (e.g. 09:00 AM)"
-              value={newSession.time}
-              onChange={handleSessionChange}
-              className="p-2 border rounded"
-            />
+
+            <div className="flex flex-col">
+              <input
+                type="text"
+                name="time"
+                placeholder="Time (e.g. 09:00 AM)"
+                value={newSession.time}
+                onChange={handleSessionChange}
+                className={`p-2 border rounded ${timeError ? 'border-red-500' : ''}`}
+                pattern="^(0[1-9]|1[0-2]):[0-5][0-9] (AM|PM)$"
+                title="Please enter time in the format HH:MM AM/PM"
+              />
+              {timeError && <span className="text-red-500 text-sm mt-1">{timeError}</span>}
+            </div>
+
             <input
               type="text"
               name="training_type"
@@ -195,7 +220,7 @@ const CreateTrainingScheduleForm = () => {
             onClick={handleAddSession}
             className="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
           >
-            ➕ Add Session
+            Add Session
           </button>
         </div>
 

@@ -76,37 +76,67 @@ export const getSchedulingById = async (req, res) => {
       .populate("service_id")
       .populate("appointment_id");
 
+    console.log("Scheduling data:", scheduling);
+
     if (!scheduling) {
       return res.status(404).json({ error: "Scheduling not found" });
     }
 
     res.status(200).json(scheduling);
   } catch (error) {
+    console.error("Error retrieving schedule:", error);
     res.status(500).json({ error: "Error retrieving scheduling", details: error.message });
   }
 };
 
+
+
+
 // UPDATE SCHEDULING
 export const updateScheduling = async (req, res) => {
   try {
+    const { id } = req.params;
+
+    // Optional: Log body for debugging
+ 
+
+    // Validate required fields (optional but recommended)
+    const requiredFields = ['appointment_id', 'pet_id', 'service_id', 'duration', 'start_time'];
+    for (const field of requiredFields) {
+      if (!req.body[field]) {
+        return res.status(400).json({ error: `Missing required field: ${field}` });
+      }
+    }
+
+    // For 'custom' duration, ensure end_time is provided
+    if (req.body.duration === 'custom' && !req.body.end_time) {
+      return res.status(400).json({ error: 'Custom duration requires an end_time' });
+    }
+
+    // Update the document
     const updatedScheduling = await Scheduling.findByIdAndUpdate(
-      req.params.id,
+      id,
       req.body,
-      { new: true }
+      { new: true, runValidators: true } // ensure Mongoose validation runs
     );
 
     if (!updatedScheduling) {
-      return res.status(404).json({ error: "Scheduling not found" });
+      return res.status(404).json({ error: 'Scheduling not found' });
     }
 
     res.status(200).json({
-      message: "Scheduling updated successfully!",
+      message: 'Scheduling updated successfully!',
       data: updatedScheduling,
     });
   } catch (error) {
-    res.status(500).json({ error: "Update failed", details: error.message });
+    console.error('Error updating schedule:', error); // log in backend
+    res.status(500).json({
+      error: 'Update failed',
+      details: error.message,
+    });
   }
 };
+
 
 // DELETE SCHEDULING
 export const deleteScheduling = async (req, res) => {

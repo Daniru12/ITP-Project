@@ -12,8 +12,9 @@ import {
     createTrainingSchedule,
   getAllSchedules,
   getScheduleById,
-  updateSchedule,
-  deleteSchedule,
+  updateTrainingSession,
+  deleteTrainingSession,
+  getScheduleByAppointmentId
 } from "../../controller/Booking_Scheduling/trainingController.js";
 
 import {
@@ -34,7 +35,7 @@ import { protect } from "../../middleware/authMiddleware.js";
 
 router.post("/groomingschedule/create",protect, createGroomingScheduling);            // Schedule a grooming appointment
 router.get("/groomingschedule",protect, getAllGroomingSchedulings);            // View all grooming appointments
-router.get("/groomingschedule/:id",protect, getGroomingSchedulingById);         // View a specific appointment
+router.get("/groomingschedule/:id", getGroomingSchedulingById);       // View a specific appointment
 router.put("/groomingschedule/update/:id",protect, updateGroomingSheduling);          // Update an appointment
 router.delete("/groomingschedule/delete/:id",protect, deleteGroomingScheduling);   
 
@@ -43,8 +44,8 @@ router.delete("/groomingschedule/delete/:id",protect, deleteGroomingScheduling);
 router.post('/trainingschedule/create',protect, createTrainingSchedule);
 router.get('/trainingschedule', getAllSchedules);
 router.get('/trainingschedule/:id',protect, getScheduleById);
-router.put('/trainingschedule/update/:id',protect, updateSchedule);
-router.delete('/trainingschedule/delete/:id', protect,deleteSchedule);
+router.put('/trainingschedule/update/:id',protect, updateTrainingSession);
+router.delete('/trainingschedule/delete/:id', protect,deleteTrainingSession);
 
 
 

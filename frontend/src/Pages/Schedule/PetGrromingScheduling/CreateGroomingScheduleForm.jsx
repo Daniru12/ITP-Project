@@ -3,47 +3,44 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
-
-const CreateTrainingScheduleForm = () => {
+const CreateGroomingScheduleForm = () => {
   const { state } = useLocation();
   const navigate = useNavigate();
 
   const appointmentDetails = state?.appointmentDetails;
 
   const [formData, setFormData] = useState({
-    appointment_id: '',
     pet_id: '',
     service_id: '',
-    week_start_date: '',
-    schedule: [],
-  });
-
-  const [newSession, setNewSession] = useState({
-    day: 'Monday',
-    time: '',
-    training_type: '',
-    duration: '1hour',
+    appointment_id: '',
+    Period: '30min',
+    start_time: '',
+    special_requests: '',
     notes: '',
   });
 
+  // Helper to get current local datetime in 'YYYY-MM-DDTHH:mm' format
+  const getLocalDatetime = () => {
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    return now.toISOString().slice(0, 16);
+  };
+
   useEffect(() => {
-    console.log("🔥 STATE:", state);
-    console.log("🐾 appointmentDetails:", appointmentDetails);
     if (!appointmentDetails) {
-      toast.error('Appointment details not provided.');
+      toast.error("Appointment details not provided.");
       return;
     }
 
-    console.log('🐾 Loaded appointment details:', appointmentDetails);
+    console.log("Loaded appointment details:", appointmentDetails);
 
     setFormData((prev) => ({
       ...prev,
-      appointment_id: appointmentDetails._id || '',
       pet_id: appointmentDetails.pet_id?._id || '',
       service_id: appointmentDetails.service_id?._id || '',
+      appointment_id: appointmentDetails._id || '',
     }));
-  }, []);
+  }, []); // ✅ no dependency warning
 
   const handleChange = (e) => {
     setFormData((prev) => ({
@@ -52,61 +49,13 @@ const CreateTrainingScheduleForm = () => {
     }));
   };
 
-  const handleSessionChange = (e) => {
-    setNewSession((prev) => ({
-      ...prev,
-      [e.target.name]: e.target.value,
-    }));
-  };
-
-  const handleAddSession = () => {
-    if (!newSession.time || !newSession.training_type) {
-      toast.error('Please provide time and training type.');
-      return;
-    }
-
-    const existingDay = formData.schedule.find((d) => d.day === newSession.day);
-    const sessionData = {
-      ...newSession,
-      status: 'Scheduled',
-    };
-
-    let updatedSchedule;
-
-    if (existingDay) {
-      existingDay.sessions.push(sessionData);
-      updatedSchedule = [...formData.schedule];
-    } else {
-      updatedSchedule = [
-        ...formData.schedule,
-        {
-          day: newSession.day,
-          sessions: [sessionData],
-        },
-      ];
-    }
-
-    setFormData((prev) => ({
-      ...prev,
-      schedule: updatedSchedule,
-    }));
-
-    setNewSession({
-      day: 'Monday',
-      time: '',
-      training_type: '',
-      duration: '1hour',
-      notes: '',
-    });
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const { appointment_id, pet_id, service_id, week_start_date, schedule } = formData;
+    const { pet_id, service_id, appointment_id, start_time } = formData;
 
-    if (!appointment_id || !pet_id || !service_id || !week_start_date || schedule.length === 0) {
-      toast.error('All required fields must be filled and at least one session added.');
+    if (!pet_id || !service_id || !appointment_id || !start_time) {
+      toast.error("All required fields must be filled");
       return;
     }
 
@@ -114,8 +63,8 @@ const CreateTrainingScheduleForm = () => {
       const token = localStorage.getItem('token');
       const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
-      const response = await axios.post(
-        `${backendUrl}/api/scheduling/trainingschedule/create`,
+      await axios.post(
+        `${backendUrl}/api/scheduling/groomingschedule/create`,
         formData,
         {
           headers: {
@@ -124,127 +73,89 @@ const CreateTrainingScheduleForm = () => {
         }
       );
 
-      toast.success('Training schedule created!');
-      navigate('/schedule/training');
+      toast.success("Grooming schedule created!");
+      navigate("/schedule/grooming");
     } catch (error) {
-      console.error('❌ Scheduling error:', error);
-      toast.error(error.response?.data?.message || 'Failed to create schedule');
+      console.error("Scheduling error:", error);
+      toast.error(error.response?.data?.error || "Failed to create schedule");
     }
   };
 
-  return (
-    <div className="max-w-2xl mx-auto mt-10 bg-white p-8 shadow-2xl rounded-2xl border border-green-100">
-      <h2 className="text-3xl font-extrabold text-center text-green-700 mb-6">Create Training Schedule</h2>
+  const isSubmitDisabled =
+    !formData.pet_id || !formData.service_id || !formData.appointment_id || !formData.start_time;
 
+  return (
+    <div className="max-w-2xl mx-auto mt-10 bg-white p-8 shadow-2xl rounded-2xl border border-blue-100">
+      <h2 className="text-3xl font-extrabold text-center text-blue-700 mb-6">Create Grooming Schedule</h2>
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Week Start Date */}
+
+        {/* Period */}
         <div>
-          <label className="block text-gray-700 font-medium mb-2">Week Start Date</label>
+          <label className="block text-gray-700 font-medium mb-2">Select Period</label>
+          <select
+            name="Period"
+            value={formData.Period}
+            onChange={handleChange}
+            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none"
+          >
+            <option value="30min">30 Minutes</option>
+            <option value="1hour">1 Hour</option>
+            <option value="2hours">2 Hours</option>
+            <option value="custom">Custom (use end_time field)</option>
+          </select>
+        </div>
+
+        {/* Start Time */}
+        <div>
+          <label className="block text-gray-700 font-medium mb-2">Start Time</label>
           <input
-            type="date"
-            name="week_start_date"
-            value={formData.week_start_date}
+            type="datetime-local"
+            name="start_time"
+            value={formData.start_time}
             onChange={handleChange}
             required
-            className="w-full border border-gray-300 rounded-lg px-4 py-2"
+            min={getLocalDatetime()}
+            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none"
           />
         </div>
 
-        {/* Session Fields */}
-        <div className="p-4 bg-gray-100 rounded-xl">
-          <h3 className="text-lg font-semibold mb-4">Add Training Session</h3>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <select
-              name="day"
-              value={newSession.day}
-              onChange={handleSessionChange}
-              className="border px-3 py-2 rounded"
-            >
-              {daysOfWeek.map((day) => (
-                <option key={day} value={day}>
-                  {day}
-                </option>
-              ))}
-            </select>
-            <input
-              type="text"
-              name="time"
-              placeholder="Time (e.g., 07:30 PM)"
-              value={newSession.time}
-              onChange={handleSessionChange}
-              className="border px-3 py-2 rounded"
-            />
-            <input
-              type="text"
-              name="training_type"
-              placeholder="Training Type"
-              value={newSession.training_type}
-              onChange={handleSessionChange}
-              className="border px-3 py-2 rounded"
-            />
-            <select
-              name="duration"
-              value={newSession.duration}
-              onChange={handleSessionChange}
-              className="border px-3 py-2 rounded"
-            >
-              <option value="30min">30 Minutes</option>
-              <option value="1hour">1 Hour</option>
-              <option value="2hours">2 Hours</option>
-              <option value="custom">Custom</option>
-            </select>
-            <input
-              type="text"
-              name="notes"
-              placeholder="Notes"
-              value={newSession.notes}
-              onChange={handleSessionChange}
-              className="border px-3 py-2 rounded"
-            />
-          </div>
-
-          <button
-            type="button"
-            onClick={handleAddSession}
-            className="mt-4 bg-green-500 text-white px-4 py-2 rounded shadow hover:bg-green-600"
-          >
-            Add Session
-          </button>
+        {/* Special Requests */}
+        <div>
+          <label className="block text-gray-700 font-medium mb-2">Special Requests</label>
+          <textarea
+            name="special_requests"
+            placeholder="e.g. Use organic shampoo"
+            value={formData.special_requests}
+            onChange={handleChange}
+            className="w-full border border-gray-300 rounded-lg px-4 py-2 h-24 resize-none focus:ring-2 focus:ring-blue-400 focus:outline-none"
+          />
         </div>
 
-        {/* Submit */}
+        {/* Notes */}
+        <div>
+          <label className="block text-gray-700 font-medium mb-2">Additional Notes</label>
+          <textarea
+            name="notes"
+            placeholder="Any other notes..."
+            value={formData.notes}
+            onChange={handleChange}
+            className="w-full border border-gray-300 rounded-lg px-4 py-2 h-24 resize-none focus:ring-2 focus:ring-blue-400 focus:outline-none"
+          />
+        </div>
+
+        {/* Submit Button */}
         <button
           type="submit"
-          className="w-full bg-green-600 hover:bg-green-700 text-white text-lg font-semibold py-3 rounded-xl shadow-md"
+          disabled={isSubmitDisabled}
+          className={`w-full ${
+            isSubmitDisabled ? 'bg-blue-300 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
+          } text-white text-lg font-semibold py-3 rounded-xl transition duration-200 shadow-md`}
         >
           Submit Schedule
         </button>
       </form>
-
-      {/* Schedule Preview */}
-      {formData.schedule.length > 0 && (
-        <div className="mt-8">
-          <h3 className="text-lg font-bold mb-3 text-green-600">Scheduled Sessions</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {formData.schedule.map((dayGroup, index) => (
-              <div key={index} className="bg-gray-50 p-4 border rounded-lg shadow-sm">
-                <h4 className="font-semibold text-green-700 mb-2">{dayGroup.day}</h4>
-                {dayGroup.sessions.map((s, i) => (
-                  <div key={i} className="text-sm mb-2 border-b pb-2">
-                    <p><strong>Time:</strong> {s.time}</p>
-                    <p><strong>Type:</strong> {s.training_type}</p>
-                    <p><strong>Duration:</strong> {s.duration}</p>
-                    {s.notes && <p><strong>Notes:</strong> {s.notes}</p>}
-                  </div>
-                ))}
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   );
 };
 
-export default CreateTrainingScheduleForm;
+export default CreateGroomingScheduleForm;
