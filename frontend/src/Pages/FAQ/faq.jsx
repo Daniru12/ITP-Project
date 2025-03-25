@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 const CreateFaq = () => {
   const [formData, setFormData] = useState({
     question: "",
-    category: "General",
+    category: "",
   });
 
   const [loading, setLoading] = useState(true);

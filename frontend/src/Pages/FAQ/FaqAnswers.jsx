@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -10,7 +10,7 @@ const FaqAdmin = () => {
   const [loading, setLoading] = useState(true);
   const [editingFaq, setEditingFaq] = useState(null);
   const [answer, setAnswer] = useState("");
-  const [userRole, setUserRole] = useState(null);
+  const [userRole, setUserRole] = useState();
 
   const token = localStorage.getItem("token");
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
@@ -18,12 +18,9 @@ const FaqAdmin = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [faqResponse] = await Promise.all([
-          axios.get(`${backendUrl}/api/faqs/all`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-        ]);
-
+        const faqResponse = await axios.get(`${backendUrl}/api/faqs/all`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
         setFaqs(faqResponse.data);
 
         if (token) {
@@ -80,6 +77,27 @@ const FaqAdmin = () => {
     }
   };
 
+  const handleConfirmAnswer = async (faqId) => {
+    try {
+      await axios.put(
+        `${backendUrl}/api/faqs/confirmAns/${faqId}`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      
+      setFaqs((prevFaqs) =>
+        prevFaqs.map((faq) =>
+          faq._id === faqId ? { ...faq, approved: true } : faq
+        )
+      );
+      
+      toast.success("FAQ answer approved successfully");
+    } catch (err) {
+      console.error("Error confirming answer:", err.response?.data || err.message);
+      toast.error("Failed to confirm answer");
+    }
+  };
+
   if (loading) {
     return <div className="flex justify-center items-center h-screen">Loading FAQs...</div>;
   }
@@ -113,6 +131,14 @@ const FaqAdmin = () => {
                 )}
               </summary>
               <p className="text-gray-600 mt-2">{faq.answer || "No answer provided."}</p>
+              {userRole === "admin" && !faq.approved && faq.answer && (
+                <button
+                  className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 mt-2"
+                  onClick={() => handleConfirmAnswer(faq._id)}
+                >
+                  Confirm
+                </button>
+              )}
             </details>
           ))}
       </div>

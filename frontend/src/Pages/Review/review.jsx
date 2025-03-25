@@ -2,14 +2,15 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom"; // Import useNavigate
 
 const CreateReview = () => {
   const { serviceId } = useParams(); // Get service ID from URL params
+  const navigate = useNavigate(); // Initialize navigate
   const [formData, setFormData] = useState({
     rating: 1,
     review: "",
-    service: "67e04020bf8ff9a7947c9d59", // Default to current service
+    service: "67e04020bf8ff9a7947c9d59" // Use dynamic service ID
   });
   
   const [submitLoading, setSubmitLoading] = useState(false);
@@ -42,6 +43,11 @@ const CreateReview = () => {
 
       toast.success("Review submitted successfully!");
       setFormData({ rating: 1, review: "", service: serviceId });
+
+      // Navigate to the AllReviews page after submission
+      setTimeout(() => {
+        navigate("/reviewdisplay"); // Adjust the route if necessary
+      }, 2000);
     } catch (err) {
       console.error("Review submission error:", err.response?.data || err.message);
       toast.error(err.response?.data?.message || "Failed to submit review");
@@ -82,7 +88,9 @@ const CreateReview = () => {
 
         <button
           type="submit"
-          className={`w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition ${submitLoading ? "opacity-50 cursor-not-allowed" : ""}`}
+          className={`w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition ${
+            submitLoading ? "opacity-50 cursor-not-allowed" : ""
+          }`}
           disabled={submitLoading}
         >
           {submitLoading ? "Submitting..." : "Submit Review"}

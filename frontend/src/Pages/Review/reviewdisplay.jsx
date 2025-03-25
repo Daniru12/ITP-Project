@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom"; // Import useNavigate
 
 const AllReviews = () => {
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate(); // Initialize useNavigate
 
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const token = localStorage.getItem("token");
@@ -76,6 +77,16 @@ const AllReviews = () => {
           ))}
         </ul>
       )}
+
+      {/* Submit Another Review Button */}
+      <div className="mt-6 text-center">
+        <button
+          onClick={() => navigate("/review")} // Adjust the route if needed
+          className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition"
+        >
+          Submit Another Review
+        </button>
+      </div>
     </div>
   );
 };
