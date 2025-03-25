@@ -2,27 +2,39 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useParams, useNavigate } from "react-router-dom"; // Import useNavigate
+import { useParams, useNavigate } from "react-router-dom";
 
 const CreateReview = () => {
-  const { serviceId } = useParams(); // Get service ID from URL params
-  const navigate = useNavigate(); // Initialize navigate
+  const { serviceId } = useParams(); 
+  const navigate = useNavigate(); 
   const [formData, setFormData] = useState({
     rating: 1,
     review: "",
-    service: "67e04020bf8ff9a7947c9d59" // Use dynamic service ID
+    service: serviceId || "" // Ensure it initializes correctly
   });
-  
+
   const [submitLoading, setSubmitLoading] = useState(false);
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const token = localStorage.getItem("token");
 
   useEffect(() => {
+    console.log("Service ID:", serviceId); // Debugging serviceId value
+
     if (!token) {
       toast.error("You're not logged in.");
-      window.location.href = "/login";
+      navigate("/login");
+      return;
     }
-  }, [token]);
+
+    if (!serviceId) {
+      toast.error("Failed to load service. Invalid service ID.");
+      navigate("/services"); // Redirect to services page or error page
+      return;
+    }
+
+    // Update formData when serviceId changes
+    setFormData((prev) => ({ ...prev, service: serviceId }));
+  }, [serviceId, token, navigate]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -37,16 +49,16 @@ const CreateReview = () => {
     setSubmitLoading(true);
 
     try {
-      await axios.post(`${backendUrl}/api/reviews/create`, formData, {
+      const response = await axios.post(`${backendUrl}/api/reviews/create`, formData, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
+      console.log("Review submitted:", response.data);
       toast.success("Review submitted successfully!");
       setFormData({ rating: 1, review: "", service: serviceId });
 
-      // Navigate to the AllReviews page after submission
       setTimeout(() => {
-        navigate("/reviewdisplay"); // Adjust the route if necessary
+        navigate("/reviewdisplay");
       }, 2000);
     } catch (err) {
       console.error("Review submission error:", err.response?.data || err.message);
