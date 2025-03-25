@@ -2,9 +2,14 @@ import React, { useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
+import mediaUpload from "../../../utils/mediaUpload";
 
 const AddGrooming = () => {
   const navigate = useNavigate();
+  
+  // Add loading state and images state
+  const [isLoading, setIsLoading] = useState(false);
+  const [images, setImages] = useState([]);
   
   // Simplified initial state with clear naming
   const [serviceName, setServiceName] = useState("");
@@ -131,9 +136,21 @@ const AddGrooming = () => {
     setLuxuryPackage({...luxuryPackage, includes: updatedServices});
   };
   
-  // Form submission handler
+  // Add image change handler
+  const handleImagesChange = (e) => {
+    const files = e.target.files;
+    if (files.length > 5) {
+      toast.error("Maximum 5 images allowed");
+      e.target.value = null;
+      return;
+    }
+    setImages(files);
+  };
+  
+  // Update form submission handler
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
     
     // Validate minimum duration
     const packages = {
@@ -146,10 +163,12 @@ const AddGrooming = () => {
     for (const [tier, package_] of Object.entries(packages)) {
       if (Number(package_.duration) < 15) {
         toast.error(`${tier} package duration must be at least 15 minutes`);
+        setIsLoading(false);
         return;
       }
       if (Number(package_.price) < 0) {
         toast.error(`${tier} package price cannot be negative`);
+        setIsLoading(false);
         return;
       }
     }
@@ -157,24 +176,39 @@ const AddGrooming = () => {
     // Check if location is provided
     if (!location.trim()) {
       toast.error("Location is required");
+      setIsLoading(false);
       return;
     }
-    
-    // Reconstruct the data in the format expected by the API
-    const formData = {
-      service_name: serviceName,
-      service_category: "pet_grooming",
-      description: description,
-      location: location,
-      image: imageUrl || undefined, // Only send if provided
-      packages: {
-        basic: basicPackage,
-        premium: premiumPackage,
-        luxury: luxuryPackage
-      }
-    };
-    
+
     try {
+      // Upload images to Supabase
+      const imageUrls = [];
+      for (let i = 0; i < images.length; i++) {
+        try {
+          const url = await mediaUpload(images[i]);
+          imageUrls.push(url);
+        } catch (error) {
+          console.error("Error uploading image:", error);
+          toast.error("Error uploading image");
+          setIsLoading(false);
+          return;
+        }
+      }
+    
+      // Reconstruct the data in the format expected by the API
+      const formData = {
+        service_name: serviceName,
+        service_category: "pet_grooming",
+        description: description,
+        location: location,
+        image: imageUrls, // Send array of image URLs
+        packages: {
+          basic: basicPackage,
+          premium: premiumPackage,
+          luxury: luxuryPackage
+        }
+      };
+      
       const token = localStorage.getItem("token");
       const backendUrl = import.meta.env.VITE_BACKEND_URL;
       
@@ -186,6 +220,8 @@ const AddGrooming = () => {
       navigate("/provider-profile");
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to add service");
+    } finally {
+      setIsLoading(false);
     }
   };
   
@@ -230,13 +266,18 @@ const AddGrooming = () => {
               className="w-full p-2 border rounded-md"
               required
             />
-            <input
-              type="url"
-              placeholder="Image URL (optional)"
-              value={imageUrl}
-              onChange={handleImageUrlChange}
-              className="w-full p-2 border rounded-md"
-            />
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Upload Images (Maximum 5)
+              </label>
+              <input
+                type="file"
+                multiple
+                accept="image/*"
+                onChange={handleImagesChange}
+                className="w-full p-2 border rounded-md"
+              />
+            </div>
           </div>
         </div>
 
@@ -399,9 +440,12 @@ const AddGrooming = () => {
         <div className="flex justify-end">
           <button
             type="submit"
-            className="bg-blue-500 text-white px-6 py-2 rounded-md"
+            disabled={isLoading}
+            className={`bg-blue-500 text-white px-6 py-2 rounded-md ${
+              isLoading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-600'
+            }`}
           >
-            Create Service
+            {isLoading ? 'Creating Service...' : 'Create Service'}
           </button>
         </div>
       </form>

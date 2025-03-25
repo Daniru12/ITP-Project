@@ -63,13 +63,30 @@ const ServiceOverview = () => {
             </div>
 
             <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-md overflow-hidden">
-                {/* Service Image */}
-                <div className="h-64 overflow-hidden">
-                    <img
-                        src={service.image || "https://via.placeholder.com/800x400?text=Pet+Service"}
-                        alt={service.service_name}
-                        className="w-full h-full object-cover"
-                    />
+                {/* Service Images Gallery */}
+                <div className="relative">
+                    {/* Main Image */}
+                    <div className="h-64 overflow-hidden">
+                        <img
+                            src={service.image?.[0] || "https://via.placeholder.com/800x400?text=Pet+Service"}
+                            alt={service.service_name}
+                            className="w-full h-full object-cover"
+                        />
+                    </div>
+                    
+                    {/* Thumbnail Gallery */}
+                    {service.image && service.image.length > 1 && (
+                        <div className="flex gap-2 p-2 bg-gray-100 overflow-x-auto">
+                            {service.image.map((img, index) => (
+                                <img
+                                    key={index}
+                                    src={img}
+                                    alt={`${service.service_name} ${index + 1}`}
+                                    className="h-20 w-20 object-cover rounded cursor-pointer"
+                                />
+                            ))}
+                        </div>
+                    )}
                 </div>
 
                 {/* Service Content */}
