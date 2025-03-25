@@ -3,7 +3,7 @@ import axios from 'axios';
 import { FiEdit2, FiTrash2, FiCheck, FiX, FiX as FiClose, FiPhone, FiMail, FiUser } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
-
+import HamsterLoader from '../../components/HamsterLoader';
 // Component for displaying package information (Basic, Premium, Luxury)
 const PackageCard = ({ tier, details }) => {
   return (
@@ -205,9 +205,7 @@ const ServiceManagement = () => {
   // Show loading spinner while fetching data
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-      </div>
+      <HamsterLoader />
     );
   }
 

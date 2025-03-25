@@ -12,7 +12,6 @@ import {
 } from 'react-icons/fi';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
-
 // Dashboard components
 const DashboardHome = () => (
   <div className="p-6">
