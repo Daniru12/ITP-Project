@@ -29,16 +29,12 @@ const AdReviewComponent = () => {
       setLoading(true);
       setError(null);
 
-      console.log("Fetching ads with token:", token);
-
       try {
         const response = await axios.get('http://localhost:3000/api/advertisement', {
           headers: { Authorization: `Bearer ${token}` },
         });
-        console.log("Ads fetched successfully:", response.data);
         setAdDetails(response.data);
       } catch (err) {
-        console.error("Error fetching ads:", err.response ? err.response.data : err.message);
         setError('Failed to fetch advertisement details.');
       } finally {
         setLoading(false);
@@ -49,7 +45,7 @@ const AdReviewComponent = () => {
   }, []);
 
   const handleApprove = async (adId, imageUrl) => {
-    setReviewStatus((prev) => ({ ...prev, [adId]: 'approving' }));
+    setReviewStatus((prev) => ({ ...prev, [adId]: 'approved' }));
     
     const token = localStorage.getItem('token');
     if (!token) {
@@ -58,21 +54,19 @@ const AdReviewComponent = () => {
     }
 
     try {
-      await axios.post(
+      await axios.put(
         `http://localhost:3000/api/advertisement/approve/${adId}`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
       localStorage.setItem('approvedImageUrl', imageUrl);
-      setReviewStatus((prev) => ({ ...prev, [adId]: 'approved' }));
     } catch (err) {
-      console.error("Error approving ad:", err.response ? err.response.data : err.message);
       setError('Failed to approve the advertisement.');
     }
   };
 
   const handleReject = async (adId) => {
-    setReviewStatus((prev) => ({ ...prev, [adId]: 'rejecting' }));
+    setReviewStatus((prev) => ({ ...prev, [adId]: 'rejected' }));
 
     const token = localStorage.getItem('token');
     if (!token) {
@@ -81,15 +75,12 @@ const AdReviewComponent = () => {
     }
 
     try {
-      await axios.post(
+      await axios.put(
         `http://localhost:3000/api/advertisement/reject/${adId}`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      setReviewStatus((prev) => ({ ...prev, [adId]: 'rejected' }));
-      setError('Ad is rejected successfully.');
     } catch (err) {
-      console.error("Error rejecting ad:", err.response ? err.response.data : err.message);
       setError('Failed to reject the advertisement.');
     }
   };
@@ -114,20 +105,20 @@ const AdReviewComponent = () => {
             <div className="mb-2"><strong>Start Date:</strong> {ad.start_date}</div>
             <div className="mb-4"><strong>End Date:</strong> {ad.end_date}</div>
             <div className="flex justify-end space-x-4">
-              {reviewStatus[ad._id] === 'approving' && <div>Approving...</div>}
-              {reviewStatus[ad._id] === 'rejecting' && <div>Rejecting...</div>}
-              {reviewStatus[ad._id] === 'approved' && <div className="text-green-500">Approved</div>}
-              {reviewStatus[ad._id] === 'rejected' && <div className="text-red-500">Rejected</div>}
-              <button
-                onClick={() => handleApprove(ad._id, ad.image_url)}
-                disabled={reviewStatus[ad._id] === 'approving' || reviewStatus[ad._id] === 'approved'}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md disabled:opacity-50"
-              >Approve</button>
-              <button
-                onClick={() => handleReject(ad._id)}
-                disabled={reviewStatus[ad._id] === 'rejecting' || reviewStatus[ad._id] === 'rejected'}
-                className="px-4 py-2 bg-red-600 text-white rounded-md disabled:opacity-50"
-              >Reject</button>
+              {reviewStatus[ad._id] === 'approved' ? (
+                <div className="text-green-500">Approved</div>
+              ) : (
+                <>
+                  <button
+                    onClick={() => handleApprove(ad._id, ad.image_url)}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-md"
+                  >Approve</button>
+                  <button
+                    onClick={() => handleReject(ad._id)}
+                    className="px-4 py-2 bg-red-600 text-white rounded-md"
+                  >Reject</button>
+                </>
+              )}
             </div>
           </div>
         ))}
