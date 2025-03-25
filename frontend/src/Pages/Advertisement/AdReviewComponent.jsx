@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
+import { FaEdit, FaTrash } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom'; // To navigate to the edit page
+
 
 const AdReviewComponent = () => {
   const [adDetails, setAdDetails] = useState([]);
@@ -8,6 +11,7 @@ const AdReviewComponent = () => {
   const [error, setError] = useState(null);
   const [reviewStatus, setReviewStatus] = useState({});
   const [user, setUser] = useState(null);
+  const navigate = useNavigate(); // To navigate to the edit page
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -46,7 +50,7 @@ const AdReviewComponent = () => {
 
   const handleApprove = async (adId, imageUrl) => {
     setReviewStatus((prev) => ({ ...prev, [adId]: 'approved' }));
-    
+
     const token = localStorage.getItem('token');
     if (!token) {
       setError('No token found. Please log in.');
@@ -85,6 +89,30 @@ const AdReviewComponent = () => {
     }
   };
 
+  const handleDelete = async (adId) => {
+    if (window.confirm('Are you sure you want to delete this advertisement?')) {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setError('No token found. Please log in.');
+        return;
+      }
+
+      try {
+        await axios.delete(
+          `http://localhost:3000/api/advertisement/delete/${adId}`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        setAdDetails(adDetails.filter((ad) => ad._id !== adId)); // Remove the deleted ad from the list
+      } catch (err) {
+        setError('Failed to delete the advertisement.');
+      }
+    }
+  };
+
+  const handleEdit = (adId) => {
+    navigate(`/update-ad/${adId}`); // Navigate to the edit page
+  };
+
   if (loading) return <div className="text-center py-4">Loading...</div>;
   if (error) return <div className="text-red-500 text-center py-4">{error}</div>;
   if (!adDetails.length) return <div className="text-center py-4">No advertisement details available.</div>;
@@ -95,7 +123,23 @@ const AdReviewComponent = () => {
       <div className="space-y-6">
         {adDetails.map((ad) => (
           <div key={ad._id} className="border rounded-md p-4 shadow-md">
-            <h3 className="text-xl font-medium mb-2">{ad.title}</h3>
+            <div className="flex justify-between items-center mb-2">
+              <h3 className="text-xl font-medium">{ad.title}</h3>
+              <div className="flex space-x-4">
+                <button
+                  onClick={() => handleEdit(ad._id)} // Edit button functionality
+                  className="text-green-600 hover:text-green-800 text-2xl"
+                >
+                  <FaEdit />
+                </button>
+                <button
+                  onClick={() => handleDelete(ad._id)} // Delete button functionality
+                  className="text-red-600 hover:text-red-800 text-2xl"
+                >
+                  <FaTrash />
+                </button>
+              </div>
+            </div>
             <p className="mb-2">{ad.description}</p>
             <div className="mb-2"><strong>Category:</strong> {ad.category}</div>
             <div className="mb-2">
@@ -112,11 +156,15 @@ const AdReviewComponent = () => {
                   <button
                     onClick={() => handleApprove(ad._id, ad.image_url)}
                     className="px-4 py-2 bg-blue-600 text-white rounded-md"
-                  >Approve</button>
+                  >
+                    Approve
+                  </button>
                   <button
                     onClick={() => handleReject(ad._id)}
                     className="px-4 py-2 bg-red-600 text-white rounded-md"
-                  >Reject</button>
+                  >
+                    Reject
+                  </button>
                 </>
               )}
             </div>

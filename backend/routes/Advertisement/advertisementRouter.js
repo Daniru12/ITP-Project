@@ -13,30 +13,16 @@ import {
 
 import { protect } from "../../middleware/authMiddleware.js";
 
-const router = express.Router();
+const Advertiserouter = express.Router();
 
-// Create a new advertisement
-router.post("/create",protect, createAdvertisement);
 
-// Get all advertisements
-router.get("/", getAdvertisements);
+Advertiserouter.post("/create",protect, createAdvertisement);// Create a new advertisement
+Advertiserouter.get("/", getAdvertisements);// Get all advertisements
+Advertiserouter.get("/approved", getApprovedAdvertisements);// Get only approved advertisements
+Advertiserouter.get("/:id",protect, getAdvertisementById);// Get a single advertisement by ID
+Advertiserouter.put("/update/:id",protect, updateAdvertisement);// Update an advertisement
+Advertiserouter.delete("/delete/:id",protect, deleteAdvertisement);// Delete an advertisement
+Advertiserouter.put("/approve/:id",protect, approveAdvertisement);// Approve an advertisement
+Advertiserouter.put("/reject/:id",protect, rejectAdvertisement);// Reject an advertisement
 
-// Get only approved advertisements
-router.get("/approved", getApprovedAdvertisements);
-
-// Get a single advertisement by ID
-router.get("/:id",protect, getAdvertisementById);
-
-// Update an advertisement
-router.put("/update/:id",protect, updateAdvertisement);
-
-// Delete an advertisement
-router.delete("/delete/:id",protect, deleteAdvertisement);
-
-// Approve an advertisement
-router.put("/approve/:id",protect, approveAdvertisement);
-
-// Reject an advertisement
-router.put("/reject/:id",protect, rejectAdvertisement);
-
-export default router;
+export default Advertiserouter;
