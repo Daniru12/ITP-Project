@@ -9,11 +9,12 @@ import {
   FaTrash
 } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
-
+import HamsterLoader from '../../components/HamsterLoader';
 const AppointmentsList = () => {
   const [appointments, setAppointments] = useState([]);
   const [boardingSchedules, setBoardingSchedules] = useState([]);
   const [groomingSchedules, setGroomingSchedules] = useState([]);
+  const [trainingSchedules, setTrainingSchedules] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
@@ -24,7 +25,7 @@ const AppointmentsList = () => {
         const token = localStorage.getItem('token');
         const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
-        const [appointmentsRes, boardingRes, groomingRes] = await Promise.all([
+        const [appointmentsRes, boardingRes, groomingRes, trainingRes] = await Promise.all([
           axios.get(`${backendUrl}/api/appointments/provider`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
@@ -32,6 +33,9 @@ const AppointmentsList = () => {
             headers: { Authorization: `Bearer ${token}` },
           }),
           axios.get(`${backendUrl}/api/scheduling/groomingschedule`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+          axios.get(`${backendUrl}/api/scheduling/trainingschedule`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
         ]);
@@ -43,6 +47,9 @@ const AppointmentsList = () => {
         setGroomingSchedules(
           Array.isArray(groomingRes.data) ? groomingRes.data : groomingRes.data?.schedules || []
         );
+        setTrainingSchedules(
+          Array.isArray(trainingRes.data?.data) ? trainingRes.data.data : []
+        );        
         setLoading(false);
       } catch (err) {
         console.error(err);
@@ -62,6 +69,9 @@ const AppointmentsList = () => {
     if (category === 'pet_grooming') {
       return groomingSchedules.some(s => s.appointment_id?._id === appointmentId);
     }
+    if (category === 'pet_training') {
+      return trainingSchedules.some(s => s.appointment_id?._id === appointmentId);
+    }    
     return false;
   };
 
@@ -154,7 +164,7 @@ const AppointmentsList = () => {
     const routeMap = {
       pet_boarding: '/schedule/boarding',
       pet_grooming: '/schedule/grooming',
-      pet_training: '/ViewTrainingSchedule',
+      pet_training: '/schedule/training',
     };
 
     const path = routeMap[category];
@@ -184,7 +194,7 @@ const AppointmentsList = () => {
     }
   };
 
-  if (loading) return <div className="text-center py-20 text-blue-600">Loading...</div>;
+  if (loading) return <HamsterLoader />;
   if (error) return <div className="text-center text-red-600">{error}</div>;
 
   return (
@@ -233,7 +243,6 @@ const AppointmentsList = () => {
               <p className="text-sm text-gray-700">Package: {appointment.package_type}</p>
               <p className="text-sm text-gray-700">Discount: ${appointment.discount_applied ?? 0}</p>
 
-              {/* Buttons */}
               <div className="mt-4 flex gap-2">
                 {appointment.status === 'pending' && (
                   <button

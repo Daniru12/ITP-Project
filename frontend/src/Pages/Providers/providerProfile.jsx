@@ -192,6 +192,24 @@ function handleDeleteService(serviceId) {
           <p className="text-gray-400 text-sm">Click the button above to view, confirm, or cancel appointments</p>
         </div>
       </div>
+
+      {/* Products Section */}
+      <div className="bg-white rounded-lg shadow-md p-6 mb-8 mt-6">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-xl font-semibold">Products</h2>
+          <Link 
+            to="/#"
+            className="flex items-center bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition duration-300"
+          >
+            <FaCalendarAlt className="mr-2" />
+            View All Products
+          </Link>
+        </div>
+        <div className="text-center py-8">
+          <p className="text-gray-500 mb-4">Manage all your products in one place</p>
+          <p className="text-gray-400 text-sm">Click the button above to view, confirm, or cancel products</p>
+        </div>
+      </div>
     </div>
   );
 };

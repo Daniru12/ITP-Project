@@ -1,136 +1,261 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import toast from 'react-hot-toast';
+import { useLocation, useNavigate } from 'react-router-dom';
 
-const CreateSchedule = () => {
-  const [pets, setPets] = useState([]);
-  const [services, setServices] = useState([]);
+const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+const CreateTrainingScheduleForm = () => {
+  const { state } = useLocation();
+  const navigate = useNavigate();
+
+  const appointmentDetails = state?.appointmentDetails;
+
   const [formData, setFormData] = useState({
-    pet_id: "",
-    service_id: "",
-    week_start_date: "",
+    appointment_id: '',
+    pet_id: '',
+    service_id: '',
+    week_start_date: '',
     schedule: [],
-    comments: "",
   });
 
-  const [day, setDay] = useState("Monday");
-  const [session, setSession] = useState({
-    time: "",
-    training_type: "",
-    duration: "1hour",
-    status: "Scheduled",
-    notes: "",
+  const [newSession, setNewSession] = useState({
+    day: 'Monday',
+    time: '',
+    training_type: '',
+    duration: '1hour',
+    notes: '',
   });
+
+  const [timeError, setTimeError] = useState('');
+
+  const todayStr = new Date().toISOString().split('T')[0]; // format: 'YYYY-MM-DD'
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const petRes = await axios.get("http://localhost:3000/api/pets"); // Update as per your route
-        const serviceRes = await axios.get("http://localhost:3000/api/services"); // Update as per your route
-        setPets(petRes.data);
-        setServices(serviceRes.data);
-      } catch (error) {
-        console.error("Error fetching pets/services", error);
-      }
-    };
-    fetchData();
+    if (!appointmentDetails) {
+      toast.error('Appointment details not provided.');
+      return;
+    }
+
+    console.log('📦 Loaded appointment details:', appointmentDetails);
+
+    setFormData((prev) => ({
+      ...prev,
+      appointment_id: appointmentDetails._id || '',
+      pet_id: appointmentDetails.pet_id?._id || '',
+      service_id: appointmentDetails.service_id?._id || '',
+    }));
   }, []);
 
-  const addSessionToDay = () => {
-    const updated = [...formData.schedule];
-    const existingDay = updated.find((d) => d.day === day);
+  const handleChange = (e) => {
+    setFormData((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  };
+
+  const handleSessionChange = (e) => {
+    const { name, value } = e.target;
+
+    if (name === 'time') {
+      const timeRegex = /^(0[1-9]|1[0-2]):[0-5][0-9] (AM|PM)$/;
+      if (value === '' || timeRegex.test(value)) {
+        setTimeError('');
+      } else {
+        setTimeError('Invalid time format. Use HH:MM AM/PM (e.g. 09:00 AM)');
+      }
+    }
+
+    setNewSession((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleAddSession = () => {
+    if (!newSession.time || !newSession.training_type) {
+      toast.error('Please provide time and training type.');
+      return;
+    }
+
+    if (timeError) {
+      toast.error('Please fix time format before adding.');
+      return;
+    }
+
+    const existingDay = formData.schedule.find((d) => d.day === newSession.day);
+    const session = { ...newSession, status: 'Scheduled' };
+    let updatedSchedule;
 
     if (existingDay) {
       existingDay.sessions.push(session);
+      updatedSchedule = [...formData.schedule];
     } else {
-      updated.push({ day, sessions: [session] });
+      updatedSchedule = [
+        ...formData.schedule,
+        {
+          day: newSession.day,
+          sessions: [session],
+        },
+      ];
     }
 
-    setFormData({ ...formData, schedule: updated });
-    setSession({ time: "", training_type: "", duration: "1hour", status: "Scheduled", notes: "" });
+    setFormData((prev) => ({
+      ...prev,
+      schedule: updatedSchedule,
+    }));
+
+    setNewSession({ day: 'Monday', time: '', training_type: '', duration: '1hour', notes: '' });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const { appointment_id, pet_id, service_id, week_start_date, schedule } = formData;
+
+    const today = new Date();
+    const selectedDate = new Date(week_start_date);
+
+    if (selectedDate < new Date(today.setHours(0, 0, 0, 0))) {
+      toast.error('Week start date cannot be in the past.');
+      return;
+    }
+
+    if (!appointment_id || !pet_id || !service_id || !week_start_date || schedule.length === 0) {
+      toast.error('All fields required and at least one session must be added.');
+      return;
+    }
+
     try {
-      await axios.post("http://localhost:3000/api/scheduling/trainigschedule/create", formData);
-      alert("Schedule created successfully!");
-      setFormData({ pet_id: "", service_id: "", week_start_date: "", schedule: [], comments: "" });
+      const token = localStorage.getItem('token');
+      const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
+      await axios.post(`${backendUrl}/api/scheduling/trainingschedule/create`, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      toast.success('✅ Training schedule created!');
+      navigate('/schedule/training');
     } catch (error) {
-      console.error("Error submitting schedule", error);
-      alert("Failed to create schedule");
+      console.error('❌ Schedule error:', error);
+      toast.error(error.response?.data?.message || 'Failed to create schedule');
     }
   };
 
   return (
-    <div className="p-6 max-w-3xl mx-auto bg-white shadow rounded">
-      <h2 className="text-xl font-bold mb-4">Create Training Schedule</h2>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <select value={formData.pet_id} onChange={(e) => setFormData({ ...formData, pet_id: e.target.value })} required>
-          <option value="">Select Pet</option>
-          {pets.map((pet) => (
-            <option key={pet._id} value={pet._id}>{pet.name}</option>
-          ))}
-        </select>
+    <div className="max-w-2xl mx-auto mt-10 bg-white p-8 shadow-xl rounded-xl border border-blue-200">
+      <h2 className="text-3xl font-extrabold text-center text-blue-700 mb-6">Create Training Schedule</h2>
 
-        <select value={formData.service_id} onChange={(e) => setFormData({ ...formData, service_id: e.target.value })} required>
-          <option value="">Select Main Service</option>
-          {services.map((s) => (
-            <option key={s._id} value={s._id}>{s.name}</option>
-          ))}
-        </select>
-
-        <input
-          type="date"
-          value={formData.week_start_date}
-          onChange={(e) => setFormData({ ...formData, week_start_date: e.target.value })}
-          required
-        />
-
-        <div className="border p-4 rounded">
-          <h3 className="font-semibold mb-2">Add Session</h3>
-          <select value={day} onChange={(e) => setDay(e.target.value)}>
-            {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"].map((d) => (
-              <option key={d}>{d}</option>
-            ))}
-          </select>
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Week Start */}
+        <div>
+          <label className="block mb-1 font-medium text-gray-700">Week Start Date</label>
           <input
-            type="text"
-            placeholder="Time (e.g., 06:00 AM)"
-            value={session.time}
-            onChange={(e) => setSession({ ...session, time: e.target.value })}
+            type="date"
+            name="week_start_date"
+            min={todayStr}
+            value={formData.week_start_date}
+            onChange={handleChange}
             required
+            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400"
           />
-          <input
-            type="text"
-            placeholder="Training Type"
-            value={session.training_type}
-            onChange={(e) => setSession({ ...session, training_type: e.target.value })}
-            required
-          />
-          <select value={session.duration} onChange={(e) => setSession({ ...session, duration: e.target.value })}>
-            <option value="30min">30min</option>
-            <option value="1hour">1hour</option>
-            <option value="2hours">2hours</option>
-            <option value="custom">custom</option>
-          </select>
-          <textarea
-            placeholder="Notes"
-            value={session.notes}
-            onChange={(e) => setSession({ ...session, notes: e.target.value })}
-          />
-          <button type="button" onClick={addSessionToDay}>Add Session</button>
         </div>
 
-        <textarea
-          placeholder="Comments"
-          value={formData.comments}
-          onChange={(e) => setFormData({ ...formData, comments: e.target.value })}
-        />
+        {/* Session Inputs */}
+        <div className="bg-gray-50 p-4 rounded-lg shadow-inner">
+          <h3 className="text-lg font-semibold text-blue-600 mb-3">Add Session</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <select name="day" value={newSession.day} onChange={handleSessionChange} className="p-2 border rounded">
+              {daysOfWeek.map((d) => (
+                <option key={d} value={d}>{d}</option>
+              ))}
+            </select>
 
-        <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">Create Schedule</button>
+            <div className="flex flex-col">
+              <input
+                type="text"
+                name="time"
+                placeholder="Time (e.g. 09:00 AM)"
+                value={newSession.time}
+                onChange={handleSessionChange}
+                className={`p-2 border rounded ${timeError ? 'border-red-500' : ''}`}
+                pattern="^(0[1-9]|1[0-2]):[0-5][0-9] (AM|PM)$"
+                title="Please enter time in the format HH:MM AM/PM"
+              />
+              {timeError && <span className="text-red-500 text-sm mt-1">{timeError}</span>}
+            </div>
+
+            <input
+              type="text"
+              name="training_type"
+              placeholder="Training Type"
+              value={newSession.training_type}
+              onChange={handleSessionChange}
+              className="p-2 border rounded"
+            />
+            <select
+              name="duration"
+              value={newSession.duration}
+              onChange={handleSessionChange}
+              className="p-2 border rounded"
+            >
+              <option value="30min">30 min</option>
+              <option value="1hour">1 hour</option>
+              <option value="2hours">2 hours</option>
+              <option value="custom">Custom</option>
+            </select>
+            <input
+              type="text"
+              name="notes"
+              placeholder="Notes"
+              value={newSession.notes}
+              onChange={handleSessionChange}
+              className="p-2 border rounded col-span-2"
+            />
+          </div>
+          <button
+            type="button"
+            onClick={handleAddSession}
+            className="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+          >
+            Add Session
+          </button>
+        </div>
+
+        {/* Submit Button */}
+        <button
+          type="submit"
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 font-semibold rounded-xl shadow"
+        >
+          Submit Schedule
+        </button>
       </form>
+
+      {/* Preview */}
+      {formData.schedule.length > 0 && (
+        <div className="mt-8">
+          <h4 className="text-lg font-bold mb-3 text-blue-700">📅 Scheduled Sessions</h4>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {formData.schedule.map((group, idx) => (
+              <div key={idx} className="bg-blue-50 border rounded p-3">
+                <h5 className="font-semibold text-blue-800 mb-2">{group.day}</h5>
+                {group.sessions.map((s, i) => (
+                  <div key={i} className="text-sm border-b py-1">
+                    <p><strong>Time:</strong> {s.time}</p>
+                    <p><strong>Type:</strong> {s.training_type}</p>
+                    <p><strong>Duration:</strong> {s.duration}</p>
+                    {s.notes && <p><strong>Notes:</strong> {s.notes}</p>}
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
-export default CreateSchedule;
+export default CreateTrainingScheduleForm;
