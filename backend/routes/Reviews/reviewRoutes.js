@@ -1,6 +1,7 @@
 import express from "express";
 import {
   addReview,
+  getAllReviews,
   getServiceReviews,
   updateReview,
   deleteReview,
@@ -13,7 +14,7 @@ const reviewRouter = express.Router();
 
 
 reviewRouter.post("/create", protect, addReview); // Add a review
-reviewRouter.get("/service/:serviceId", getServiceReviews); // Get all reviews for a service
+reviewRouter.get("/service", getAllReviews); // Get all reviews for a service
 reviewRouter.put("/update/:reviewId", protect, updateReview); // Update a review
 reviewRouter.delete("/delete/:reviewId",deleteReview); // Delete a review
 

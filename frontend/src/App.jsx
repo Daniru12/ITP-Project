@@ -33,12 +33,14 @@ import UpdateAppointment from './Pages/Appoiment/UpdateAppointment'
 import AppointmentCreate from './Pages/Appoiment/AppointmentCreate'
 import UserAppointments from './Pages/Appoiment/UserAppointments'
 import CreateReview from './Pages/Review/review'
-
+import FaqList from './Pages/FAQ/faqCategory'
+import FaqAdmin from './Pages/FAQ/FaqAnswers'
+import ServiceReviews from './Pages/Review/reviewdisplay'
 import DisplayServices from './Pages/Home/displayServices'
 import ServiceOverview from './Pages/Home/serviceOverview'
 import AddBoarding from './Pages/Providers/addBoarding'
 import AddTraining from './Pages/Providers/addTraining'
-
+import UpdateSchedule from "./Pages/Schedule/PetGrromingScheduling/UpdateSchedule"
 import UpdatePet from './Pages/PetOwner/updatePet'
 import UpdateService from './Pages/Providers/updateService'
 import CreateBoedingScheduleForm from './Pages/Schedule/bordingschedule/CreateScheduleForm'
@@ -46,8 +48,8 @@ import BoardingScheduleList from './Pages/Schedule/bordingschedule/ScheduleList'
 import UpdateBoedingScheduleForm from './Pages/Schedule/bordingschedule/UpdateBoedingScheduleForm'
 import CreateGroomingScheduleForm from './Pages/Schedule/PetGrromingScheduling/CreateGroomingScheduleForm'
 import GroomingScheduleList from "./Pages/Schedule/PetGrromingScheduling/GroomingScheduleList";
-
-
+import TrainingScheduleView from './Pages/Schedule/TrainingSchedule/showSchedule'
+import CreateTrainingSchedule from './Pages/Schedule/TrainingSchedule/createSchedule'
 // Wrapper component to handle NavBar conditional rendering
 const AppContent = () => {
   const location = useLocation();
@@ -81,8 +83,10 @@ const AppContent = () => {
           <Route path='/Appointmentadd/:id' element={<AppointmentCreate />} />
           <Route path='/Appointment' element={<UserAppointments />} />
           <Route path="/appointments/update/:id" element={<UpdateAppointment />} />
-
+          <Route path="/Trainingscheduleadd" element={<CreateTrainingSchedule />} />
+          <Route path="/TrainingScheduleView" element={<TrainingScheduleView />} />
           <Route path="/Groomingscheduleadd" element={<CreateGroomingScheduleForm />} />
+          <Route path="/update-groomingschedule/:id" element={<UpdateSchedule />} />
           <Route path="/schedule/grooming" element={<GroomingScheduleList />} />
           <Route path="/Bordingscheduleadd" element={<CreateBoedingScheduleForm />} />
           <Route path="/schedule/boarding" element={<BoardingScheduleList />} />
@@ -114,6 +118,10 @@ const AppContent = () => {
 
           <Route path='/edit-pet/:id' element={<UpdatePet />} />
           <Route path='/update-service/:id' element={<UpdateService />} />
+          <Route path='/faqList' element={<FaqList />} />
+          <Route path='/faqAdmin' element={<FaqAdmin/>}/> 
+          <Route path='/reviewdisplay' element={<ServiceReviews/>}/>
+
         </Routes>
       </div>
     </>
