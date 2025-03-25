@@ -6,7 +6,7 @@ import Service from "../../models/Service.js";
 export const addReview = async (req, res) => {
   try {
     const { service, rating, review } = req.body;
-    const userId = req.user._id; // assuming you have authentication middleware that populates req.user
+    const userId = req.user._id;
 
     // Check if the service exists
     const existingService = await Service.findById(service);
@@ -22,7 +22,6 @@ export const addReview = async (req, res) => {
       review,
     });
 
-    // Save the new review to the database
     await newReview.save();
 
     res.status(201).json({
@@ -30,6 +29,7 @@ export const addReview = async (req, res) => {
       review: newReview,
     });
   } catch (error) {
+    console.error("Review creation error:", error);
     res.status(500).json({ message: "Error adding review", error: error.message });
   }
 };
@@ -40,8 +40,8 @@ export const addReview = async (req, res) => {
 export const getAllReviews = async (req, res) => {
   try {
     const reviews = await Review.find()
-      .populate("user", "name") // Fetch user name only
-      .populate("service", "service_name"); // Fetch service name only
+      .populate("user", "full_name") // 👈 must match your user schema field name
+      .populate("service", "service_name");
 
     res.status(200).json(reviews);
   } catch (error) {
@@ -49,6 +49,7 @@ export const getAllReviews = async (req, res) => {
     res.status(500).json({ message: "Error fetching reviews", error: error.message });
   }
 };
+
 
 // ✅ Get reviews for a specific service
 export const getServiceReviews = async (req, res) => {

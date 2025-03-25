@@ -114,7 +114,7 @@ const AppContent = () => {
           <Route path='/display-services' element={<DisplayServices />} />
           <Route path='/service-overview/:id' element={<ServiceOverview />} />
 
-          <Route path='/review/:id' element={<CreateReview />} /> 
+          <Route path='/reviews/:serviceId' element={<CreateReview />} /> 
 
           <Route path='/edit-pet/:id' element={<UpdatePet />} />
           <Route path='/update-service/:id' element={<UpdateService />} />
