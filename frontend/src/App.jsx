@@ -15,11 +15,16 @@ import AddGrooming from './Pages/Providers/addGrooming'
 import AddService from './Pages/Providers/addService'
 import RegisterPet from './Pages/PetOwner/registerPet'
 import CreateFaq from './Pages/FAQ/faq'
+
 import PaymentPage from './Pages/Payment/PaymentPage'
 import ServiceSummary from './Pages/Payment/AppointmentSummary'
 import PaymentForm from './Pages/Payment/PaymentForm'
 import AppointmentSummary from './Pages/Payment/OrderSummary'
+
 import AddAdvertisementForm from './Pages/Advertisement/AddAdvertisementForm'
+
+import AdReviewComponent from './Pages/Advertisement/AdReviewComponent'
+
 import UpdateUser from './Pages/Admin/UpdateUser'
 import AdminUpdatePet from './Pages/Admin/UpdatePet'
 import AdminUpdateService from './Pages/Admin/UpdateService'
@@ -105,7 +110,10 @@ const AppContent = () => {
           <Route path='/ServiceSummary' element={<ServiceSummary/>}/>
           <Route path='/payment/:id' element={<PaymentForm/>}/>
           <Route path='/AppointmentSummary' element={<AppointmentSummary/>}/>
+
           <Route path='/AddAdvertisementForm' element={<AddAdvertisementForm/>}/>
+          <Route path='/AdReviewComponent' element={<AdReviewComponent/>}/>
+       
           
           <Route path='/petmarketplace' element={<PetMarketplace />} /> 
 

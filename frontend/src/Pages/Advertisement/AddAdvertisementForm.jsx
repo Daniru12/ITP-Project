@@ -21,21 +21,26 @@ const AddAdvertisementForm = ({ onClose }) => {
       const token = localStorage.getItem('token');
       if (!token) {
         toast.error('Please login to add an advertisement');
+        setLoading(false);
         return;
       }
 
       const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
-      const response = await axios.post(`${backendUrl}/api/advertisement/create`, {
-        title,
-        description,
-        category,
-        image_url,
-        start_date,
-        end_date
-      }, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await axios.post(
+        `${backendUrl}/api/advertisement/create`,
+        {
+          title,
+          description,
+          category,
+          image_url,
+          start_date,
+          end_date,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
       toast.success('Advertisement added successfully!');
       // Reset form fields
@@ -45,7 +50,7 @@ const AddAdvertisementForm = ({ onClose }) => {
       setImageUrl('');
       setStartDate('');
       setEndDate('');
-      
+
       if (onClose) {
         onClose();
       }

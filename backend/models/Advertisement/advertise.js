@@ -15,7 +15,7 @@ const advertisementSchema = new mongoose.Schema(
       type: String,
       required: [true, "Advertisement description is required"],
     },
-   category: {
+    category: {
       type: String,
       enum: ["Service", "Product", "Rescue Pet"],
       required: [true, "Advertisement category is required"],
@@ -32,6 +32,11 @@ const advertisementSchema = new mongoose.Schema(
       type: Date,
       required: [true, "End date is required"],
     },
+    status: {
+      type: String,
+      enum: ["pending", "approved", "rejected"],
+      default: "pending", // Default status is pending
+    },
   },
   {
     timestamps: true,
@@ -41,10 +46,3 @@ const advertisementSchema = new mongoose.Schema(
 const Advertisement = mongoose.model("Advertisement", advertisementSchema);
 
 export default Advertisement;
-
-
-
-
-
-
-
