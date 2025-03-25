@@ -14,6 +14,13 @@ const UpdateGroomingSchedule = () => {
 
   const token = localStorage.getItem("token");
 
+  // Helper to get the current local datetime in 'YYYY-MM-DDTHH:mm' format
+  const getLocalDatetime = () => {
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    return now.toISOString().slice(0, 16);
+  };
+
   useEffect(() => {
     const fetchSchedule = async () => {
       try {
@@ -23,7 +30,7 @@ const UpdateGroomingSchedule = () => {
           },
         });
         console.log("🧾 Grooming Schedule:", res.data);
-        setSchedule(res.data.data); // ✅ Based on your API structure
+        setSchedule(res.data.data);
       } catch (error) {
         toast.error("Failed to fetch grooming schedule");
         console.error("Error fetching grooming schedule:", error);
@@ -52,7 +59,7 @@ const UpdateGroomingSchedule = () => {
         }
       );
       toast.success("Grooming schedule updated successfully!");
-      setTimeout(() => navigate("/schedule/grooming"), 2000); // Redirect after success
+      setTimeout(() => navigate("/schedule/grooming"), 2000);
     } catch (error) {
       toast.error("Error updating grooming schedule");
       console.error("Error updating grooming schedule:", error);
@@ -82,6 +89,7 @@ const UpdateGroomingSchedule = () => {
           <input
             type="datetime-local"
             value={schedule.start_time ? new Date(schedule.start_time).toISOString().slice(0, 16) : ""}
+            min={getLocalDatetime()} // 🛡️ Prevent past date selection
             onChange={(e) => handleChange("start_time", e.target.value)}
             className="w-full border rounded px-3 py-2"
           />
