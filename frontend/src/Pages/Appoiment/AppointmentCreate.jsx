@@ -2,10 +2,8 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { useParams, useNavigate } from "react-router-dom";
-<<<<<<< HEAD
-=======
+
 import HamsterLoader from '../../components/HamsterLoader';
->>>>>>> Development-Branch
 
 const AppointmentCreate = () => {
   const [formData, setFormData] = useState({
