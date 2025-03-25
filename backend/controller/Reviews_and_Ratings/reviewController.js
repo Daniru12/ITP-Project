@@ -110,11 +110,20 @@ export const updateReview = async (req, res) => {
 export const deleteReview = async (req, res) => {
   try {
     const { reviewId } = req.params;
-    const deletedReview = await Review.findByIdAndDelete(reviewId);
+    const userId = req.user._id;
+    const userRole = req.user.user_type;
 
-    if (!deletedReview) {
+    const review = await Review.findById(reviewId);
+    if (!review) {
       return res.status(404).json({ message: "Review not found" });
     }
+
+    // Allow only review owner or Admin/Service Provider to delete
+    if (review.user.toString() !== userId.toString() && userRole !== "admin" && userRole !== "service_provider") {
+      return res.status(403).json({ message: "You can only delete your own reviews" });
+    }
+
+    await review.deleteOne();
 
     res.status(200).json({ message: "Review deleted successfully" });
   } catch (error) {
@@ -122,3 +131,4 @@ export const deleteReview = async (req, res) => {
     res.status(500).json({ message: "Error deleting review", error: error.message });
   }
 };
+

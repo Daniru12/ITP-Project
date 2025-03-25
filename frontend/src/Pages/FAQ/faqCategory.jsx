@@ -3,119 +3,119 @@ import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-const FaqList = () => {
-  const [faqs, setFaqs] = useState([]);
-  const [search, setSearch] = useState("");
+const ReviewList = () => {
+  const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [userRole, setUserRole] = useState("");
+  const [userId, setUserId] = useState("");
 
   const token = localStorage.getItem("token");
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
   useEffect(() => {
-    const fetchFaqs = async () => {
+    const fetchReviews = async () => {
       try {
-        const response = await axios.get(`${backendUrl}/api/faqs/all`, {
+        const response = await axios.get(`${backendUrl}/api/reviews/all`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        setFaqs(response.data);
+        setReviews(response.data);
       } catch (err) {
-        console.error("Error fetching FAQs:", err.response?.data || err.message);
-        toast.error("Failed to load FAQs");
+        console.error("Error fetching reviews:", err.response?.data || err.message);
+        toast.error("Failed to load reviews");
       } finally {
         setLoading(false);
       }
     };
 
+    const fetchUserDetails = async () => {
+      try {
+        const res = await axios.get(`${backendUrl}/api/users/all-users`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setUserRole(res.data.user_type);
+        setUserId(res.data._id);
+      } catch (err) {
+        console.error("Error fetching user details:", err.response?.data || err.message);
+      }
+    };
+
     if (token) {
-      fetchFaqs();
+      fetchReviews();
+      fetchUserDetails();
     } else {
       toast.error("You're not logged in.");
       window.location.href = "/login";
     }
   }, [token]);
 
-  // Group FAQs by category with handling for empty or undefined categories
-  const groupFaqsByCategory = (faqs) => {
-    return faqs.reduce((acc, faq) => {
-      // Ensure category exists and is trimmed, else default to "General"
-      const category = faq.category ? faq.category.trim() : "General";
-      
-      if (!acc[category]) {
-        acc[category] = [];
-      }
-      
-      acc[category].push(faq);
-      return acc;
-    }, {});
+  const handleDelete = async (reviewId) => {
+    try {
+      await axios.delete(`${backendUrl}/api/reviews/${reviewId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setReviews(reviews.filter((review) => review._id !== reviewId));
+      toast.success("Review deleted successfully");
+    } catch (err) {
+      console.error("Error deleting review:", err.response?.data || err.message);
+      toast.error("Failed to delete review");
+    }
   };
-
-  // Filter FAQs based on the search query
-  const filteredFaqs = faqs.filter((faq) =>
-    faq.question.toLowerCase().includes(search.toLowerCase())
-  );
-
-  // Group filtered FAQs by category
-  const faqCategories = groupFaqsByCategory(filteredFaqs);
 
   if (loading) {
     return (
       <div className="flex justify-center items-center h-screen">
-        <p className="text-xl">Loading FAQs...</p>
+        <p className="text-xl">Loading Reviews...</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-orange-100 p-6 flex items-center justify-center">
+    <div className="min-h-screen bg-gray-100 p-6 flex items-center justify-center">
       <ToastContainer />
-      <div className="bg-white max-w-5xl w-full rounded-3xl shadow-xl p-10 flex flex-col md:flex-row gap-10">
-        {/* Left Side: FAQ Section */}
-        <div className="flex-1">
-          <h1 className="text-3xl font-bold mb-6 text-gray-800 text-center">Frequently Asked Questions</h1>
+      <div className="bg-white max-w-5xl w-full rounded-3xl shadow-xl p-10">
+        <h1 className="text-3xl font-bold mb-6 text-gray-800 text-center">Reviews</h1>
 
-          {/* Search bar */}
-          <div className="relative mb-6">
-            <input
-              type="text"
-              placeholder="Search question here"
-              className="w-full border rounded-full px-4 py-2 pl-10 shadow-sm focus:outline-none"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-            <span className="absolute left-3 top-2.5 text-gray-400">🔍</span>
-          </div>
+        {reviews.length > 0 ? (
+          reviews.map((review) => (
+            <div key={review._id} className="mb-6 border-b pb-4">
+              <h3 className="font-semibold text-lg">{review.user.full_name}</h3>
+              <p className="text-gray-700">{review.review}</p>
+              <p className="text-yellow-500">Rating: {review.rating} ⭐</p>
 
-          {/* FAQ List Grouped by Category */}
-          {Object.keys(faqCategories).length > 0 ? (
-            Object.entries(faqCategories).map(([category, faqs]) => (
-              <div key={category} className="mb-6">
-                <h3 className="text-xl font-semibold text-blue-700 mb-2">{category}</h3>
-                <div>
-                  {faqs.map((faq) => (
-                    <details key={faq._id} className="mb-3 border-b pb-2 cursor-pointer">
-                      <summary className="font-medium text-gray-800">{faq.question}</summary>
-                      <p className="text-gray-600 mt-2">{faq.answer || "No answer provided."}</p>
-                    </details>
-                  ))}
+              {/* Show update and delete buttons only for user's own reviews */}
+              {review.user._id === userId && (
+                <div className="mt-2">
+                  <button className="bg-blue-500 text-white px-3 py-1 rounded mr-2">Edit</button>
+                  <button
+                    onClick={() => handleDelete(review._id)}
+                    className="bg-red-500 text-white px-3 py-1 rounded"
+                  >
+                    Delete
+                  </button>
                 </div>
-              </div>
-            ))
-          ) : (
-            <p className="text-gray-500">No matching FAQs found.</p>
-          )}
-        </div>
+              )}
 
-        {/* Right Side: Illustration (Optional) */}
-        <div className="hidden md:block flex-1">
-          <img
-            src="/faq-illustration.png" 
-            alt="FAQ Illustration" 
-            className="w-full"
-          />
-        </div>
+              {/* Show delete button for Admins and Service Providers */}
+              {userRole === "admin" || userRole === "service_provider" ? (
+                review.user._id !== userId && (
+                  <div className="mt-2">
+                    <button
+                      onClick={() => handleDelete(review._id)}
+                      className="bg-red-500 text-white px-3 py-1 rounded"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                )
+              ) : null}
+            </div>
+          ))
+        ) : (
+          <p className="text-gray-500 text-center">No reviews found.</p>
+        )}
       </div>
     </div>
   );
 };
 
-export default FaqList;
+export default ReviewList;
