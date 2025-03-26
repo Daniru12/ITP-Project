@@ -1,9 +1,9 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
+import axios from 'axios'
+import { toast } from 'react-hot-toast'
 import {
   StarIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
   ArrowLeftIcon,
   ShoppingCartIcon,
   HeartIcon,
@@ -11,91 +11,62 @@ import {
 
 export const ProductDetail = () => {
   const { id } = useParams()
-  const [selectedImage, setSelectedImage] = useState(0)
   const [selectedTab, setSelectedTab] = useState('description')
+  const [product, setProduct] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
-  // Mock product data - in a real app, fetch this based on the ID
-  const product = {
-    id: 1,
-    name: 'Premium Dog Food',
-    price: 29.99,
-    images: [
-      'https://images.unsplash.com/photo-1568640347023-a616a30bc3bd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1589924691995-400dc9ecc119?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1602584386319-fa8eb4361c2c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-    ],
-    description: `High-quality nutrition for your adult dog with real chicken as the first ingredient.
-    Key Benefits:
-    • Made with real chicken as the first ingredient
-    • Contains essential vitamins and minerals
-    • Supports healthy digestion
-    • Promotes strong muscles
-    • Suitable for all adult dog breeds
-    Ingredients:
-    Chicken, Chicken Meal, Brown Rice, Barley, Oatmeal, Chicken Fat, Natural Flavor, Dried Beet Pulp...`,
-    rating: 4.8,
-    category: 'food',
-    specifications: [
-      {
-        name: 'Weight',
-        value: '15 kg',
-      },
-      {
-        name: 'Age Range',
-        value: 'Adult',
-      },
-      {
-        name: 'Type',
-        value: 'Dry Food',
-      },
-      {
-        name: 'Main Ingredient',
-        value: 'Chicken',
-      },
-      {
-        name: 'Special Diet',
-        value: 'All Natural',
-      },
-    ],
-    reviews: [
-      {
-        id: 1,
-        user: 'John D.',
-        rating: 5,
-        date: '2023-10-15',
-        comment: 'My dog loves this food! His coat has never looked better.',
-        avatar:
-          'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=32&h=32&q=80',
-      },
-      {
-        id: 2,
-        user: 'Sarah M.',
-        rating: 4,
-        date: '2023-10-10',
-        comment:
-          'Good quality food, but a bit pricey. Still worth it for the quality.',
-        avatar:
-          'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&auto=format&fit=crop&w=32&h=32&q=80',
-      },
-      {
-        id: 3,
-        user: 'Mike R.',
-        rating: 5,
-        date: '2023-10-05',
-        comment: 'Excellent product! My picky eater actually enjoys this food.',
-        avatar:
-          'https://images.unsplash.com/photo-1527980965255-d3b416303d12?ixlib=rb-4.0.3&auto=format&fit=crop&w=32&h=32&q=80',
-      },
-    ],
+  useEffect(() => {
+    const fetchProduct = async () => {
+      if (!id) {
+        setError('Invalid product ID');
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000';
+        const response = await axios.get(`${backendUrl}/api/Products/${id}`);
+        
+        if (!response.data) {
+          throw new Error('Product not found');
+        }
+        
+        setProduct(response.data);
+      } catch (err) {
+        console.error('Error fetching product:', err);
+        setError(err.response?.data?.message || 'Failed to load product details');
+        toast.error('Failed to load product details');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProduct();
+  }, [id]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+      </div>
+    )
   }
 
-  const nextImage = () => {
-    setSelectedImage((prev) => (prev + 1) % product.images.length)
-  }
-
-  const prevImage = () => {
-    setSelectedImage(
-      (prev) => (prev - 1 + product.images.length) % product.images.length,
+  if (error || !product) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-red-500 mb-4">Error</h2>
+          <p className="text-gray-600">{error || 'Product not found'}</p>
+          <Link
+            to="/petMarketplace"
+            className="mt-4 inline-block bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+          >
+            Back to Marketplace
+          </Link>
+        </div>
+      </div>
     )
   }
 
@@ -103,53 +74,36 @@ export const ProductDetail = () => {
     <div className="min-h-screen bg-gray-50">
       <main className="container mx-auto px-4 py-6">
         <Link
-          to="/"
+          to="/petMarketplace"
           className="inline-flex items-center text-blue-600 hover:text-blue-700 mb-6"
         >
           <ArrowLeftIcon className="w-4 h-4 mr-2" />
           Back to Products
         </Link>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 bg-white p-6 rounded-xl shadow-sm">
-          {/* Product Images */}
+          {/* Product Image */}
           <div className="space-y-4">
             <div className="relative aspect-square overflow-hidden rounded-lg">
               <img
-                src={product.images[selectedImage]}
+                src={product.image?.[0] || 'https://via.placeholder.com/300x200?text=No+Image'}
                 alt={product.name}
                 className="w-full h-full object-cover"
               />
-              <button
-                onClick={prevImage}
-                className="absolute left-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/80 hover:bg-white shadow-md"
-              >
-                <ChevronLeftIcon className="w-5 h-5" />
-              </button>
-              <button
-                onClick={nextImage}
-                className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/80 hover:bg-white shadow-md"
-              >
-                <ChevronRightIcon className="w-5 h-5" />
-              </button>
             </div>
-            <div className="flex space-x-2">
-              {product.images.map((img, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => setSelectedImage(idx)}
-                  className={`relative aspect-square w-20 rounded-lg overflow-hidden ${
-                    selectedImage === idx
-                      ? 'ring-2 ring-blue-500'
-                      : 'hover:opacity-75'
-                  }`}
-                >
-                  <img
-                    src={img}
-                    alt=""
-                    className="w-full h-full object-cover"
-                  />
-                </button>
-              ))}
-            </div>
+            {/* Thumbnail Gallery */}
+            {product.image && product.image.length > 1 && (
+              <div className="grid grid-cols-5 gap-2">
+                {product.image.map((img, index) => (
+                  <div key={index} className="aspect-square rounded-lg overflow-hidden">
+                    <img
+                      src={img}
+                      alt={`${product.name} - ${index + 1}`}
+                      className="w-full h-full object-cover cursor-pointer hover:opacity-75 transition-opacity"
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
           {/* Product Info */}
           <div className="space-y-6">
@@ -163,16 +117,16 @@ export const ProductDetail = () => {
                     <StarIcon
                       key={i}
                       className={`w-5 h-5 ${
-                        i < product.rating
+                        i < (product.rating || 0)
                           ? 'text-yellow-400'
                           : 'text-gray-300'
                       }`}
-                      fill={i < product.rating ? 'currentColor' : 'none'}
+                      fill={i < (product.rating || 0) ? 'currentColor' : 'none'}
                     />
                   ))}
                 </div>
                 <span className="text-sm text-gray-600">
-                  ({product.rating} rating)
+                  ({product.rating || 0} rating)
                 </span>
               </div>
             </div>
@@ -215,16 +169,6 @@ export const ProductDetail = () => {
               >
                 Specifications
               </button>
-              <button
-                onClick={() => setSelectedTab('reviews')}
-                className={`px-4 py-3 text-sm font-medium border-b-2 ${
-                  selectedTab === 'reviews'
-                    ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700'
-                }`}
-              >
-                Reviews
-              </button>
             </div>
           </div>
           <div className="p-6">
@@ -244,7 +188,15 @@ export const ProductDetail = () => {
                   Specifications
                 </h2>
                 <ul className="divide-y divide-gray-200">
-                  {product.specifications.map((spec, idx) => (
+                  <li className="py-3 flex justify-between text-gray-700">
+                    <span>Category</span>
+                    <span>{product.category}</span>
+                  </li>
+                  <li className="py-3 flex justify-between text-gray-700">
+                    <span>Quantity Available</span>
+                    <span>{product.quantity}</span>
+                  </li>
+                  {product.specifications?.map((spec, idx) => (
                     <li
                       key={idx}
                       className="py-3 flex justify-between text-gray-700"
@@ -256,54 +208,11 @@ export const ProductDetail = () => {
                 </ul>
               </div>
             )}
-            {selectedTab === 'reviews' && (
-              <div>
-                <h2 className="text-lg font-bold text-gray-900 mb-4">
-                  Customer Reviews
-                </h2>
-                <ul className="space-y-6">
-                  {product.reviews.map((review) => (
-                    <li key={review.id} className="flex space-x-4">
-                      <img
-                        src={review.avatar}
-                        alt={review.user}
-                        className="w-10 h-10 rounded-full"
-                      />
-                      <div>
-                        <div className="flex items-center space-x-2">
-                          <div className="text-sm font-bold text-gray-900">
-                            {review.user}
-                          </div>
-                          <div className="text-sm text-gray-600">
-                            {review.date}
-                          </div>
-                        </div>
-                        <div className="flex items-center mt-1">
-                          {[...Array(5)].map((_, i) => (
-                            <StarIcon
-                              key={i}
-                              className={`w-4 h-4 ${
-                                i < review.rating
-                                  ? 'text-yellow-400'
-                                  : 'text-gray-300'
-                              }`}
-                              fill={i < review.rating ? 'currentColor' : 'none'}
-                            />
-                          ))}
-                        </div>
-                        <p className="mt-2 text-sm text-gray-700">
-                          {review.comment}
-                        </p>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
           </div>
         </div>
       </main>
     </div>
   )
 }
+
 export default ProductDetail

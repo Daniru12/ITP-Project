@@ -232,7 +232,7 @@ export default function Profile() {
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-2xl font-bold text-gray-800">My Products</h2>
             <Link 
-              to="/#"
+              to="/ownerOrders"
               className="flex items-center bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition duration-300"
             >
               <FaCalendarAlt className="mr-2" />

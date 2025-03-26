@@ -1,10 +1,11 @@
 import React, { useState } from 'react'
-import { ShoppingCartIcon, HeartIcon, StarIcon } from 'lucide-react'
-import { Link } from 'react-router-dom'
+import { ShoppingCartIcon, HeartIcon, StarIcon, EyeIcon } from 'lucide-react'
+import { Link, useNavigate } from 'react-router-dom'
 
 export const ProductCard = ({ product }) => {
   const [isLiked, setIsLiked] = useState(false)
   const [isAdding, setIsAdding] = useState(false)
+  const navigate = useNavigate()
 
   const handleAddToCart = (e) => {
     e.preventDefault()
@@ -17,6 +18,13 @@ export const ProductCard = ({ product }) => {
     setIsLiked(!isLiked)
   }
 
+  const handleView = (e) => {
+    e.preventDefault()
+    navigate(`/product/${product._id}`)
+  }
+
+  if (!product) return null;
+
   const rating = typeof product.rating === 'number' ? product.rating : 0
   const price = typeof product.price === 'number' ? product.price : 0.0
 
@@ -27,7 +35,7 @@ export const ProductCard = ({ product }) => {
     >
       <div className="relative overflow-hidden group">
         <img
-          src={product.image || 'https://via.placeholder.com/300x200?text=No+Image'}
+          src={product.image?.[0] || 'https://via.placeholder.com/300x200?text=No+Image'}
           alt={product.name || 'Product'}
           className="w-full h-48 object-cover transition-transform duration-700 group-hover:scale-110"
         />
@@ -63,19 +71,27 @@ export const ProductCard = ({ product }) => {
         <p className="text-sm text-gray-500 mb-3 line-clamp-2">
           {product.description || 'No description available.'}
         </p>
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-2">
           <span className="text-lg font-bold text-gray-900">
             ${price.toFixed(2)}
           </span>
-          <button
-            onClick={handleAddToCart}
-            className={`flex items-center justify-center p-2 rounded-full transition-all duration-300 transform
-              ${isAdding ? 'bg-green-500 scale-110' : 'bg-blue-600 hover:bg-blue-700 hover:scale-110 active:scale-95'}`}
-          >
-            <ShoppingCartIcon
-              className={`w-5 h-5 text-white transition-transform duration-300 ${isAdding ? 'scale-110' : ''}`}
-            />
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={handleView}
+              className="flex items-center justify-center p-2 rounded-full bg-green-500 hover:bg-green-600 transition-all duration-300 transform hover:scale-110 active:scale-95"
+            >
+              <EyeIcon className="w-5 h-5 text-white" />
+            </button>
+            <button
+              onClick={handleAddToCart}
+              className={`flex items-center justify-center p-2 rounded-full transition-all duration-300 transform
+                ${isAdding ? 'bg-green-500 scale-110' : 'bg-blue-600 hover:bg-blue-700 hover:scale-110 active:scale-95'}`}
+            >
+              <ShoppingCartIcon
+                className={`w-5 h-5 text-white transition-transform duration-300 ${isAdding ? 'scale-110' : ''}`}
+              />
+            </button>
+          </div>
         </div>
       </div>
     </Link>

@@ -168,7 +168,7 @@ const ServiceOverview = () => {
                     {/* Review Button */}
                     <div className="text-center mt-4">
                         <Link
-                            to={`/review/${service._id}`}
+                            to={`/reviews/${service._id}`}
                             className="inline-block bg-green-600 text-white px-8 py-3 rounded-md hover:bg-green-700 transition duration-300"
                         >
                             Add Review

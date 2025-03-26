@@ -47,6 +47,14 @@ const NavBar = () => {
             <Link to="/" className="text-white hover:text-blue-200 transition-colors duration-200 text-sm font-medium">
               Home
             </Link>
+
+            <div className="flex items-center space-x-8">
+            <Link to="/petmarketplace" className="text-white hover:text-blue-200 transition-colors duration-200 text-sm font-medium">
+              Marketplace
+            </Link>
+            </div>
+
+            
             
             {isLoggedIn ? (
               <>
