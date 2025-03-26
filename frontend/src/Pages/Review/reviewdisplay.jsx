@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const AllReviews = () => {
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const token = localStorage.getItem("token");
@@ -36,9 +37,8 @@ const AllReviews = () => {
     return <p className="text-center text-red-500 mt-10">{error}</p>;
   }
 
-  // Function to generate stars based on rating
   const renderStars = (rating) => {
-    return "⭐".repeat(rating); // Creates stars equal to the rating value
+    return "⭐".repeat(rating);
   };
 
   return (
@@ -59,8 +59,8 @@ const AllReviews = () => {
                   Rating: <strong>{review.rating}</strong> {renderStars(review.rating)}
                 </p>
                 <p className="text-sm text-gray-500">
-                  By <strong>{review.user?.name || "Unknown User"}</strong> | Service:{" "}
-                  <strong>{review.service?.name || "Unknown Service"}</strong>
+                  By <strong>{review.user?.full_name || "Unknown User"}</strong> | Service:{" "}
+                  <strong>{review.service?.service_name || "Unknown Service"}</strong>
                 </p>
                 <p className="text-sm text-gray-400">
                   {new Date(review.createdAt).toLocaleString()}
@@ -76,6 +76,15 @@ const AllReviews = () => {
           ))}
         </ul>
       )}
+
+      <div className="mt-6 text-center">
+        <button
+          onClick={() => navigate("/review")}
+          className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition"
+        >
+          Submit Another Review
+        </button>
+      </div>
     </div>
   );
 };
