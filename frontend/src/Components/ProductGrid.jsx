@@ -11,15 +11,8 @@ export const ProductGrid = ({ searchQuery, activeCategory }) => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const token = localStorage.getItem('token');
         const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000';
-
-        const response = await axios.get(`${backendUrl}/api/products/all`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
+        const response = await axios.get(`${backendUrl}/api/Products/all`);
         setProducts(response.data);
       } catch (err) {
         console.error('Error fetching products:', err);
@@ -47,26 +40,7 @@ export const ProductGrid = ({ searchQuery, activeCategory }) => {
   if (loading) {
     return (
       <div className="text-center py-12">
-        <svg
-          className="animate-spin h-6 w-6 text-blue-500 mx-auto"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-        >
-          <circle
-            className="opacity-25"
-            cx="12"
-            cy="12"
-            r="10"
-            stroke="currentColor"
-            strokeWidth="4"
-          />
-          <path
-            className="opacity-75"
-            fill="currentColor"
-            d="M4 12a8 8 0 018-8v8H4z"
-          />
-        </svg>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
         <p className="mt-2 text-sm text-gray-500">Loading products...</p>
       </div>
     );

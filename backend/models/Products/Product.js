@@ -23,8 +23,8 @@ const productSchema = new mongoose.Schema(
       required: [true, "Product category is required"],
     },
     image: {
-      type: String, 
-      default: "https://via.placeholder.com/150", // Default image
+      type: [String], 
+      default: [], // Default image
     },
     serviceProvider: {
       type: mongoose.Schema.Types.ObjectId,

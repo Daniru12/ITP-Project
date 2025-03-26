@@ -10,17 +10,14 @@ import { protect } from "../../middleware/authMiddleware.js"; // Import the prot
 
 const productRouter = express.Router();
 
-
-productRouter.post("/create", protect, createProduct);
-
+// Public routes
 productRouter.get("/all", getAllProducts);
 
-productRouter.get("/getProduct/:id", getProductById);
-
-productRouter.delete("/delete/:id", protect, deleteProduct);
-
-productRouter.put("/update/:id", protect, updateProduct);
-
+// Protected routes
+productRouter.post("/create", protect, createProduct);
 productRouter.get("/own", protect, getOwnProducts);
+productRouter.delete("/delete/:id", protect, deleteProduct);
+productRouter.put("/update/:id", protect, updateProduct);
+productRouter.get("/:id", getProductById);
 
 export default productRouter;
