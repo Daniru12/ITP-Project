@@ -2,6 +2,7 @@ import React from 'react'
 import axios from 'axios'
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import '../../App.css'
 
 const DisplayServices = () => {
     const [services, setServices] = useState([])
@@ -28,7 +29,24 @@ const DisplayServices = () => {
     if (isLoading) {
         return (
             <div className="min-h-screen flex items-center justify-center">
-                <div className="text-xl text-gray-600">Loading services...</div>
+                <div aria-label="Orange and tan hamster running in a metal wheel" role="img" className="wheel-and-hamster">
+                    <div className="wheel"></div>
+                    <div className="hamster">
+                        <div className="hamster__body">
+                            <div className="hamster__head">
+                                <div className="hamster__ear"></div>
+                                <div className="hamster__eye"></div>
+                                <div className="hamster__nose"></div>
+                            </div>
+                            <div className="hamster__limb hamster__limb--fr"></div>
+                            <div className="hamster__limb hamster__limb--fl"></div>
+                            <div className="hamster__limb hamster__limb--br"></div>
+                            <div className="hamster__limb hamster__limb--bl"></div>
+                            <div className="hamster__tail"></div>
+                        </div>
+                    </div>
+                    <div className="spoke"></div>
+                </div>
             </div>
         )
     }
@@ -56,7 +74,7 @@ const DisplayServices = () => {
                         {/* Service Image */}
                         <div className="h-48 overflow-hidden">
                             <img
-                                src={service.image || "https://via.placeholder.com/400x300?text=Pet+Service"}
+                                src={service.image?.[0] || "https://via.placeholder.com/400x300?text=Pet+Service"}
                                 alt={service.service_name}
                                 className="w-full h-full object-cover"
                             />

@@ -18,8 +18,17 @@ const faqSchema = new mongoose.Schema(
     category: {
       type: String,
       required: true,  
-      enum: ['General', 'Financial', 'Technical', 'Related to Services'], 
+      enum: ['General', 'Financial', 'Technical', 'Related to Services', 'Products'], 
       default: 'General'
+    },
+    answer: {
+      type: String,
+      default: "",
+      trim: true
+    },
+    approved: {  // ✅ New field for approval
+      type: Boolean,
+      default: false  // ✅ By default, FAQs are not approved
     }
   },
   { timestamps: true }
@@ -28,6 +37,3 @@ const faqSchema = new mongoose.Schema(
 const Faq = mongoose.model("Faq", faqSchema);
 
 export default Faq;
-
-
-

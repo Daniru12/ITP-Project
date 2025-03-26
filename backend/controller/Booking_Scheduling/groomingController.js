@@ -58,7 +58,6 @@ export const getAllGroomingSchedulings = async (req, res) => {
   
   
   
-
 // Get a single grooming schedule by ID
 export const getGroomingSchedulingById = async (req, res) => {
     try {
@@ -70,6 +69,7 @@ export const getGroomingSchedulingById = async (req, res) => {
         res.status(500).json({ error: "Internal Server Error", details: error.message });
     }
 };
+
 
 // Update an existing grooming appointment
 export const updateGroomingSheduling = async (req, res) => {

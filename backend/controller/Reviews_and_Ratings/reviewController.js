@@ -6,7 +6,7 @@ import Service from "../../models/Service.js";
 export const addReview = async (req, res) => {
   try {
     const { service, rating, review } = req.body;
-    const userId = req.user._id; // assuming you have authentication middleware that populates req.user
+    const userId = req.user._id;
 
     // Check if the service exists
     const existingService = await Service.findById(service);
@@ -22,7 +22,6 @@ export const addReview = async (req, res) => {
       review,
     });
 
-    // Save the new review to the database
     await newReview.save();
 
     res.status(201).json({
@@ -30,20 +29,27 @@ export const addReview = async (req, res) => {
       review: newReview,
     });
   } catch (error) {
+    console.error("Review creation error:", error);
     res.status(500).json({ message: "Error adding review", error: error.message });
   }
 };
 
 // ✅ Get all reviews
+
+// ✅ Get all reviews
 export const getAllReviews = async (req, res) => {
   try {
-    const reviews = await Review.find().populate("user", "name").populate("service", "name");
+    const reviews = await Review.find()
+      .populate("user", "full_name") // 👈 must match your user schema field name
+      .populate("service", "service_name");
+
     res.status(200).json(reviews);
   } catch (error) {
     console.error("Error fetching reviews:", error);
     res.status(500).json({ message: "Error fetching reviews", error: error.message });
   }
 };
+
 
 // ✅ Get reviews for a specific service
 export const getServiceReviews = async (req, res) => {
@@ -104,11 +110,20 @@ export const updateReview = async (req, res) => {
 export const deleteReview = async (req, res) => {
   try {
     const { reviewId } = req.params;
-    const deletedReview = await Review.findByIdAndDelete(reviewId);
+    const userId = req.user._id;
+    const userRole = req.user.user_type;
 
-    if (!deletedReview) {
+    const review = await Review.findById(reviewId);
+    if (!review) {
       return res.status(404).json({ message: "Review not found" });
     }
+
+    // Allow only review owner or Admin/Service Provider to delete
+    if (review.user.toString() !== userId.toString() && userRole !== "admin" && userRole !== "service_provider") {
+      return res.status(403).json({ message: "You can only delete your own reviews" });
+    }
+
+    await review.deleteOne();
 
     res.status(200).json({ message: "Review deleted successfully" });
   } catch (error) {
@@ -116,3 +131,4 @@ export const deleteReview = async (req, res) => {
     res.status(500).json({ message: "Error deleting review", error: error.message });
   }
 };
+

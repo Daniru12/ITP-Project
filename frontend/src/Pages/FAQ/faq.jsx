@@ -2,12 +2,12 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const CreateFaq = () => {
   const [formData, setFormData] = useState({
     question: "",
-    category: "General", // Default category
+    category: "",
   });
 
   const [loading, setLoading] = useState(true);
@@ -15,9 +15,9 @@ const CreateFaq = () => {
 
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const token = localStorage.getItem("token");
+  const navigate = useNavigate();
 
   useEffect(() => {
-    // Check if user is logged in
     if (!token) {
       toast.error("You're not logged in.");
       window.location.href = "/login";
@@ -39,12 +39,17 @@ const CreateFaq = () => {
     setSubmitLoading(true);
 
     try {
-      await axios.post(`${backendUrl}/api/faqs/create`, formData, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axios.post(
+        `${backendUrl}/api/faqs/create`,
+        formData,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
       toast.success("FAQ created successfully!");
-      setFormData({ question: "", category: "General" }); // Reset form
+      setFormData({ question: "", category: "General" });
+      navigate("/faqs");
     } catch (err) {
       console.error("FAQ create error:", err.response?.data || err.message);
       toast.error(err.response?.data?.message || "Failed to create FAQ");

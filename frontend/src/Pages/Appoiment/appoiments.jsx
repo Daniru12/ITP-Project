@@ -1,271 +1,179 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import {
-  FaCheck,
-  FaTimes,
-  FaCalendarAlt,
-  FaCalendarPlus,
-  FaTrash
-} from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
 
-const AppointmentsList = () => {
-  const [appointments, setAppointments] = useState([]);
-  const [boardingSchedules, setBoardingSchedules] = useState([]);
-  const [groomingSchedules, setGroomingSchedules] = useState([]);
-  const [loading, setLoading] = useState(true);
+const AddAdvertisementForm = ({ onClose }) => {
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [category, setCategory] = useState('Service');
+  const [image_url, setImageUrl] = useState('');
+  const [start_date, setStartDate] = useState('');
+  const [end_date, setEndDate] = useState('');
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchAll = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        const backendUrl = import.meta.env.VITE_BACKEND_URL;
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
 
-        const [appointmentsRes, boardingRes, groomingRes] = await Promise.all([
-          axios.get(`${backendUrl}/api/appointments/provider`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          axios.get(`${backendUrl}/api/scheduling/bordingschedule`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          axios.get(`${backendUrl}/api/scheduling/groomingschedule`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-        ]);
-
-        setAppointments(appointmentsRes.data.appointments || []);
-        setBoardingSchedules(
-          Array.isArray(boardingRes.data) ? boardingRes.data : boardingRes.data?.schedules || []
-        );
-        setGroomingSchedules(
-          Array.isArray(groomingRes.data) ? groomingRes.data : groomingRes.data?.schedules || []
-        );
-        setLoading(false);
-      } catch (err) {
-        console.error(err);
-        setError(err.response?.data?.message || 'Failed to load data');
-        toast.error('Failed to load data');
-        setLoading(false);
+    try {
+      // Retrieve token
+      const token = localStorage.getItem('token');
+      if (!token) {
+        toast.error('Please login to add an advertisement');
+        return;
       }
-    };
 
-    fetchAll();
-  }, []);
-
-  const hasSchedule = (appointmentId, category) => {
-    if (category === 'pet_boarding') {
-      return boardingSchedules.some(s => s.appointment_id?._id === appointmentId);
-    }
-    if (category === 'pet_grooming') {
-      return groomingSchedules.some(s => s.appointment_id?._id === appointmentId);
-    }
-    return false;
-  };
-
-  const handleConfirm = async (appointmentId) => {
-    try {
-      const token = localStorage.getItem('token');
+      // Retrieve backend URL
       const backendUrl = import.meta.env.VITE_BACKEND_URL;
+      if (!backendUrl) {
+        setError('Backend URL is not defined.');
+        toast.error('Backend URL is missing.');
+        return;
+      }
 
-      await axios.put(`${backendUrl}/api/appointments/${appointmentId}`, {
-        status: 'confirmed',
-      }, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      // Retrieve user ID from localStorage
+      const advertiser_id = localStorage.getItem('userId'); // Ensure this matches the key used to store the userId
+      if (!advertiser_id) {
+        setError('User ID not found. Please log in again.');
+        toast.error('User ID not found. Please log in again.');
+        return;
+      }
 
-      toast.success('Appointment confirmed!');
-      setAppointments((prev) =>
-        prev.map((a) =>
-          a._id === appointmentId ? { ...a, status: 'confirmed' } : a
-        )
+      // Validate form inputs
+      if (!title.trim() || !description.trim() || !image_url.trim()) {
+        setError('All fields are required.');
+        toast.error('All fields are required.');
+        return;
+      }
+
+      // Send request
+      await axios.post(
+        `${backendUrl}/api/advertisement/create`,
+        {
+          title,
+          description,
+          category,
+          image_url,
+          start_date,
+          end_date,
+          advertiser_id,
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
       );
-    } catch (error) {
-      toast.error(error.response?.data?.message || 'Failed to confirm appointment');
+
+      toast.success('Advertisement added successfully!');
+
+      // Reset form fields
+      setTitle('');
+      setDescription('');
+      setCategory('Service');
+      setImageUrl('');
+      setStartDate('');
+      setEndDate('');
+
+      if (onClose) {
+        onClose();
+      }
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to add advertisement.');
+      toast.error(err.response?.data?.message || 'Failed to add advertisement.');
+    } finally {
+      setLoading(false);
     }
   };
-
-  const handleCancel = async (appointmentId) => {
-    if (!window.confirm("Are you sure to cancel this appointment?")) return;
-    try {
-      const token = localStorage.getItem('token');
-      const backendUrl = import.meta.env.VITE_BACKEND_URL;
-
-      await axios.put(`${backendUrl}/api/appointments/${appointmentId}`, {
-        status: 'cancelled',
-      }, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      toast.success('Appointment cancelled!');
-      setAppointments((prev) =>
-        prev.map((a) =>
-          a._id === appointmentId ? { ...a, status: 'cancelled' } : a
-        )
-      );
-    } catch (error) {
-      toast.error(error.response?.data?.message || 'Failed to cancel');
-    }
-  };
-
-  const handleDelete = async (appointmentId) => {
-    if (!window.confirm("Are you sure to delete this appointment?")) return;
-    try {
-      const token = localStorage.getItem('token');
-      const backendUrl = import.meta.env.VITE_BACKEND_URL;
-
-      await axios.delete(`${backendUrl}/api/appointments/${appointmentId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      toast.success('Appointment deleted!');
-      setAppointments((prev) => prev.filter((a) => a._id !== appointmentId));
-    } catch (error) {
-      toast.error(error.response?.data?.message || 'Delete failed');
-    }
-  };
-
-  const handleSchedule = (appointment) => {
-    const category = appointment?.service_id?.service_category;
-    const routeMap = {
-      pet_boarding: '/Bordingscheduleadd',
-      pet_grooming: '/Groomingscheduleadd',
-      pet_training: '/Trainingscheduleadd',
-    };
-
-    const path = routeMap[category];
-    if (!path) {
-      toast.error("Invalid service category");
-      return;
-    }
-
-    navigate(path, {
-      state: {
-        appointmentId: appointment._id,
-        appointmentDetails: appointment,
-      },
-    });
-  };
-
-  const handleViewSchedule = (appointment) => {
-    const category = appointment?.service_id?.service_category;
-    const routeMap = {
-      pet_boarding: '/schedule/boarding',
-      pet_grooming: '/schedule/grooming',
-      pet_training: '/ViewTrainingSchedule',
-    };
-
-    const path = routeMap[category];
-    if (!path) {
-      toast.error("Invalid service category");
-      return;
-    }
-
-    navigate(path, {
-      state: {
-        appointmentId: appointment._id,
-        appointmentDetails: appointment,
-      },
-    });
-  };
-
-  const getStatusStyle = (status) => {
-    switch (status) {
-      case 'confirmed':
-        return 'bg-green-100 text-green-700';
-      case 'pending':
-        return 'bg-yellow-100 text-yellow-700';
-      case 'cancelled':
-        return 'bg-red-100 text-red-700';
-      default:
-        return 'bg-gray-100 text-gray-700';
-    }
-  };
-
-  if (loading) return <div className="text-center py-20 text-blue-600">Loading...</div>;
-  if (error) return <div className="text-center text-red-600">{error}</div>;
 
   return (
-    <div className="max-w-7xl mx-auto p-6">
-      <h2 className="text-2xl font-semibold mb-4">📅 Provider Appointments</h2>
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {appointments.map((appointment) => {
-          const service = appointment.service_id || {};
-          const pet = appointment.pet_id || {};
-          const owner = pet.owner_id || {};
-          const category = service.service_category;
-          const scheduled = hasSchedule(appointment._id, category);
-
-          return (
-            <div key={appointment._id} className="relative border rounded-xl p-4 shadow hover:shadow-md">
-              {/* Schedule button */}
-              {appointment.status === 'confirmed' && !scheduled && (
-                <button
-                  onClick={() => handleSchedule(appointment)}
-                  className="absolute top-3 right-3 bg-blue-600 text-white p-2 rounded-full hover:bg-blue-700"
-                  title="Create Schedule"
-                >
-                  <FaCalendarPlus />
-                </button>
-              )}
-
-              {appointment.status === 'confirmed' && scheduled && (
-                <button
-                  onClick={() => handleViewSchedule(appointment)}
-                  className="absolute top-3 right-3 bg-blue-100 text-blue-700 p-2 rounded-full hover:bg-blue-200"
-                  title="View Schedule"
-                >
-                  <FaCalendarAlt />
-                </button>
-              )}
-
-              <h3 className="text-lg font-bold mb-2">{service.service_name}</h3>
-              <div className={`text-xs px-2 py-1 inline-block rounded-full mb-2 ${getStatusStyle(appointment.status)}`}>
-                {appointment.status}
-              </div>
-
-              <p className="text-sm text-gray-700">Pet: {pet.name}</p>
-              <p className="text-sm text-gray-700">Owner: {owner.full_name}</p>
-              <p className="text-sm text-gray-700">Phone: {owner.phone_number}</p>
-              <p className="text-sm text-gray-700">Date: {new Date(appointment.appointment_date).toLocaleDateString()}</p>
-              <p className="text-sm text-gray-700">Package: {appointment.package_type}</p>
-              <p className="text-sm text-gray-700">Discount: ${appointment.discount_applied ?? 0}</p>
-
-              {/* Buttons */}
-              <div className="mt-4 flex gap-2">
-                {appointment.status === 'pending' && (
-                  <button
-                    onClick={() => handleConfirm(appointment._id)}
-                    className="text-green-700 bg-green-100 hover:bg-green-200 px-3 py-1 rounded-full text-sm"
-                  >
-                    <FaCheck className="inline mr-1" /> Confirm
-                  </button>
-                )}
-                {appointment.status !== 'completed' && appointment.status !== 'cancelled' && (
-                  <button
-                    onClick={() => handleCancel(appointment._id)}
-                    className="text-red-700 bg-red-100 hover:bg-red-200 px-3 py-1 rounded-full text-sm"
-                  >
-                    <FaTimes className="inline mr-1" /> Cancel
-                  </button>
-                )}
-                {appointment.status === 'cancelled' && (
-                  <button
-                    onClick={() => handleDelete(appointment._id)}
-                    className="text-gray-800 bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-full text-sm"
-                  >
-                    <FaTrash className="inline mr-1" /> Delete
-                  </button>
-                )}
-              </div>
-            </div>
-          );
-        })}
-      </div>
+    <div className="max-w-md mx-auto p-6 bg-white rounded-md shadow-md">
+      <h2 className="text-2xl font-semibold mb-4">Add Advertisement</h2>
+      {error && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
+          {error}
+        </div>
+      )}
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label htmlFor="title" className="block text-sm font-medium text-gray-700">Title</label>
+          <input
+            type="text"
+            id="title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            required
+            className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          />
+        </div>
+        <div>
+          <label htmlFor="description" className="block text-sm font-medium text-gray-700">Description</label>
+          <textarea
+            id="description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            required
+            className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          />
+        </div>
+        <div>
+          <label htmlFor="category" className="block text-sm font-medium text-gray-700">Category</label>
+          <select
+            id="category"
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          >
+            <option value="Service">Service</option>
+            <option value="Product">Product</option>
+            <option value="Rescue Pet">Rescue Pet</option>
+          </select>
+        </div>
+        <div>
+          <label htmlFor="image_url" className="block text-sm font-medium text-gray-700">Image URL</label>
+          <input
+            type="url"
+            id="image_url"
+            value={image_url}
+            onChange={(e) => setImageUrl(e.target.value)}
+            required
+            className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          />
+        </div>
+        <div>
+          <label htmlFor="start_date" className="block text-sm font-medium text-gray-700">Start Date</label>
+          <input
+            type="date"
+            id="start_date"
+            value={start_date}
+            onChange={(e) => setStartDate(e.target.value)}
+            required
+            className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          />
+        </div>
+        <div>
+          <label htmlFor="end_date" className="block text-sm font-medium text-gray-700">End Date</label>
+          <input
+            type="date"
+            id="end_date"
+            value={end_date}
+            onChange={(e) => setEndDate(e.target.value)}
+            required
+            className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          />
+        </div>
+        <div>
+          <button
+            type="submit"
+            disabled={loading}
+            className={`w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${
+              loading ? 'opacity-50 cursor-not-allowed' : ''
+            }`}
+          >
+            {loading ? 'Adding...' : 'Add Advertisement'}
+          </button>
+        </div>
+      </form>
     </div>
   );
 };
 
-export default AppointmentsList;
+export default AddAdvertisementForm;

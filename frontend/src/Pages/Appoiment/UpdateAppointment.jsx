@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-
+import HamsterLoader from '../../components/HamsterLoader';
 const UpdateAppointment = () => {
   const { id } = useParams(); // appointment ID
   const navigate = useNavigate();
@@ -87,9 +87,7 @@ const UpdateAppointment = () => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-screen">
-        <p className="text-xl">Loading appointment details...</p>
-      </div>
+      <HamsterLoader />
     );
   }
 

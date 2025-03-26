@@ -11,7 +11,7 @@ import reviewRouter from "./routes/Reviews/reviewRoutes.js";
 import faqRouter from "./routes/Reviews/faqRoutes.js";
 import paymnetRouter from "./routes/Payment/paymentRouter.js";
 import AdvertisementRoutes from "./routes/Advertisement/advertisementRouter.js";
-
+import faqAllRouter from "./routes/Reviews/faqAllRoutes.js";
 import productRouter from "./routes/Products/productRouter.js";
 import orderRouter from "./routes/Products/orderRouter.js";
 
@@ -47,7 +47,7 @@ app.use("/api/faqs", faqRouter);
 app.use("/api/payment",paymnetRouter);
 app.use("/api/advertisement",AdvertisementRoutes);
 app.use("/api/Products", productRouter);
-app.use("/api/orders", orderRouter);
+
 
 
 const PORT = process.env.PORT || 3000;
