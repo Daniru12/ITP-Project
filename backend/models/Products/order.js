@@ -27,6 +27,11 @@ const orderSchema = new mongoose.Schema(
       enum: ["Pending", "Processing", "Shipped", "Delivered", "Cancelled"],
       default: "Pending",
     },
+    pet_owner: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User", 
+      required: [true, "petowner is required"],
+    },
     shipping_details: {
       address: { type: String, required: [true, "Shipping address is required"] },
       city: { type: String, required: [true, "City is required"] },

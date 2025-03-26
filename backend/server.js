@@ -13,6 +13,7 @@ import paymnetRouter from "./routes/Payment/paymentRouter.js";
 import AdvertisementRoutes from "./routes/Advertisement/advertisementRouter.js";
 
 import productRouter from "./routes/Products/productRouter.js";
+import orderRouter from "./routes/Products/orderRouter.js";
 
 
 dotenv.config();
@@ -46,6 +47,7 @@ app.use("/api/faqs", faqRouter);
 app.use("/api/payment",paymnetRouter);
 app.use("/api/advertisement",AdvertisementRoutes);
 app.use("/api/Products", productRouter);
+app.use("/api/orders", orderRouter);
 
 
 const PORT = process.env.PORT || 3000;
