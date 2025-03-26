@@ -5,6 +5,7 @@ import { getAllProducts } from "../../controller/ProductsCRUD/productsContoller.
 import { getProductById } from "../../controller/ProductsCRUD/productsContoller.js"; 
 import { deleteProduct } from "../../controller/ProductsCRUD/productsContoller.js"; 
 import { updateProduct } from "../../controller/ProductsCRUD/productsContoller.js"; 
+import { getOwnProducts } from "../../controller/ProductsCRUD/productsContoller.js";
 import { protect } from "../../middleware/authMiddleware.js"; // Import the protect middleware
 
 const productRouter = express.Router();
@@ -20,6 +21,6 @@ productRouter.delete("/delete/:id", protect, deleteProduct);
 
 productRouter.put("/update/:id", protect, updateProduct);
 
-
+productRouter.get("/own", protect, getOwnProducts);
 
 export default productRouter;

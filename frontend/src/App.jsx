@@ -44,6 +44,8 @@ import GroomingScheduleList from "./Pages/Schedule/PetGrromingScheduling/Groomin
 import ProductDetail from './Pages/productMarket/ProductDetail'
 import PetMarketplace from './Pages/productMarket/PetMarketplace'
 import CreateProduct from './Pages/productMarket/CreateProduct'
+import DeleteProducts from './Pages/productMarket/deleteProducts'
+import UpdateProduct from './Pages/productMarket/UpdateProduct'
 
 // Wrapper component to handle NavBar conditional rendering
 const AppContent = () => {
@@ -101,6 +103,8 @@ const AppContent = () => {
           <Route path='/createproduct' element={<CreateProduct />} />     
           <Route path='/petmarketplace' element={<PetMarketplace />} />
           <Route path="/product/:id" element={<ProductDetail />} />
+          <Route path="/deleteproducts" element={<DeleteProducts />} />
+          <Route path="/update-product/:id" element={<UpdateProduct />} />
 
         </Routes>
       </div>
