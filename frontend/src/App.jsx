@@ -56,6 +56,7 @@ import CreateGroomingScheduleForm from './Pages/Schedule/PetGrromingScheduling/C
 import GroomingScheduleList from "./Pages/Schedule/PetGrromingScheduling/GroomingScheduleList";
 import TrainingScheduleView from './Pages/Schedule/TrainingSchedule/showSchedule'
 import CreateTrainingSchedule from './Pages/Schedule/TrainingSchedule/createSchedule'
+import FaqManager from './Pages/FAQ/faqall'
 // Wrapper component to handle NavBar conditional rendering
 const AppContent = () => {
   const location = useLocation();
@@ -105,8 +106,8 @@ const AppContent = () => {
           <Route path='/add-service' element={<AddService />} />
           <Route path='/register-pet' element={<RegisterPet />} />
           <Route path='/Faq' element={<CreateFaq />} />  
+          <Route path='/FaqAll' element={<FaqManager />} /> 
           <Route path='/PaymentPage' element={<PaymentPage />} />
-
           <Route path='/ServiceSummary' element={<ServiceSummary/>}/>
           <Route path='/payment/:id' element={<PaymentForm/>}/>
           <Route path='/AppointmentSummary' element={<AppointmentSummary/>}/>
