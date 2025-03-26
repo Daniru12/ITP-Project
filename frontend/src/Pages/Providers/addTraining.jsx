@@ -148,35 +148,81 @@ const AddTraining = () => {
     setImages(files);
   };
   
-  // Update form submission handler
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsLoading(true);
-    
-    // Validate minimum duration
+  // Add validation function before handleSubmit
+  const validateForm = () => {
+    // Check service name
+    if (!serviceName.trim()) {
+      toast.error("Service name is required");
+      return false;
+    }
+    if (serviceName.length < 3) {
+      toast.error("Service name must be at least 3 characters long");
+      return false;
+    }
+
+    // Check description
+    if (!description.trim()) {
+      toast.error("Description is required");
+      return false;
+    }
+    if (description.length < 10) {
+      toast.error("Description must be at least 10 characters long");
+      return false;
+    }
+
+    // Check location
+    if (!location.trim()) {
+      toast.error("Location is required");
+      return false;
+    }
+    if (!location.includes(",")) {
+      toast.error("Location should include city (e.g., 123 Pet Street, City)");
+      return false;
+    }
+
+    // Check images
+    if (images.length === 0) {
+      toast.error("Please upload at least one image");
+      return false;
+    }
+
+    // Validate packages
     const packages = {
       basic: basicPackage,
       premium: premiumPackage,
       luxury: luxuryPackage
     };
 
-    // Check minimum duration for each package
     for (const [tier, package_] of Object.entries(packages)) {
-      if (Number(package_.duration) < 15) {
-        toast.error(`${tier} package duration must be at least 15 minutes`);
-        setIsLoading(false);
-        return;
+      // Check price
+      if (!package_.price || Number(package_.price) <= 0) {
+        toast.error(`${tier} package price must be greater than 0`);
+        return false;
       }
-      if (Number(package_.price) < 0) {
-        toast.error(`${tier} package price cannot be negative`);
-        setIsLoading(false);
-        return;
+
+      // Check duration
+      if (!package_.duration || Number(package_.duration) < 15) {
+        toast.error(`${tier} package duration must be at least 15 minutes`);
+        return false;
+      }
+
+      // Check included services
+      if (package_.includes.length === 0 || package_.includes.some(service => !service.trim())) {
+        toast.error(`${tier} package must include at least one service`);
+        return false;
       }
     }
 
-    // Check if location is provided
-    if (!location.trim()) {
-      toast.error("Location is required");
+    return true;
+  };
+  
+  // Update form submission handler
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    
+    // Run validation
+    if (!validateForm()) {
       setIsLoading(false);
       return;
     }
