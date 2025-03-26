@@ -7,27 +7,33 @@ const DeleteAdvertisement = ({ ads }) => {
   const navigate = useNavigate();
 
   const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this advertisement?')) {
-      try {
-        const backendUrl = import.meta.env.VITE_BACKEND_URL;
-        const token = localStorage.getItem('token');
-        if (!token) {
-          toast.error('Please login to delete an advertisement');
-          return;
-        }
-
-        await axios.delete(
-          `${backendUrl}/api/advertisement/delete/${id}`,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-
-        toast.success('Advertisement deleted successfully!');
-        // Optionally, reload or re-fetch the ads list
-      } catch (error) {
-        toast.error('Failed to delete advertisement.');
+    if (!window.confirm('Are you sure you want to delete this advertisement?')) return;
+  
+    try {
+      const backendUrl = import.meta.env.VITE_BACKEND_URL;
+      const token = localStorage.getItem('token');
+  
+      if (!token) {
+        toast.error('Please login to delete an advertisement');
+        return;
       }
+  
+      const response = await axios.delete(`${backendUrl}/api/advertisement/delete/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+  
+      if (response.status === 200 || response.status === 204) {
+        toast.success('Advertisement deleted successfully!');
+        setAds((prevAds) => prevAds.filter((ad) => ad._id !== id)); // Update UI
+      } else {
+        throw new Error(`Unexpected response: ${response.status}`);
+      }
+    } catch (error) {
+      console.error('Delete Error:', error.response?.data || error.message);
+      toast.error(`Failed to delete advertisement: ${error.response?.data?.message || 'Unknown error'}`);
     }
   };
+  
 
   return (
     <div className="space-y-4">
