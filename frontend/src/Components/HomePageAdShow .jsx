@@ -37,7 +37,7 @@ const HomePageAdShow = () => {
               <img
                 src={ad.image_url}
                 alt={ad.title}
-                className="w-full h-[650px] object-cover"
+                className="w-full h-[700px] object-cover"
               />
             </SwiperSlide>
           ))}
