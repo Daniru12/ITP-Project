@@ -5,21 +5,19 @@ import { getAllProducts } from "../../controller/ProductsCRUD/productsContoller.
 import { getProductById } from "../../controller/ProductsCRUD/productsContoller.js"; 
 import { deleteProduct } from "../../controller/ProductsCRUD/productsContoller.js"; 
 import { updateProduct } from "../../controller/ProductsCRUD/productsContoller.js"; 
+import { getOwnProducts } from "../../controller/ProductsCRUD/productsContoller.js";
 import { protect } from "../../middleware/authMiddleware.js"; // Import the protect middleware
 
 const productRouter = express.Router();
 
-
-productRouter.post("/create", protect, createProduct);
-
+// Public routes
 productRouter.get("/all", getAllProducts);
 
-productRouter.get("/getProduct/:id", getProductById);
-
+// Protected routes
+productRouter.post("/create", protect, createProduct);
+productRouter.get("/own", protect, getOwnProducts);
 productRouter.delete("/delete/:id", protect, deleteProduct);
-
 productRouter.put("/update/:id", protect, updateProduct);
-
-
+productRouter.get("/:id", getProductById);
 
 export default productRouter;

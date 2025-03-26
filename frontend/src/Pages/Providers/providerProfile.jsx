@@ -198,7 +198,7 @@ function handleDeleteService(serviceId) {
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-semibold">Products</h2>
           <Link 
-            to="/#"
+            to="/delete-product"
             className="flex items-center bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition duration-300"
           >
             <FaCalendarAlt className="mr-2" />

@@ -2,11 +2,6 @@ import mongoose from "mongoose";
 
 const orderSchema = new mongoose.Schema(
   {
-    user: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: [true, "User is required"],
-    },
     product: [
       {
         type: mongoose.Schema.Types.ObjectId,
@@ -26,6 +21,11 @@ const orderSchema = new mongoose.Schema(
       type: String,
       enum: ["Pending", "Processing", "Shipped", "Delivered", "Cancelled"],
       default: "Pending",
+    },
+    pet_owner: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User", 
+      required: [true, "petowner is required"],
     },
     shipping_details: {
       address: { type: String, required: [true, "Shipping address is required"] },

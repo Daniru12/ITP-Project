@@ -16,7 +16,7 @@ export const createProduct = async (req, res) => {
 
   try {
     // Check user
-    if (req.user.role !== "admin" && req.user.user_type !== "service_provider") {
+    if (req.user.type !== "admin" && req.user.user_type !== "service_provider") {
       return res.status(403).json({ message: "Access denied. Only admins and service providers can create products." });
     }
 
@@ -160,5 +160,23 @@ export const updateProduct = async (req, res) => {
       message: "Error updating product",
       error: error.message
     });
+  }
+};
+
+// Retrieve Products for a Specific Service Provider (Own Products)
+export const getOwnProducts = async (req, res) => {
+  try {
+    const serviceProviderId = req.user._id; // Assuming the service provider's ID is stored in the token
+
+    const products = await Product.find({ serviceProvider: serviceProviderId });
+
+    if (!products.length) {
+      return res.status(404).json({ message: "No products found" });
+    }
+
+    res.status(200).json(products);
+  } catch (error) {
+    console.error("Error retrieving own products:", error);
+    res.status(500).json({ message: "Server error, unable to retrieve products." });
   }
 };

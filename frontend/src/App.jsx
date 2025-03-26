@@ -34,6 +34,12 @@ import { PetCareBooking } from './Pages/Booking/Create/PetCareBooking'
 
 import ProductDetail from './Pages/productMarket/ProductDetail'
 import PetMarketplace from './Pages/productMarket/PetMarketplace' 
+import CreateProduct from './Pages/productMarket/CreateProduct'
+import UpdateProduct from './Pages/productMarket/UpdateProduct'
+import DeleteProduct from './Pages/productMarket/deleteProducts'
+
+
+
 import AppointmentsList from './Pages/Appoiment/appoiments'
 import UpdateAppointment from './Pages/Appoiment/UpdateAppointment'
 import AppointmentCreate from './Pages/Appoiment/AppointmentCreate'
@@ -57,6 +63,7 @@ import GroomingScheduleList from "./Pages/Schedule/PetGrromingScheduling/Groomin
 import TrainingScheduleView from './Pages/Schedule/TrainingSchedule/showSchedule'
 import CreateTrainingSchedule from './Pages/Schedule/TrainingSchedule/createSchedule'
 import FaqManager from './Pages/FAQ/faqall'
+import VeiwOwnerOerders from './Pages/Orders/viewOwnerOrders'
 // Wrapper component to handle NavBar conditional rendering
 const AppContent = () => {
   const location = useLocation();
@@ -118,10 +125,11 @@ const AppContent = () => {
           <Route path='/DeleteAdvertisement' element={<DeleteAdvertisement/>}/>
 
           <Route path='/petmarketplace' element={<PetMarketplace />} /> 
-
-          <Route path='/petmarketplace' element={<PetMarketplace />} />
-
+          <Route path='/create-product' element={<CreateProduct />} />
+          <Route path='/update-product/:id' element={<UpdateProduct />} />
+          <Route path='/delete-product' element={<DeleteProduct />} />
           <Route path="/product/:id" element={<ProductDetail />} />
+
           <Route path='/display-services' element={<DisplayServices />} />
           <Route path='/service-overview/:id' element={<ServiceOverview />} />
 
@@ -132,6 +140,8 @@ const AppContent = () => {
           <Route path='/faqList' element={<FaqList />} />
           <Route path='/faqAdmin' element={<FaqAdmin/>}/> 
           <Route path='/reviewdisplay' element={<ServiceReviews/>}/>
+
+          <Route path='/ownerOrders' element={<VeiwOwnerOerders/>}/>
 
         </Routes>
       </div>
