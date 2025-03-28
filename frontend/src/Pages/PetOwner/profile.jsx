@@ -95,56 +95,59 @@ export default function Profile() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto p-6">
+    <div className="max-w-6xl mx-auto p-6 bg-gray-50">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Profile Card */}
         <div className="md:col-span-1">
-          <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="bg-white rounded-lg shadow-lg p-6 border border-gray-100">
             {/* Profile Header */}
             <div className="text-center mb-6">
-              <h1 className="text-3xl font-bold text-gray-800 mb-4">My Profile</h1>
+              <h1 className="text-3xl font-bold mb-4" style={{ color: 'var(--color-accent)' }}>My Profile</h1>
               {userData.profile_picture && (
-                <img
-                  src={userData.profile_picture}
-                  alt="Profile"
-                  className="w-32 h-32 rounded-full mx-auto mb-4 object-cover border-4 border-blue-500"
-                />
+                <div className="relative inline-block">
+                  <img
+                    src={userData.profile_picture}
+                    alt="Profile"
+                    className="w-32 h-32 rounded-full mx-auto mb-4 object-cover"
+                    style={{ borderColor: 'var(--color-secondary)', borderWidth: '4px' }}
+                  />
+                </div>
               )}
             </div>
 
             {/* Profile Details */}
             <div className="space-y-4">
               <div className="border-b pb-3">
-                <p className="text-gray-600 text-sm">Username</p>
-                <p className="text-gray-900 font-medium">{userData.username}</p>
+                <p className="text-sm" style={{ color: 'var(--color-accent)' }}>Username</p>
+                <p className="font-medium text-gray-900">{userData.username}</p>
               </div>
 
               <div className="border-b pb-3">
-                <p className="text-gray-600 text-sm">Full Name</p>
-                <p className="text-gray-900 font-medium">{userData.full_name}</p>
+                <p className="text-sm" style={{ color: 'var(--color-accent)' }}>Full Name</p>
+                <p className="font-medium text-gray-900">{userData.full_name}</p>
               </div>
 
               <div className="border-b pb-3">
-                <p className="text-gray-600 text-sm">Email</p>
-                <p className="text-gray-900 font-medium">{userData.email}</p>
+                <p className="text-sm" style={{ color: 'var(--color-accent)' }}>Email</p>
+                <p className="font-medium text-gray-900">{userData.email}</p>
               </div>
 
               <div className="border-b pb-3">
-                <p className="text-gray-600 text-sm">Phone Number</p>
-                <p className="text-gray-900 font-medium">{userData.phone_number}</p>
+                <p className="text-sm" style={{ color: 'var(--color-accent)' }}>Phone Number</p>
+                <p className="font-medium text-gray-900">{userData.phone_number}</p>
               </div>
 
               <div className="pb-3">
-                <p className="text-gray-600 text-sm">Account Type</p>
-                <p className="text-gray-900 font-medium capitalize">{userData.user_type}</p>
+                <p className="text-sm" style={{ color: 'var(--color-accent)' }}>Account Type</p>
+                <p className="font-medium text-gray-900 capitalize">{userData.user_type}</p>
               </div>
 
               {/* Loyalty Points Display */}
               <div className="pt-4 border-t">
-                <div className="bg-blue-50 rounded-lg p-4 text-center">
-                  <p className="text-gray-600 text-sm mb-1">Loyalty Points</p>
-                  <p className="text-3xl font-bold text-blue-600">{userData.loyalty_points || 0}</p>
-                  <p className="text-gray-500 text-xs mt-1">Points earned from your bookings</p>
+                <div className="rounded-lg p-4 text-center" style={{ backgroundColor: 'var(--color-accent-light)' }}>
+                  <p className="text-sm mb-1" style={{ color: 'var(--color-accent)' }}>Loyalty Points</p>
+                  <p className="text-3xl font-bold" style={{ color: 'var(--color-accent)' }}>{userData.loyalty_points || 0}</p>
+                  <p className="text-xs mt-1 text-gray-600">Points earned from your bookings</p>
                 </div>
               </div>
             </div>
@@ -153,10 +156,14 @@ export default function Profile() {
 
         {/* Pets Section */}
         <div className="md:col-span-2">
-          <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="bg-white rounded-lg shadow-lg p-6 border border-gray-100">
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold text-gray-800">My Pets</h2>
-              <Link to="/register-pet" className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md">
+              <h2 className="text-2xl font-bold" style={{ color: 'var(--color-accent)' }}>My Pets</h2>
+              <Link 
+                to="/register-pet" 
+                className="px-4 py-2 rounded-md text-white transition duration-300"
+                style={{ backgroundColor: 'var(--color-primary)', hover: { backgroundColor: 'var(--color-primary-light)' } }}
+              >
                 Add New Pet
               </Link>
             </div>
@@ -168,38 +175,46 @@ export default function Profile() {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {userPets.map((pet) => (
-                  <div key={pet._id} className="bg-gray-50 rounded-lg p-4 hover:shadow-md transition-shadow">
+                  <div key={pet._id} className="rounded-lg p-4 transition-shadow hover:shadow-lg border border-gray-100">
                     <div className="flex items-start space-x-4">
                       <div className="w-24 h-24 flex-shrink-0">
                         <img
                           src={pet.pet_image || "https://images.pexels.com/photos/1404819/pexels-photo-1404819.jpeg"}
                           alt={pet.name}
-                          className="w-full h-full object-cover rounded-lg"
+                          className="w-full h-full object-cover rounded-lg shadow-sm"
                         />
                       </div>
                       <div className="flex-1">
-                        <h3 className="text-lg font-semibold text-gray-900">{pet.name}</h3>
+                        <h3 className="text-lg font-semibold" style={{ color: 'var(--color-primary)' }}>{pet.name}</h3>
                         <div className="mt-2 space-y-1">
                           <p className="text-sm text-gray-600">
-                            <span className="font-medium">Species:</span> {pet.species}
+                            <span className="font-medium" style={{ color: 'var(--color-secondary)' }}>Species:</span> {pet.species}
                           </p>
                           <p className="text-sm text-gray-600">
-                            <span className="font-medium">Breed:</span> {pet.breed}
+                            <span className="font-medium" style={{ color: 'var(--color-secondary)' }}>Breed:</span> {pet.breed}
                           </p>
                           <p className="text-sm text-gray-600">
-                            <span className="font-medium">Age:</span> {pet.age}
+                            <span className="font-medium" style={{ color: 'var(--color-secondary)' }}>Age:</span> {pet.age}
                           </p>
                           <p className="text-sm text-gray-600">
-                            <span className="font-medium">Gender:</span> {pet.gender}
+                            <span className="font-medium" style={{ color: 'var(--color-secondary)' }}>Gender:</span> {pet.gender}
                           </p>
                         </div>
                       </div>
                     </div>
                     <div className="mt-4 flex justify-end space-x-2">
-                      <Link to={`/edit-pet/${pet._id}`} className="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                      <Link 
+                        to={`/edit-pet/${pet._id}`} 
+                        className="text-sm font-medium transition-colors duration-300"
+                        style={{ color: 'var(--color-accent)' }}
+                      >
                         Edit
                       </Link>
-                      <button onClick={() => handleDeletePet(pet._id)} className="text-red-600 hover:text-red-800 text-sm font-medium">
+                      <button 
+                        onClick={() => handleDeletePet(pet._id)} 
+                        className="text-sm font-medium transition-colors duration-300"
+                        style={{ color: 'var(--color-primary)' }}
+                      >
                         Delete
                       </button>
                     </div>
@@ -211,37 +226,40 @@ export default function Profile() {
         </div>
 
         {/* Appointments Section */}
-        <div className="bg-white rounded-lg shadow-md p-6 mt-6">
+        <div className="bg-white rounded-lg shadow-lg p-6 mt-6 border border-gray-100">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-800">My Appointments</h2>
+            <h2 className="text-2xl font-bold" style={{ color: 'var(--color-accent)' }}>My Appointments</h2>
             <Link 
               to="/Appointment"
-              className="flex items-center bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition duration-300"
+              className="flex items-center px-4 py-2 rounded-md text-white transition duration-300"
+              style={{ backgroundColor: 'var(--color-primary)' }}
             >
               <FaCalendarAlt className="mr-2" />
               View My Appointments
             </Link>
           </div>
           <div className="text-center py-6">
-            <p className="text-gray-500 mb-2">Track and manage all your pet grooming appointments</p>
-            <p className="text-gray-400 text-sm">View appointment status, history, and upcoming bookings</p>
+            <p className="text-gray-600 mb-2">Track and manage all your pet grooming appointments</p>
+            <p className="text-sm text-gray-500">View appointment status, history, and upcoming bookings</p>
           </div>
         </div>
+
         {/* Products Section */}
-        <div className="bg-white rounded-lg shadow-md p-6 mt-6">
+        <div className="bg-white rounded-lg shadow-lg p-6 mt-6 border border-gray-100">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-800">My Products</h2>
+            <h2 className="text-2xl font-bold" style={{ color: 'var(--color-accent)' }}>My Products</h2>
             <Link 
               to="/ownerOrders"
-              className="flex items-center bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition duration-300"
+              className="flex items-center px-4 py-2 rounded-md text-white transition duration-300"
+              style={{ backgroundColor: 'var(--color-primary)' }}
             >
               <FaCalendarAlt className="mr-2" />
               View My Products
             </Link>
           </div>
           <div className="text-center py-6">
-            <p className="text-gray-500 mb-2">Track and manage all your pet grooming products</p>
-            <p className="text-gray-400 text-sm">View product status, history, and upcoming bookings</p>
+            <p className="text-gray-600 mb-2">Track and manage all your pet grooming products</p>
+            <p className="text-sm text-gray-500">View product status, history, and upcoming bookings</p>
           </div>
         </div>
       </div>
