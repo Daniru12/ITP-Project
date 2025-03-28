@@ -1,5 +1,6 @@
 import React from 'react'
 import { SearchIcon } from 'lucide-react'
+import RotatingText from '../UI/RotateText'
 
 export const HeroSection = () => {
   const gradientStyle = {
@@ -12,7 +13,24 @@ export const HeroSection = () => {
         <div className="flex flex-col lg:flex-row items-center">
           <div className="lg:w-1/2 lg:pr-10">
             <h1 className="text-4xl md:text-5xl font-bold text-gray-800 leading-tight">
-              The Smart Way to <span style={{ color: 'var(--color-primary)' }}>Care</span> for
+              The Smart Way to
+            </h1>
+            <div>
+              <RotatingText
+                texts={['Care for Pets', 'Groom Your Pet', 'Train Your Pet', 'Board Your Pet']}
+                mainClassName="text-4xl md:text-5xl font-bold leading-tight mb-2"
+                staggerFrom="last"
+                initial={{ y: "100%" }}
+                animate={{ y: 0 }}
+                exit={{ y: "-120%" }}
+                staggerDuration={0.025}
+                splitLevelClassName="overflow-hidden"
+                transition={{ type: "spring", damping: 30, stiffness: 400 }}
+                rotationInterval={3000}
+                elementLevelClassName="text-[#BC4626]"
+              />
+            </div>
+            <h1 className="text-4xl md:text-5xl font-bold text-gray-800 leading-tight">
               Your Furry Friends
             </h1>
             <p className="mt-4 text-lg text-gray-600 max-w-lg">
