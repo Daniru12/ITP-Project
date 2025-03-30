@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import { FaStar, FaEdit, FaTrash, FaCalendarAlt } from 'react-icons/fa';
+import { FaStar, FaEdit, FaTrash, FaCalendarAlt, FaUser, FaCut, FaBox } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 
 const ProviderProfile = () => {
@@ -88,126 +88,167 @@ function handleDeleteService(serviceId) {
 }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      {/* Provider Profile Header */}
-      <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-        <div className="flex flex-col md:flex-row items-center md:items-start">
-          <div className="w-32 h-32 rounded-full overflow-hidden mb-4 md:mb-0 md:mr-6">
-            <img 
-              src={providerInfo?.profile_picture || "https://via.placeholder.com/150"} 
-              alt="Provider" 
-              className="w-full h-full object-cover"
-            />
-          </div>
-          <div className="text-center md:text-left">
-            <h1 className="text-2xl font-bold">{providerInfo?.full_name || "Service Provider"}</h1>
-            <p className="text-gray-600 mb-2">{providerInfo?.email}</p>
-            <p className="text-gray-600 mb-4">{providerInfo?.phone_number}</p>
-            <button className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md">
-              Edit Profile
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Services Section */}
-      <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-xl font-semibold">My Services</h2>
-          <Link 
-            to="/add-service"
-            className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md"
-          >
-            Add New Service
-          </Link>
-        </div>
-
-        {services.length === 0 ? (
-          <div className="text-center py-8">
-            <p className="text-gray-500 mb-4">You haven't added any services yet.</p>
-            <p className="text-gray-500">Start by adding your first service!</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {services.map((service) => (
-              <div key={service._id} className="border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-                <div className="p-4 border-b">
-                  <div className="flex justify-between items-start">
-                    <h3 className="text-lg font-semibold">{service.service_name}</h3>
-                    <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full capitalize">
-                      {service.service_category.replace('_', ' ')}
-                    </span>
+    <div className="max-w-7xl mx-auto p-8 bg-gradient-to-br from-gray-50 to-white">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        {/* Profile Card */}
+        <div className="lg:col-span-4">
+          <div className="bg-white rounded-2xl shadow-sm p-8 border border-gray-100">
+            <div className="text-center mb-8">
+              <div className="relative inline-block">
+                {providerInfo?.profile_picture ? (
+                  <img
+                    src={providerInfo.profile_picture}
+                    alt="Profile"
+                    className="w-36 h-36 rounded-full mx-auto mb-6 object-cover ring-4 ring-offset-4"
+                    style={{ borderColor: 'var(--color-accent)' }}
+                  />
+                ) : (
+                  <div className="w-36 h-36 rounded-full mx-auto mb-6 bg-gray-100 flex items-center justify-center">
+                    <FaUser className="w-16 h-16 text-gray-400" />
                   </div>
-                  <p className="text-gray-600 mt-2 text-sm">{service.description}</p>
-                </div>
-                
-                <div className="p-4">
-                  <h4 className="font-medium mb-2">Packages:</h4>
-                  <div className="space-y-3">
-                    {service.packages && Object.entries(service.packages).map(([tier, details]) => (
-                      <div key={tier} className="flex justify-between items-center">
-                        <div>
-                          <span className="capitalize font-medium">{tier}</span>
-                          <p className="text-sm text-gray-500">{details.duration} mins</p>
-                        </div>
-                        <span className="font-semibold">{formatPrice(details.price)}</span>
-                      </div>
-                    ))}
+                )}
+              </div>
+              <h1 className="text-2xl font-bold mb-2" style={{ color: 'var(--color-accent)' }}>{providerInfo?.full_name || "Service Provider"}</h1>
+              <p className="text-gray-500">Professional Groomer</p>
+            </div>
+
+            <div className="space-y-6">
+              <div className="bg-gray-50 rounded-xl p-4">
+                <div className="grid grid-cols-1 gap-4">
+                  <div>
+                    <p className="text-sm text-gray-500 mb-1">Email</p>
+                    <p className="font-medium text-gray-900 break-all text-sm">{providerInfo?.email}</p>
                   </div>
-                </div>
-                
-                <div className="p-4 bg-gray-50 flex justify-between items-center">
-                  <span className={`px-2 py-1 rounded-full text-xs ${service.is_available ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                    {service.is_available ? 'Available' : 'Unavailable'}
-                  </span>
-                  <div className="flex space-x-2">
-                    <Link to={`/update-service/${service._id}`} className="text-blue-600 hover:text-blue-800">
-                      <FaEdit />
-                    </Link>
-                    <button className="text-red-600 hover:text-red-800" onClick={()=>handleDeleteService(service._id)}>
-                      <FaTrash />
-                    </button>
+                  <div>
+                    <p className="text-sm text-gray-500 mb-1">Phone</p>
+                    <p className="font-medium text-gray-900">{providerInfo?.phone_number}</p>
                   </div>
                 </div>
               </div>
-            ))}
-          </div>
-        )}
-      </div>
-      
-      {/* Appointments Section */}
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-xl font-semibold">Appointments</h2>
-          <Link 
-            to="/AppointmentLIST"
-            className="flex items-center bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition duration-300"
-          >
-            <FaCalendarAlt className="mr-2" />
-            View All Appointments
-          </Link>
-        </div>
-        <div className="text-center py-8">
-          <p className="text-gray-500 mb-4">Manage all your appointments in one place</p>
-          <p className="text-gray-400 text-sm">Click the button above to view, confirm, or cancel appointments</p>
-        </div>
-      </div>
 
-      {/* Products Section */}
-      <div className="bg-white rounded-lg shadow-md p-6 mb-8 mt-6">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-xl font-semibold">Products</h2>
-          <Link 
-            to="/delete-product"
-            className="flex items-center bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition duration-300"
-          >
-            <FaCalendarAlt className="mr-2" />
-            View All Products
-          </Link>
+              <Link 
+                to="/edit-profile" 
+                className="block text-center px-6 py-2.5 rounded-full text-white transition-all duration-300 hover:shadow-md"
+                style={{ backgroundColor: 'var(--color-primary)' }}
+              >
+                Edit Profile
+              </Link>
+            </div>
+          </div>
         </div>
-        <div className="text-center py-8">
-          <p className="text-gray-500 mb-4">Manage all your products in one place</p>
-          <p className="text-gray-400 text-sm">Click the button above to view, confirm, or cancel products</p>
+
+        {/* Main Content Area */}
+        <div className="lg:col-span-8 space-y-8">
+          {/* Services Section */}
+          <div className="bg-white rounded-2xl shadow-sm p-8 border border-gray-100">
+            <div className="flex justify-between items-center mb-8">
+              <div className="flex items-center">
+                <FaCut className="w-6 h-6 mr-3" style={{ color: 'var(--color-accent)' }} />
+                <h2 className="text-2xl font-bold" style={{ color: 'var(--color-accent)' }}>My Services</h2>
+              </div>
+              <Link 
+                to="/add-service"
+                className="px-6 py-2.5 rounded-full text-white transition-all duration-300 hover:shadow-md"
+                style={{ backgroundColor: 'var(--color-primary)' }}
+              >
+                Add New Service
+              </Link>
+            </div>
+
+            {services.length === 0 ? (
+              <div className="text-center py-12">
+                <FaCut className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+                <p className="text-gray-500 text-lg">No services added yet</p>
+                <p className="text-sm text-gray-400 mt-2">Start by adding your first service!</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {services.map((service) => (
+                  <div key={service._id} className="bg-gray-50 rounded-xl p-6 transition-all duration-300 hover:shadow-md">
+                    <div className="flex justify-between items-start mb-4">
+                      <h3 className="text-xl font-semibold" style={{ color: 'var(--color-primary)' }}>{service.service_name}</h3>
+                      <span className="bg-blue-100 text-blue-800 text-xs px-3 py-1 rounded-full capitalize">
+                        {service.service_category.replace('_', ' ')}
+                      </span>
+                    </div>
+                    
+                    <p className="text-gray-600 mb-4 text-sm">{service.description}</p>
+                    
+                    <div className="space-y-3 mb-4">
+                      {service.packages && Object.entries(service.packages).map(([tier, details]) => (
+                        <div key={tier} className="flex justify-between items-center bg-white rounded-lg p-3">
+                          <div>
+                            <span className="capitalize font-medium text-sm">{tier}</span>
+                            <p className="text-xs text-gray-500">{details.duration} mins</p>
+                          </div>
+                          <span className="font-semibold text-sm">{formatPrice(details.price)}</span>
+                        </div>
+                      ))}
+                    </div>
+                    
+                    <div className="flex justify-between items-center pt-4 border-t border-gray-200">
+                      <span className={`px-3 py-1 rounded-full text-xs ${
+                        service.is_available 
+                          ? 'bg-green-100 text-green-800' 
+                          : 'bg-red-100 text-red-800'
+                      }`}>
+                        {service.is_available ? 'Available' : 'Unavailable'}
+                      </span>
+                      <div className="flex space-x-3">
+                        <Link 
+                          to={`/update-service/${service._id}`} 
+                          className="text-gray-400 hover:text-blue-500 transition-colors"
+                        >
+                          <FaEdit className="w-5 h-5" />
+                        </Link>
+                        <button 
+                          onClick={() => handleDeleteService(service._id)}
+                          className="text-gray-400 hover:text-red-500 transition-colors"
+                        >
+                          <FaTrash className="w-5 h-5" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Quick Actions Section */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Appointments Card */}
+            <div className="bg-white rounded-2xl shadow-sm p-8 border border-gray-100">
+              <div className="flex items-center mb-6">
+                <FaCalendarAlt className="w-6 h-6 mr-3" style={{ color: 'var(--color-accent)' }} />
+                <h2 className="text-xl font-bold" style={{ color: 'var(--color-accent)' }}>Appointments</h2>
+              </div>
+              <p className="text-gray-600 mb-6">Manage your upcoming appointments and bookings</p>
+              <Link 
+                to="/AppointmentLIST"
+                className="inline-flex items-center px-6 py-2.5 rounded-full text-white transition-all duration-300 hover:shadow-md"
+                style={{ backgroundColor: 'var(--color-primary)' }}
+              >
+                View Appointments
+              </Link>
+            </div>
+
+            {/* Products Card */}
+            <div className="bg-white rounded-2xl shadow-sm p-8 border border-gray-100">
+              <div className="flex items-center mb-6">
+                <FaBox className="w-6 h-6 mr-3" style={{ color: 'var(--color-accent)' }} />
+                <h2 className="text-xl font-bold" style={{ color: 'var(--color-accent)' }}>Products</h2>
+              </div>
+              <p className="text-gray-600 mb-6">Manage your product inventory and listings</p>
+              <Link 
+                to="/delete-product"
+                className="inline-flex items-center px-6 py-2.5 rounded-full text-white transition-all duration-300 hover:shadow-md"
+                style={{ backgroundColor: 'var(--color-primary)' }}
+              >
+                View Products
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
     </div>
