@@ -3,7 +3,7 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
 import mediaUpload from "../../../utils/mediaUpload";
-import HamsterLoader from "../../components/HamsterLoader";
+import HamsterLoader from "../../Components/HamsterLoader";
 
 const AddTraining = () => {
   const navigate = useNavigate();
